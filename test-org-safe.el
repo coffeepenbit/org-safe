@@ -31,6 +31,22 @@
 (my-ert-reload-feature 'org-safe)
 
 
+(defun ert-helper-org-buffer (buffer-text &optional func)
+  "Useful for testing org-mode functions in ert.
+
+BUFFER-TEXT is the initial state of the org-mode buffer.
+
+FUNC is what is ran after creating the buffer."
+  (with-temp-buffer
+    (insert buffer-text)
+    (beginning-of-buffer)
+    (org-mode)
+    (if func
+        (funcall func)
+      (buffer-string))
+    ))
+
+;;;; delete-backwards-char
 (ert-deftest test-delete-backward-char nil
   (should (string=
            "* headlin"
@@ -101,6 +117,7 @@
               (buffer-string))))))
 
 
+;;;; point-on-headline-stars
 (ert-deftest test-point-on-headline-stars nil
   (should (equal
            t
