@@ -64,6 +64,7 @@ N is number of chars to consider."
       (looking-at "
 [*]? ")))
 
+
 (defun org-safe-delete-char (N)
   "Execute org-delete-char if non-protected content.
 
