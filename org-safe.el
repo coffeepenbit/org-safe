@@ -25,8 +25,6 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Code:
-
-
 (defgroup org-safe ()
   "org-safe minor mode."
   :group 'editing)
@@ -46,6 +44,30 @@
   :lighter " org-safe"
   :group 'org-safe
   :keymap org-safe-mode-map)
+
+
+(defcustom org-safe-prohibited-duration 1
+  "Disables org-safe protection for specified numebr of seconds."
+  :group 'org-safe)
+
+
+(defun org-safe-start-prohibited-timer nil
+  "Enable `org-mode' again after timer is done."
+  (run-with-timer org-safe-prohibited-duration nil (org-safe--enable)))
+
+
+(defun org-safe-prohibited-p nil
+  "Check if `org-safe' protection is prohibited."
+  org-safe-is-prohibited--var)
+
+
+(defvar org-safe-is-prohibited--var nil
+  "If true, prevent function from activating.")
+
+
+(defun org-safe--enable nil
+  "Re-enables org safe after prohibited."
+  (setq org-safe-prohibited-p nil))
 
 
 (defun org-safe-delete-backward-char nil

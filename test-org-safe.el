@@ -26,25 +26,9 @@
 (require 'ert)
 (require 'my-ert)
 
-(ert-delete-all-tests)
 
-(my-ert-reload-feature 'org-safe)
+(my-ert-setup 'org-safe)
 
-
-(defun ert-helper-org-buffer (buffer-text &optional func)
-  "Useful for testing org-mode functions in ert.
-
-BUFFER-TEXT is the initial state of the org-mode buffer.
-
-FUNC is what is ran after creating the buffer."
-  (with-temp-buffer
-    (insert buffer-text)
-    (beginning-of-buffer)
-    (org-mode)
-    (if func
-        (funcall func)
-      (buffer-string))
-    ))
 
 ;;;; delete-backwards-char
 (ert-deftest test-delete-backward-char nil
@@ -94,6 +78,7 @@ FUNC is what is ran after creating the buffer."
                (goto-char 2) ; After first asterisk
                (org-safe-delete-backward-char)
                (buffer-string)))))
+
   (should (string=
            "*this is not a headline"
            (my-ert-org-buffer
@@ -148,6 +133,7 @@ FUNC is what is ran after creating the buffer."
               (org-safe-mode)
               (goto-char 2) ; After first asterisk
               (org-safe-point-on-headline-stars-p)))))
+
   (should (equal
            nil
            (my-ert-org-buffer
@@ -156,6 +142,7 @@ FUNC is what is ran after creating the buffer."
               (org-safe-mode)
               (goto-char 3) ; After first asterisk
               (org-safe-point-on-headline-stars-p)))))
+
   (should (equal
            nil
            (my-ert-org-buffer
@@ -166,6 +153,21 @@ FUNC is what is ran after creating the buffer."
               (org-safe-point-on-headline-stars-p))))))
 
 
+;;;; disabled-timer
+(ert-deftest test-org-safe-disabled-timer/none nil
+  :tags '(disabled-timer)
+  (should (equal
+           t
+           (my-ert-org-buffer
+            "
+* headline"
+            (lambda nil
+              (org-safe-mode)
+              (let ((org-safe-is-prohibited--var))
+                (org-safe-prohibited-p)))))))
+
+
+;;;; End of tests
 (ert t)
 
 (provide 'test-org-safe)
