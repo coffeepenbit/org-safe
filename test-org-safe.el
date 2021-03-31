@@ -79,19 +79,19 @@
               (org-safe-mode)
               (goto-char 2) ; After first asterisk
               (org-safe-delete-backward-char)
+              (buffer-string))))))
+
+
+(ert-deftest test-delete-backward-char-allow-nonheadline-delete nil
+  (should (string=
+           "this is not a headline*"
+           (my-ert-org-buffer
+            "*this is not a headline*"
+            (lambda nil
+              (org-safe-mode)
+              (goto-char 2) ; After first asterisk
+              (org-safe-delete-backward-char)
               (buffer-string)))))
-
-
-  (ert-deftest test-delete-backward-char-allow-nonheadline-delete nil
-    (should (string=
-             "this is not a headline*"
-             (my-ert-org-buffer
-              "*this is not a headline*"
-              (lambda nil
-                (org-safe-mode)
-                (goto-char 2) ; After first asterisk
-                (org-safe-delete-backward-char)
-                (buffer-string))))))
 
   (should (string=
            "*this is not a headline"
