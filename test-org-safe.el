@@ -181,7 +181,7 @@
 
 
 ;;;; set prohibited state
-(ert-deftest test-org-safe--prohibit/not-prohibited nil
+(ert-deftest test-org-safe--prohibit/make-prohibited nil
   ;; :tags '(org-safe-prohibited-p)
   (my-ert-org-buffer
    "
@@ -196,7 +196,7 @@
                       (org-safe-prohibited-p)))))))
 
 
-(ert-deftest test-org-safe--prohibit/prohibited nil
+(ert-deftest test-org-safe--prohibit/make-un-prohibited nil
   :tags '(org-safe-prohibited-p)
   (my-ert-org-buffer
    "
@@ -213,57 +213,20 @@
 
 
 ;;;; prohibited-timer
-(ert-deftest test-org-safe-disabled-timer/default-is-nil nil
+(ert-deftest test-org-safe-disabled-timer/prohibited-nil-to-t nil
+  "Verify that timer is un-prohibiting after given time."
   :tags '(disabled-timer)
-  (should (equal
-           nil
-           (my-ert-org-buffer
-            "
+  (my-ert-org-buffer
+   "
 * headline"
-            (lambda nil
-              (org-safe-mode)
-              (let ((org-safe--prohibited-var))
-                (org-safe-prohibited-p)))))))
-
-
-(ert-deftest test-org-safe-disabled-timer/prohibit nil
-  :tags '(disabled-timer)
-  (should (equal
-           t
-           (my-ert-org-buffer
-            "
-* headline"
-            (lambda nil
-              (org-safe-mode)
-              (let ((org-safe--prohibited-var))
-                (org-safe--prohibit)
-                (org-safe-prohibited-p)))))))
-
-
-
-
-
-;; (ert-deftest test-org-safe-disabled-timer/prohibited-nil-to-t nil
-;;   "Verify that timer is un-prohibiting after given time.
-
-;; 1. (org-safe-prohibited-p) should start as nil
-;; 2. (org-safe--prohibit)
-;; 3. should be t
-;; 4.
-;; "
-;;   :tags '(disabled-timer)
-;;   (should (equal
-;;            nil
-;;            (my-ert-org-buffer
-;;             "
-;; * headline"
-;;             (lambda nil
-;;               (org-safe-mode)
-;;               (let ((org-safe-prohibited-duration 1)
-;;                     (org-safe--prohibited-var t))
-;;                 (progn (org-safe-start-prohibited-timer)
-;;                        (sit-for org-safe-prohibited-duration)
-;;                        (org-safe-prohibited-p))))))))
+   (lambda nil
+     (org-safe-mode)
+     (let ((org-safe-prohibited-duration 0.1)
+           (org-safe--prohibited-var t))
+       (should (equal t (org-safe-prohibited-p)))
+       (org-safe-start-prohibited-timer)
+       (sit-for org-safe-prohibited-duration)
+       (should (equal nil (org-safe-prohibited-p)))))))
 
 
 ;;;; End of tests

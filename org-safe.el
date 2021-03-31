@@ -4,6 +4,7 @@
 
 ;; Author:  coffeepenbit@gmail.com
 ;; Keywords: outlines
+;; Version: 0.0.1
 
 ;;; Commentary:
 
