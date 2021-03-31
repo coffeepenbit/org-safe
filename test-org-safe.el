@@ -227,7 +227,7 @@
 
 
 ;;;; prohibited-timer
-(ert-deftest test-org-safe-disabled-timer/prohibited-nil-to-t nil
+(ert-deftest test-org-safe-disabled-timer/prohibited-nil-to-t-to-nil nil
   "Verify that timer is un-prohibiting after given time."
   :tags '(disabled-timer)
   (my-ert-org-buffer
