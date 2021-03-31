@@ -52,6 +52,13 @@
   :group 'org-safe)
 
 
+(defun org-safe-temp-allow-deletion nil
+  "Prohibit `org-safe' protection."
+  (interactive)
+  (org-safe--prohibit)
+  (org-safe-start-prohibited-timer))
+
+
 (defun org-safe-start-prohibited-timer nil
   "Enable `org-safe' again after timer is done."
   (run-with-timer org-safe-prohibited-duration nil 'org-safe--enable))

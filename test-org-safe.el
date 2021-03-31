@@ -33,16 +33,7 @@
 
 
 ;;;; remapped-functions
-;; (ert-deftest test-delete-backward-char/dont-prevent-title-delete-end nil
-;;   (should (string=
-;;            "* headlin"
-;;            (my-ert-org-buffer
-;;             "* headline"
-;;             (lambda nil
-;;               (org-safe-mode)
-;;               (goto-char (point-max))
-;;               (org-safe-delete-backward-char)
-;;               (buffer-string))))))
+;; Create test that checks if functions are remapped
 
 
 ;;;; delete-backwards-char
@@ -229,7 +220,7 @@
 ;;;; prohibited-timer
 (ert-deftest test-org-safe-disabled-timer/prohibited-nil-to-t-to-nil nil
   "Verify that timer is un-prohibiting after given time."
-  :tags '(disabled-timer)
+  :tags '(prohibited-timer)
   (my-ert-org-buffer
    "
 * headline"
@@ -241,6 +232,21 @@
        (org-safe-start-prohibited-timer)
        (sit-for org-safe-prohibited-duration)
        (should (equal nil (org-safe-prohibited-p)))))))
+
+
+;;;; org-safe-temp-allow-deletion
+;; (ert-deftest test-org-safe-temp-allow-deletion nil
+;;   :tags '(org-safe-temp-allow-deletion)
+;;   (should (equal
+;;            "* hadline"
+;;            (my-ert-org-buffer
+;;             "* headline"
+;;             (lambda nil
+;;               (org-safe-mode)
+;;               (goto-char 5)
+;;               (org-safe-delete-backward-char)
+;;               (buffer-string))))))
+
 
 
 ;;;; End of tests
