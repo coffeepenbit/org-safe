@@ -26,7 +26,7 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Code:
-(defgroup org-safe ()
+(defgroup org-safe nil
   "org-safe minor mode."
   :group 'editing)
 
@@ -80,6 +80,7 @@
   "Execute org-delete-backward-char if non-protected content.
 
 N is number of chars to consider."
+  (interactive "p")
   (if (not (org-safe-point-on-headline-stars-p))
       (org-delete-backward-char 1)
     (message "Cant delete headline stars")))
@@ -98,6 +99,7 @@ N is number of chars to consider."
 
 N is number of chars to consider."
   (interactive "p")
+  (message "running or safe delete char")
   (org-delete-char N))
 
 

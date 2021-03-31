@@ -23,22 +23,37 @@
 ;; Test cases for `org-safe-mode'
 
 ;;; Code:
+(require 'org-safe)
+
 (require 'ert)
-(require 'my-ert)
+(require 'my-ert "~/.emacs.d/site-lisp/my-ert.el")
 
 
 (my-ert-setup 'org-safe)
 
 
+;;;; remapped-functions
+;; (ert-deftest test-delete-backward-char/dont-prevent-title-delete-end nil
+;;   (should (string=
+;;            "* headlin"
+;;            (my-ert-org-buffer
+;;             "* headline"
+;;             (lambda nil
+;;               (org-safe-mode)
+;;               (goto-char (point-max))
+;;               (org-safe-delete-backward-char)
+;;               (buffer-string))))))
+
+
 ;;;; delete-backwards-char
-(ert-deftest test-delete-backward-char nil
-  (should (string=
-           "* headlin"
+(ert-deftest test-delete-backward-char/dont-prevent-title-delete-end nil
+  (should (equal
+           "* hadline"
            (my-ert-org-buffer
             "* headline"
             (lambda nil
               (org-safe-mode)
-              (goto-char (point-max))
+              (goto-char 5)
               (org-safe-delete-backward-char)
               (buffer-string))))))
 
@@ -71,13 +86,12 @@
     (should (string=
              "this is not a headline*"
              (my-ert-org-buffer
-
-              "*this is not a headline*")
-             (lambda nil
-               (org-safe-mode)
-               (goto-char 2) ; After first asterisk
-               (org-safe-delete-backward-char)
-               (buffer-string)))))
+              "*this is not a headline*"
+              (lambda nil
+                (org-safe-mode)
+                (goto-char 2) ; After first asterisk
+                (org-safe-delete-backward-char)
+                (buffer-string))))))
 
   (should (string=
            "*this is not a headline"
