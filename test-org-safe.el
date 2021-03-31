@@ -153,8 +153,80 @@
               (org-safe-point-on-headline-stars-p))))))
 
 
-;;;; disabled-timer
-(ert-deftest test-org-safe-disabled-timer/none nil
+;;;; prohibited-p
+(ert-deftest test-org-safe-prohibited-p/not-prohibited nil
+  :tags '(org-safe-prohibited-p)
+  (should (equal
+           nil
+           (my-ert-org-buffer
+            "
+* headline"
+            (lambda nil
+              (org-safe-mode)
+              (let ((org-safe--prohibited-var nil))
+                (org-safe-prohibited-p)))))))
+
+
+(ert-deftest test-org-safe-prohibited-p/is-prohibited nil
+  :tags '(org-safe-prohibited-p)
+  (should (equal
+           t
+           (my-ert-org-buffer
+            "
+* headline"
+            (lambda nil
+              (org-safe-mode)
+              (let ((org-safe--prohibited-var t))
+                (org-safe-prohibited-p)))))))
+
+
+;;;; set prohibited state
+(ert-deftest test-org-safe--prohibit/not-prohibited nil
+  ;; :tags '(org-safe-prohibited-p)
+  (my-ert-org-buffer
+   "
+* headline"
+   (lambda nil
+     (org-safe-mode)
+     (let ((org-safe--prohibited-var nil))
+       (should (equal nil
+                      (org-safe-prohibited-p)))
+       (org-safe--prohibit)
+       (should (equal t
+                      (org-safe-prohibited-p)))))))
+
+
+(ert-deftest test-org-safe--prohibit/prohibited nil
+  :tags '(org-safe-prohibited-p)
+  (my-ert-org-buffer
+   "
+* headline"
+   (lambda nil
+     (org-safe-mode)
+     (let ((org-safe--prohibited-var t))
+       (should (equal t
+                      (org-safe-prohibited-p)))
+       (org-safe--enable)
+       (should (equal nil
+                      (org-safe-prohibited-p)))
+       ))))
+
+
+;;;; prohibited-timer
+(ert-deftest test-org-safe-disabled-timer/default-is-nil nil
+  :tags '(disabled-timer)
+  (should (equal
+           nil
+           (my-ert-org-buffer
+            "
+* headline"
+            (lambda nil
+              (org-safe-mode)
+              (let ((org-safe--prohibited-var))
+                (org-safe-prohibited-p)))))))
+
+
+(ert-deftest test-org-safe-disabled-timer/prohibit nil
   :tags '(disabled-timer)
   (should (equal
            t
@@ -163,8 +235,35 @@
 * headline"
             (lambda nil
               (org-safe-mode)
-              (let ((org-safe-is-prohibited--var))
+              (let ((org-safe--prohibited-var))
+                (org-safe--prohibit)
                 (org-safe-prohibited-p)))))))
+
+
+
+
+
+;; (ert-deftest test-org-safe-disabled-timer/prohibited-nil-to-t nil
+;;   "Verify that timer is un-prohibiting after given time.
+
+;; 1. (org-safe-prohibited-p) should start as nil
+;; 2. (org-safe--prohibit)
+;; 3. should be t
+;; 4.
+;; "
+;;   :tags '(disabled-timer)
+;;   (should (equal
+;;            nil
+;;            (my-ert-org-buffer
+;;             "
+;; * headline"
+;;             (lambda nil
+;;               (org-safe-mode)
+;;               (let ((org-safe-prohibited-duration 1)
+;;                     (org-safe--prohibited-var t))
+;;                 (progn (org-safe-start-prohibited-timer)
+;;                        (sit-for org-safe-prohibited-duration)
+;;                        (org-safe-prohibited-p))))))))
 
 
 ;;;; End of tests

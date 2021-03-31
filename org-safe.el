@@ -52,22 +52,27 @@
 
 
 (defun org-safe-start-prohibited-timer nil
-  "Enable `org-mode' again after timer is done."
-  (run-with-timer org-safe-prohibited-duration nil (org-safe--enable)))
+  "Enable `org-safe' again after timer is done."
+  (run-with-timer org-safe-prohibited-duration nil 'org-safe--enable))
 
 
 (defun org-safe-prohibited-p nil
   "Check if `org-safe' protection is prohibited."
-  org-safe-is-prohibited--var)
+  org-safe--prohibited-var)
 
 
-(defvar org-safe-is-prohibited--var nil
+(defvar org-safe--prohibited-var nil
   "If true, prevent function from activating.")
+
+
+(defun org-safe--prohibit nil
+  "Prohibit `org-safe' safety functions."
+  (setq org-safe--prohibited-var t))
 
 
 (defun org-safe--enable nil
   "Re-enables org safe after prohibited."
-  (setq org-safe-prohibited-p nil))
+  (setq org-safe--prohibited-var nil))
 
 
 (defun org-safe-delete-backward-char nil
