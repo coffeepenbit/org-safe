@@ -60,16 +60,15 @@
               (buffer-string))))))
 
 
-;; (ert-deftest test-delete-char-prevent-one-asterisk nil
-;;   (should (string=
-;;            "* headline"
-;;            (my-ert-org-buffer
-;;             "* headline"
-;;             (lambda nil
-;;               (org-safe-mode)
-;;               (goto-char 2) ; After first asterisk
-;;               (org-safe-delete-char)
-;;               (buffer-string))))))
+(ert-deftest test-delete-char-prevent-one-asterisk nil
+  (should (string=
+           "* headline"
+           (my-ert-org-buffer
+            "* headline"
+            (lambda nil
+              (org-safe-mode)
+              (org-safe-delete-char)
+              (buffer-string))))))
 
 
 ;; (ert-deftest test-delete-char-prevent-two-asterisks nil
