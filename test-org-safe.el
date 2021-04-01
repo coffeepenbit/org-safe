@@ -29,7 +29,9 @@
 (require 'my-ert "~/.emacs.d/site-lisp/my-ert.el")
 
 
-(my-ert-setup 'org-safe)
+(ert-delete-all-tests)
+
+(my-ert-reload-feature 'org-safe)
 
 
 ;;;; remapped-functions
