@@ -60,15 +60,15 @@
               (buffer-string))))))
 
 
-(ert-deftest test-delete-char-prevent-one-asterisk nil
-  (should (string=
-           "* headline"
-           (my-ert-org-buffer
-            "* headline"
-            (lambda nil
-              (org-safe-mode)
-              (org-safe-delete-char)
-              (buffer-string))))))
+;; (ert-deftest test-delete-char-prevent-one-asterisk nil
+;;   (should (string=
+;;            "* headline"
+;;            (my-ert-org-buffer
+;;             "* headline"
+;;             (lambda nil
+;;               (org-safe-mode)
+;;               (org-safe-delete-char)
+;;               (buffer-string))))))
 
 
 ;; (ert-deftest test-delete-char-prevent-two-asterisks nil
@@ -186,6 +186,37 @@
               (goto-char (point-max)) ; After first asterisk
               (org-safe-delete-backward-char)
               (buffer-string))))))
+
+
+;;;; point-looking-at-headline-stars
+(ert-deftest test-point-looking-at-headline-stars-p/t nil
+  (should (equal
+           t
+           (my-ert-org-buffer
+            "* headline"
+            (lambda nil
+              (org-safe-mode)
+              (org-safe-point-looking-at-headline-stars-p)))))
+
+  (should (equal
+           t
+           (my-ert-org-buffer
+            "** headline"
+            (lambda nil
+              (org-safe-mode)
+              (goto-char 2)
+              (org-safe-point-looking-at-headline-stars-p))))))
+
+
+(ert-deftest test-point-looking-at-headline-stars-p/nil nil
+  (should (equal
+           t
+           (my-ert-org-buffer
+            "*headline*"
+            (lambda nil
+              (org-safe-mode)
+              (org-safe-point-looking-at-headline-stars-p))))))
+
 
 
 ;;;; point-on-headline-stars
