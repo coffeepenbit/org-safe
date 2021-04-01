@@ -94,13 +94,14 @@ N is number of chars to consider."
 [*]? ")))
 
 
-(defun org-safe-delete-char (N)
-  "Execute org-delete-char if non-protected content.
-
-N is number of chars to consider."
+(defun org-safe-delete-char nil
+  "Execute org-delete-char if non-protected content."
   (interactive "p")
-  (message "running or safe delete char")
-  (org-delete-char N))
+  (if (not (org-safe-point-on-headline-stars-p))
+      (org-delete-char 1)
+    (message "Cant delete headline stars")))
+
+
 
 
 (provide 'org-safe)

@@ -47,7 +47,78 @@
 ;;               (buffer-string))))))
 
 
-;;;; delete-backwards-char
+;;;; delete-char-forwards
+(ert-deftest test-delete-char/dont-prevent-title-delete-end nil
+  (should (equal
+           "* hedline"
+           (my-ert-org-buffer
+            "* headline"
+            (lambda nil
+              (org-safe-mode)
+              (goto-char 5)
+              (org-safe-delete-char)
+              (buffer-string))))))
+
+
+;; (ert-deftest test-delete-char-prevent-one-asterisk nil
+;;   (should (string=
+;;            "* headline"
+;;            (my-ert-org-buffer
+;;             "* headline"
+;;             (lambda nil
+;;               (org-safe-mode)
+;;               (goto-char 2) ; After first asterisk
+;;               (org-safe-delete-char)
+;;               (buffer-string))))))
+
+
+;; (ert-deftest test-delete-char-prevent-two-asterisks nil
+;;   (should (string=
+;;            "** headline"
+;;            (my-ert-org-buffer
+;;             "** headline"
+;;             (lambda nil
+;;               (org-safe-mode)
+;;               (goto-char 2) ; After first asterisk
+;;               (org-safe-delete-char)
+;;               (buffer-string))))))
+
+
+;; (ert-deftest test-delete-char-allow-nonheadline-delete nil
+;;   (should (string=
+;;            "this is not a headline*"
+;;            (my-ert-org-buffer
+;;             "*this is not a headline*"
+;;             (lambda nil
+;;               (org-safe-mode)
+;;               (goto-char 2) ; After first asterisk
+;;               (org-safe-delete-char)
+;;               (buffer-string)))))
+
+;;   (should (string=
+;;            "*this is not a headline"
+;;            (my-ert-org-buffer
+;;             "*this is not a headline*"
+;;             (lambda nil
+;;               (org-safe-mode)
+;;               (goto-char (point-max)) ; After last asterisk
+;;               (org-safe-delete-char)
+;;               (buffer-string))))))
+
+
+;; (ert-deftest test-delete-char-allow-nonheadline-delete-2 nil
+;;   (should (string=
+;;            "asterisk"
+;;            (my-ert-org-buffer
+;;             "asterisk*"
+;;             (lambda nil
+;;               (org-safe-mode)
+;;               (goto-char (point-max)) ; After first asterisk
+;;               (org-safe-delete-char)
+;;               (buffer-string))))))
+
+
+;;;; delete-char-backwards
 (ert-deftest test-delete-backward-char/dont-prevent-title-delete-end nil
   (should (equal
            "* hadline"
