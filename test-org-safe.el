@@ -237,12 +237,20 @@
 * headline"
    (lambda nil
      (org-safe-mode)
-     (let ((org-safe-prohibited-duration 0.1)
-           (org-safe--prohibited-var t))
+     (let ((org-safe-prohibited-duration 0.1))
+       ;; Start prohibited
+       (org-safe--prohibit)
+
+       ;; Verify that we are starting prohibited
        (should (equal t (org-safe-prohibited-p)))
+
+       ;; Run prohibited timer and wait for it to finish
        (org-safe-start-prohibited-timer)
-       (sit-for org-safe-prohibited-duration)
-       (should (equal nil (org-safe-prohibited-p)))))))
+       (sit-for (+ org-safe-prohibited-duration 0.01))
+
+       ;; Verify that `org-safe' is re-enabled
+       (should
+        (equal nil (org-safe-prohibited-p)))))))
 
 
 ;;;; End of tests
