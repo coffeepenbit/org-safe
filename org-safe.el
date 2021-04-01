@@ -101,13 +101,19 @@ N is number of chars to consider."
 [*]? ")))
 
 
-(defun org-safe-delete-char (N)
-  "Execute org-delete-char if non-protected content.
+(defun org-safe-point-looking-at-headline-stars-p nil
+  "Return non-nil if point is within or immediately after headline stars."
+  (looking-at "[*]? "))
 
-N is number of chars to consider."
+
+(defun org-safe-delete-char nil
+  "Execute org-delete-char if non-protected content."
   (interactive "p")
-  (message "running or safe delete char")
-  (org-delete-char N))
+  (if (not (org-safe-point-on-headline-stars-p))
+      (org-delete-char 1)
+    (message "Cant delete headline stars")))
+
+
 
 
 (provide 'org-safe)

@@ -29,14 +29,86 @@
 (require 'my-ert "~/.emacs.d/site-lisp/my-ert.el")
 
 
-(my-ert-setup 'org-safe)
+(ert-delete-all-tests)
+
+(my-ert-reload-feature 'org-safe)
 
 
 ;;;; remapped-functions
 ;; Create test that checks if functions are remapped
 
 
-;;;; delete-backwards-char
+;;;; delete-char-forwards
+(ert-deftest test-delete-char/dont-prevent-title-delete-end nil
+  (should (equal
+           "* hedline"
+           (my-ert-org-buffer
+            "* headline"
+            (lambda nil
+              (org-safe-mode)
+              (goto-char 5)
+              (org-safe-delete-char)
+              (buffer-string))))))
+
+
+;; (ert-deftest test-delete-char-prevent-one-asterisk nil
+;;   (should (string=
+;;            "* headline"
+;;            (my-ert-org-buffer
+;;             "* headline"
+;;             (lambda nil
+;;               (org-safe-mode)
+;;               (org-safe-delete-char)
+;;               (buffer-string))))))
+
+
+;; (ert-deftest test-delete-char-prevent-two-asterisks nil
+;;   (should (string=
+;;            "** headline"
+;;            (my-ert-org-buffer
+;;             "** headline"
+;;             (lambda nil
+;;               (org-safe-mode)
+;;               (goto-char 2) ; After first asterisk
+;;               (org-safe-delete-char)
+;;               (buffer-string))))))
+
+
+;; (ert-deftest test-delete-char-allow-nonheadline-delete nil
+;;   (should (string=
+;;            "this is not a headline*"
+;;            (my-ert-org-buffer
+;;             "*this is not a headline*"
+;;             (lambda nil
+;;               (org-safe-mode)
+;;               (goto-char 2) ; After first asterisk
+;;               (org-safe-delete-char)
+;;               (buffer-string)))))
+
+;;   (should (string=
+;;            "*this is not a headline"
+;;            (my-ert-org-buffer
+;;             "*this is not a headline*"
+;;             (lambda nil
+;;               (org-safe-mode)
+;;               (goto-char (point-max)) ; After last asterisk
+;;               (org-safe-delete-char)
+;;               (buffer-string))))))
+
+
+;; (ert-deftest test-delete-char-allow-nonheadline-delete-2 nil
+;;   (should (string=
+;;            "asterisk"
+;;            (my-ert-org-buffer
+;;             "asterisk*"
+;;             (lambda nil
+;;               (org-safe-mode)
+;;               (goto-char (point-max)) ; After first asterisk
+;;               (org-safe-delete-char)
+;;               (buffer-string))))))
+
+
+;;;; delete-char-backwards
 (ert-deftest test-delete-backward-char/dont-prevent-title-delete-end nil
   (should (equal
            "* hadline"
@@ -105,6 +177,37 @@
               (goto-char (point-max)) ; After first asterisk
               (org-safe-delete-backward-char)
               (buffer-string))))))
+
+
+;;;; point-looking-at-headline-stars
+(ert-deftest test-point-looking-at-headline-stars-p/t nil
+  (should (equal
+           t
+           (my-ert-org-buffer
+            "* headline"
+            (lambda nil
+              (org-safe-mode)
+              (org-safe-point-looking-at-headline-stars-p)))))
+
+  (should (equal
+           t
+           (my-ert-org-buffer
+            "** headline"
+            (lambda nil
+              (org-safe-mode)
+              (goto-char 2)
+              (org-safe-point-looking-at-headline-stars-p))))))
+
+
+(ert-deftest test-point-looking-at-headline-stars-p/nil nil
+  (should (equal
+           t
+           (my-ert-org-buffer
+            "*headline*"
+            (lambda nil
+              (org-safe-mode)
+              (org-safe-point-looking-at-headline-stars-p))))))
+
 
 
 ;;;; point-on-headline-stars
@@ -226,12 +329,20 @@
 * headline"
    (lambda nil
      (org-safe-mode)
-     (let ((org-safe-prohibited-duration 0.1)
-           (org-safe--prohibited-var t))
+     (let ((org-safe-prohibited-duration 0.1))
+       ;; Start prohibited
+       (org-safe--prohibit)
+
+       ;; Verify that we are starting prohibited
        (should (equal t (org-safe-prohibited-p)))
+
+       ;; Run prohibited timer and wait for it to finish
        (org-safe-start-prohibited-timer)
-       (sit-for org-safe-prohibited-duration)
-       (should (equal nil (org-safe-prohibited-p)))))))
+       (sit-for (+ org-safe-prohibited-duration 0.01))
+
+       ;; Verify that `org-safe' is re-enabled
+       (should
+        (equal nil (org-safe-prohibited-p)))))))
 
 
 ;;;; org-safe-temp-allow-deletion
