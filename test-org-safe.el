@@ -226,6 +226,16 @@
             "*    headline"
             (lambda nil
               (org-safe-mode)
+              (org-safe-point-looking-at-headline-stars-p)))))
+
+  ;; Header on immediate next line
+  (should (equal
+           t
+           (my-ert-org-buffer
+            "
+* headline"
+            (lambda nil
+              (org-safe-mode)
               (org-safe-point-looking-at-headline-stars-p))))))
 
 
