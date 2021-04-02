@@ -409,6 +409,26 @@
 ;;               (buffer-string))))))
 
 
+;;;; org-safe-temp-allow-deletion
+(ert-deftest test-org-safe-temp-allow-deletion nil
+  :tags '(org-safe-temp-allow-deletion)
+  (my-ert-org-buffer
+   "
+* headline"
+   (lambda nil
+     (let ((org-safe-prohibited-duration 0.1))
+       (org-safe-mode)
+       ;; Verify start not prohibited
+       (should (equal nil (org-safe-prohibited-p)))
+
+       ;; Temporarily prohibit
+       (call-interactively 'org-safe-temp-allow-deletion)
+       (should (equal t (org-safe-prohibited-p)))
+
+       ;; Verify prohibit status is reset
+       (sit-for (+ org-safe-prohibited-duration 0.01))
+       (should (equal nil (org-safe-prohibited-p)))))))
+
 
 ;;;; End of tests
 (ert t)

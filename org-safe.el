@@ -26,11 +26,20 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Code:
+;;;; Required packages
+(require 'org)
+
+;;;; Customization
 (defgroup org-safe nil
   "org-safe minor mode."
   :group 'editing)
 
+(defcustom org-safe-prohibited-duration 1
+  "Disables org-safe protection for specified numebr of seconds."
+  :group 'org-safe
+  :type 'float)
 
+;;;; Vars
 (defvar org-safe-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map [remap org-delete-backward-char] 'org-safe-delete-backward-char)
@@ -39,17 +48,16 @@
   "Keymap used for `org-safe-mode.'.")
 
 
+(defvar org-safe--prohibited-var nil
+  "If true, prevent function from activating.")
+
+
 (define-minor-mode org-safe-mode
   "For keeping org-mode content safe from butter-fingers."
   :init-value nil
   :lighter " org-safe"
   :group 'org-safe
   :keymap org-safe-mode-map)
-
-
-(defcustom org-safe-prohibited-duration 1
-  "Disables org-safe protection for specified numebr of seconds."
-  :group 'org-safe)
 
 
 (defun org-safe-temp-allow-deletion nil
@@ -67,10 +75,6 @@
 (defun org-safe-prohibited-p nil
   "Check if `org-safe' protection is prohibited."
   org-safe--prohibited-var)
-
-
-(defvar org-safe--prohibited-var nil
-  "If true, prevent function from activating.")
 
 
 (defun org-safe--prohibit nil
@@ -113,8 +117,6 @@ N is number of chars to consider."
   (if (not (org-safe-point-on-headline-stars-p))
       (org-delete-char 1)
     (message "Cant delete headline stars")))
-
-
 
 
 (provide 'org-safe)
