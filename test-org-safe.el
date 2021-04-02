@@ -195,6 +195,14 @@
             "** headline"
             (lambda nil
               (org-safe-mode)
+              (org-safe-point-looking-at-headline-stars-p)))))
+
+  (should (equal
+           t
+           (my-ert-org-buffer
+            "** headline"
+            (lambda nil
+              (org-safe-mode)
               (goto-char 2)
               (org-safe-point-looking-at-headline-stars-p))))))
 
