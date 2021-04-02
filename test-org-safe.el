@@ -26,7 +26,7 @@
 (require 'org-safe)
 
 (require 'ert)
-(require 'my-ert "~/.emacs.d/site-lisp/my-ert.el")
+(require 'my-ert "../my-ert/my-ert.el")
 
 
 (ert-delete-all-tests)
@@ -201,7 +201,7 @@
 
 (ert-deftest test-point-looking-at-headline-stars-p/nil nil
   (should (equal
-           t
+           nil
            (my-ert-org-buffer
             "*headline*"
             (lambda nil
