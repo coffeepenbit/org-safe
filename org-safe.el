@@ -34,10 +34,12 @@
   "org-safe minor mode."
   :group 'editing)
 
+
 (defcustom org-safe-prohibited-duration 1
   "Disables org-safe protection for specified numebr of seconds."
   :group 'org-safe
   :type 'float)
+
 
 ;;;; Vars
 (defvar org-safe-mode-map
