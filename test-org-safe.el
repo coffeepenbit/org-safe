@@ -181,6 +181,7 @@
 
 ;;;; point-looking-at-headline-stars
 (ert-deftest test-point-looking-at-headline-stars-p/t nil
+  ;; Simple headline
   (should (equal
            t
            (my-ert-org-buffer
@@ -189,6 +190,7 @@
               (org-safe-mode)
               (org-safe-point-looking-at-headline-stars-p)))))
 
+  ;; Level two headline
   (should (equal
            t
            (my-ert-org-buffer
@@ -197,6 +199,8 @@
               (org-safe-mode)
               (org-safe-point-looking-at-headline-stars-p)))))
 
+  ;; Level two headline
+  ;; Inbetween asterisks
   (should (equal
            t
            (my-ert-org-buffer
