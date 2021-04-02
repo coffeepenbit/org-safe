@@ -204,10 +204,38 @@
             (lambda nil
               (org-safe-mode)
               (goto-char 2)
+              (org-safe-point-looking-at-headline-stars-p)))))
+
+  ;; Similar to bold stars, but space affter first star
+  (should (equal
+           t
+           (my-ert-org-buffer
+            "* headline*"
+            (lambda nil
+              (org-safe-mode)
+              (org-safe-point-looking-at-headline-stars-p)))))
+
+  ;; Multiple spaces after asterisk
+  (should (equal
+           t
+           (my-ert-org-buffer
+            "*    headline"
+            (lambda nil
+              (org-safe-mode)
               (org-safe-point-looking-at-headline-stars-p))))))
 
 
 (ert-deftest test-point-looking-at-headline-stars-p/nil nil
+  ;; No space after first asterisk
+  (should (equal
+           nil
+           (my-ert-org-buffer
+            "*headline"
+            (lambda nil
+              (org-safe-mode)
+              (org-safe-point-looking-at-headline-stars-p)))))
+
+  ;; Looking at bold text
   (should (equal
            nil
            (my-ert-org-buffer
