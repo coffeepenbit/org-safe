@@ -103,7 +103,8 @@ N is number of chars to consider."
 
 (defun org-safe-point-looking-at-headline-stars-p nil
   "Return non-nil if point is within or immediately after headline stars."
-  (looking-at "\\*+\\ [^\\ ]?"))
+  (looking-at "\\(
+\\)?\\*+\\ [^\\ ]?"))
 
 
 (defun org-safe-delete-char nil
