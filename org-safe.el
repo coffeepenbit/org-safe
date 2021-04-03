@@ -93,7 +93,7 @@
   "Execute org-delete-backward-char if non-protected content.
 
 N is number of chars to consider."
-  (interactive "p")
+  (interactive)
   (if (not (org-safe-point-on-headline-stars-p))
       (org-delete-backward-char 1)
     (message "Cant delete headline stars")))
@@ -115,7 +115,7 @@ N is number of chars to consider."
 
 (defun org-safe-delete-char nil
   "Execute org-delete-char if non-protected content."
-  (interactive "p")
+  (interactive)
   (if (not (org-safe-point-on-headline-stars-p))
       (org-delete-char 1)
     (message "Cant delete headline stars")))

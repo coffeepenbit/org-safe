@@ -430,6 +430,42 @@
        (should (equal nil (org-safe-prohibited-p)))))))
 
 
+(ert-deftest test-org-safe-temp-allow-deletion/allow-backward-delete nil
+  :tags '(org-safe-temp-allow-deletion)
+  (my-ert-org-buffer
+   "** headline"
+   (lambda nil
+     (let ((org-safe-prohibited-duration 0.1))
+       (org-safe-mode)
+       (goto-char 3)
+
+       ;; Verify start not prohibited
+       (should (equal nil (org-safe-prohibited-p)))
+
+       ;; Verify looking back at two stars
+       (should (equal t (looking-back "^\\*\\*" nil)))
+
+       (call-interactively 'org-safe-delete-backward-char)
+
+       ;; Still looking back at two stars
+       (should (equal t (looking-back "^\\*" nil)))
+
+       (call-interactively 'org-safe-temp-allow-deletion)
+
+       ;; Now it should be deleted (one star)
+       (should (equal t (looking-back "^\\*" nil)))
+
+       ;; Verify prohibit status is reset
+       (sit-for (+ org-safe-prohibited-duration 0.01))
+       (should (equal nil (org-safe-prohibited-p)))
+
+       ;; Try deleting remaining star
+       (call-interactively 'org-safe-delete-backward-char)
+
+       ;; Verify that trying to delete again doesn't work
+       (should (equal t (looking-back "^\\*" nil)))))))
+
+
 ;;;; End of tests
 (ert t)
 
