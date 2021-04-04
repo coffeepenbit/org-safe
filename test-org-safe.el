@@ -34,10 +34,8 @@ BUFFER-TEXT is the initial state of the `org-mode' buffer.
 FUNC is what is ran after creating the buffer."
   (with-temp-buffer
     (insert buffer-text)
-
     (goto-char (point-min))
     (org-mode)
-
     (if func
         (funcall func)
       (buffer-string))))
@@ -257,16 +255,12 @@ FUNC is what is ran after creating the buffer."
        (let ((org-safe-prohibited-duration 0.1))
          ;; Start prohibited
          (org-safe--prohibit)
-
          ;; Verify that we are starting prohibited
          (expect t :to-be( org-safe-prohibited-p))
-
          ;; Run prohibited timer and wait for it to finish
          (org-safe-start-prohibited-timer)
          (sit-for (+ org-safe-prohibited-duration 0.01))
-
          ;; Verify that `org-safe' is re-enabled
-
          (expect nil :to-be (org-safe-prohibited-p)))))))
 
 ;; (describe "test-org-safe-temp-allow-deletion nil
@@ -306,30 +300,21 @@ FUNC is what is ran after creating the buffer."
        (let ((org-safe-prohibited-duration 0.1))
          (org-safe-mode)
          (goto-char 3)
-
          ;; Verify start not prohibited
          (expect nil :to-be (org-safe-prohibited-p))
-
          ;; Verify looking back at two stars
          (expect t :to-be (looking-back "^\\*\\*" nil))
-
          (call-interactively 'org-safe-delete-backward-char)
-
          ;; Still looking back at two stars
          (expect t :to-be (looking-back "^\\*" nil))
-
          (call-interactively 'org-safe-temp-allow-deletion)
-
          ;; Now it should be deleted (one star)
          (expect t :to-be (looking-back "^\\*" nil))
-
          ;; Verify prohibit status is reset
          (sit-for (+ org-safe-prohibited-duration 0.01))
          (expect nil :to-be (org-safe-prohibited-p))
-
          ;; Try deleting remaining star
          (call-interactively 'org-safe-delete-backward-char)
-
          ;; Verify that trying to delete again doesn't work
          (expect t :to-be (looking-back "^\\*" nil)))))))
 
