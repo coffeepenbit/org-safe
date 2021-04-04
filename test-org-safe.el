@@ -48,15 +48,15 @@ FUNC is what is ran after creating the buffer."
 
 
 (describe "delete-char"
-          (it "deletes headline title chars"
-              (expect "* hedline" :to-equal
-                      (org-temp-buffer
-                       "* headline"
-                       (lambda nil
-                         (org-safe-mode)
-                         (goto-char 5)
-                         (org-safe-delete-char)
-                         (buffer-string))))))
+  (it "deletes headline title chars"
+    (expect "* hedline" :to-equal
+            (org-temp-buffer
+             "* headline"
+             (lambda nil
+               (org-safe-mode)
+               (goto-char 5)
+               (org-safe-delete-char)
+               (buffer-string))))))
 
 
 (describe "delete-backward-char"
@@ -171,114 +171,115 @@ FUNC is what is ran after creating the buffer."
 
 
 (describe "point-on-headline-stars-p"
-          (it "should be t when point is on headline"
-              (expect t :should-be
-                      (org-temp-buffer
-                       "* headline"
-                       (lambda nil
-                         (org-safe-mode)
-                         (goto-char 2) ; After first asterisk
-                         (org-safe-point-on-headline-stars-p))))
-              (expect t :should-be
-                      t
-                      (org-temp-buffer
-                       "
+  (it "should be t when point is on headline"
+    (expect t :should-be
+            (org-temp-buffer
+             "* headline"
+             (lambda nil
+               (org-safe-mode)
+               (goto-char 2) ; After first asterisk
+               (org-safe-point-on-headline-stars-p))))
+    (expect t :should-be
+            t
+            (org-temp-buffer
+             "
 * headline"
-                       (lambda nil
-                         (org-safe-mode)
-                         (goto-char (point-min)) ; At line above asterisk
-                         (org-safe-point-on-headline-stars-p)))))
-          (it "should be nil when point on non-headlines"
-              (expect nil :to-be
-                      (org-temp-buffer
-                       "*headline"
-                       (lambda nil
-                         (org-safe-mode)
-                         (goto-char 2) ; After first asterisk
-                         (org-safe-point-on-headline-stars-p))))
-              (expect nil :to-be
-                      (org-temp-buffer
-                       " * headline"
-                       (lambda nil
-                         (org-safe-mode)
-                         (goto-char 3) ; After first asterisk
-                         (org-safe-point-on-headline-stars-p))))
-              (expect nil :to-be
-                      (org-temp-buffer
-                       "* headline*"
-                       (lambda nil
-                         (org-safe-mode)
-                         (goto-char (point-max)) ; After first asterisk
-                         (org-safe-point-on-headline-stars-p))))))
+             (lambda nil
+               (org-safe-mode)
+               (goto-char (point-min)) ; At line above asterisk
+               (org-safe-point-on-headline-stars-p)))))
+  (it "should be nil when point on non-headlines"
+    (expect nil :to-be
+            (org-temp-buffer
+             "*headline"
+             (lambda nil
+               (org-safe-mode)
+               (goto-char 2) ; After first asterisk
+               (org-safe-point-on-headline-stars-p))))
+    (expect nil :to-be
+            (org-temp-buffer
+             " * headline"
+             (lambda nil
+               (org-safe-mode)
+               (goto-char 3) ; After first asterisk
+               (org-safe-point-on-headline-stars-p))))
+    (expect nil :to-be
+            (org-temp-buffer
+             "* headline*"
+             (lambda nil
+               (org-safe-mode)
+               (goto-char (point-max)) ; After first asterisk
+               (org-safe-point-on-headline-stars-p))))))
 
 
 (describe "prohibited-p"
-          (it "should be t when org-safe--prohibited-var t"
-              (expect t :to-equal
-                      (org-temp-buffer
-                       "
+  (it "should be t when org-safe--prohibited-var t"
+    (expect t :to-equal
+            (org-temp-buffer
+             "
 * headline"
-                       (lambda nil
-                         (org-safe-mode)
-                         (let ((org-safe--prohibited-var t))
-                           (org-safe-prohibited-p))))))
-          (it "should be nil when org-safe--prohibited-var nil"
-              (expect nil :to-be
-                      (org-temp-buffer
-                       "
+             (lambda nil
+               (org-safe-mode)
+               (let ((org-safe--prohibited-var t))
+                 (org-safe-prohibited-p))))))
+  (it "should be nil when org-safe--prohibited-var nil"
+    (expect nil :to-be
+            (org-temp-buffer
+             "
   * headline"
-                       (lambda nil
-                         (org-safe-mode)
-                         (let ((org-safe--prohibited-var nil))
-                           (org-safe-prohibited-p)))))))
+             (lambda nil
+               (org-safe-mode)
+               (let ((org-safe--prohibited-var nil))
+                 (org-safe-prohibited-p)))))))
 
 
 (describe "org-safe--prohibit"
-          (it "should cause prohibited-p to be t after being nil"
-              (org-temp-buffer
-               "
+  (it "should cause prohibited-p to be t after being nil"
+    (org-temp-buffer
+     "
   * headline"
-               (lambda nil
-                 (org-safe-mode)
-                 (let ((org-safe--prohibited-var nil))
-                   (expect nil :to-be (org-safe-prohibited-p)))
-                 (org-safe--prohibit)
-                 (expect t :to-be (org-safe-prohibited-p))))))
+     (lambda nil
+       (org-safe-mode)
+       (let ((org-safe--prohibited-var nil))
+         (expect nil :to-be (org-safe-prohibited-p)))
+       (org-safe--prohibit)
+       (expect t :to-be (org-safe-prohibited-p))))))
 
 
 (describe "org-safe--enable"
-          (it "should cause prohibited-p to be nil after being t"
-              (org-temp-buffer
-               "
+  (it "should cause prohibited-p to be nil after being t"
+    (org-temp-buffer
+     "
 * headline"
-               (lambda nil
-                 (org-safe-mode)
-                 (let ((org-safe--prohibited-var t))
-                   (expect t :to-be (org-safe-prohibited-p)))
-                 (org-safe--enable)
-                 (expect nil :to-be (org-safe-prohibited-p))))))
+     (lambda nil
+       (org-safe-mode)
+       (let ((org-safe--prohibited-var t))
+         (expect t :to-be (org-safe-prohibited-p)))
+       (org-safe--enable)
+       (expect nil :to-be (org-safe-prohibited-p))))))
 
 
-(describe "org-safe-disabled-timer/prohibited-nil-to-t-to-nil"
-          (org-temp-buffer
-           "
+(describe "org-safe-disabled-timer"
+  (it "prohibited-nil-to-t-to-nil"
+    (org-temp-buffer
+     "
 * headline"
-           (lambda nil
-             (org-safe-mode)
-             (let ((org-safe-prohibited-duration 0.1))
-               ;; Start prohibited
-               (org-safe--prohibit)
+     (lambda nil
+       (org-safe-mode)
+       (let ((org-safe-prohibited-duration 0.1))
+         ;; Start prohibited
+         (org-safe--prohibit)
 
-               ;; Verify that we are starting prohibited
-               (should (equal t (org-safe-prohibited-p)))
+         ;; Verify that we are starting prohibited
+         (expect t :to-be( org-safe-prohibited-p))
 
-               ;; Run prohibited timer and wait for it to finish
-               (org-safe-start-prohibited-timer)
-               (sit-for (+ org-safe-prohibited-duration 0.01))
+         ;; Run prohibited timer and wait for it to finish
+         (org-safe-start-prohibited-timer)
+         (sit-for (+ org-safe-prohibited-duration 0.01))
 
-               ;; Verify that `org-safe' is re-enabled
-               (should
-                (equal nil (org-safe-prohibited-p)))))))
+         ;; Verify that `org-safe' is re-enabled
+
+         (expect nil :to-be (org-safe-prohibited-p)))))))
 
 
 ;; (describe "test-org-safe-temp-allow-deletion nil
@@ -302,15 +303,15 @@ FUNC is what is ran after creating the buffer."
              (let ((org-safe-prohibited-duration 0.1))
                (org-safe-mode)
                ;; Verify start not prohibited
-               (should (equal nil (org-safe-prohibited-p)))
+               (expect nil :to-be (org-safe-prohibited-p))
 
                ;; Temporarily prohibit
                (call-interactively 'org-safe-temp-allow-deletion)
-               (should (equal t (org-safe-prohibited-p)))
+               (expect t :to-be (org-safe-prohibited-p))
 
                ;; Verify prohibit status is reset
                (sit-for (+ org-safe-prohibited-duration 0.01))
-               (should (equal nil (org-safe-prohibited-p)))))))
+               (expect nil :to-be (org-safe-prohibited-p))))))
 
 
 (describe "test-org-safe-temp-allow-deletion/allow-backward-delete" nil
@@ -322,30 +323,30 @@ FUNC is what is ran after creating the buffer."
                (goto-char 3)
 
                ;; Verify start not prohibited
-               (should (equal nil (org-safe-prohibited-p)))
+               (expect nil :to-be (org-safe-prohibited-p))
 
                ;; Verify looking back at two stars
-               (should (equal t (looking-back "^\\*\\*" nil)))
+               (expect t :to-be (looking-back "^\\*\\*" nil))
 
                (call-interactively 'org-safe-delete-backward-char)
 
                ;; Still looking back at two stars
-               (should (equal t (looking-back "^\\*" nil)))
+               (expect t :to-be (looking-back "^\\*" nil))
 
                (call-interactively 'org-safe-temp-allow-deletion)
 
                ;; Now it should be deleted (one star)
-               (should (equal t (looking-back "^\\*" nil)))
+               (expect t :to-be (looking-back "^\\*" nil))
 
                ;; Verify prohibit status is reset
                (sit-for (+ org-safe-prohibited-duration 0.01))
-               (should (equal nil (org-safe-prohibited-p)))
+               (expect nil :to-be (org-safe-prohibited-p))
 
                ;; Try deleting remaining star
                (call-interactively 'org-safe-delete-backward-char)
 
                ;; Verify that trying to delete again doesn't work
-               (should (equal t (looking-back "^\\*" nil)))))))
+               (expect t :to-be (looking-back "^\\*" nil))))))
 
 
 (provide 'test-org-safe)
