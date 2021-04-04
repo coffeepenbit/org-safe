@@ -1,3 +1,30 @@
+;;; test-org-safe.el ---                             -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2021  coffeepenbit
+
+;; Author: coffeepenbit@gmail.com
+;; Keywords:
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; Test cases for `org-safe-mode'
+
+;;; Code:
+
+
 (require 'buttercup)
 
 (require 'org-safe)
@@ -322,3 +349,7 @@ FUNC is what is ran after creating the buffer."
 
                ;; Verify that trying to delete again doesn't work
                (should (equal t (looking-back "^\\*" nil)))))))
+
+
+(provide 'test-org-safe)
+;;; test-org-safe.el ends here
