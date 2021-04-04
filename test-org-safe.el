@@ -282,20 +282,21 @@ FUNC is what is ran after creating the buffer."
 
 
 (describe "org-safe-temp-allow-deletion"
-  (org-temp-buffer
-   "
+  (it "needs a description"
+    (org-temp-buffer
+     "
  * headline"
-   (lambda nil
-     (let ((org-safe-prohibited-duration 0.1))
-       (org-safe-mode)
-       ;; Verify start not prohibited
-       (expect nil :to-be (org-safe-prohibited-p))
-       ;; Temporarily prohibit
-       (call-interactively 'org-safe-temp-allow-deletion)
-       (expect t :to-be (org-safe-prohibited-p))
-       ;; Verify prohibit status is reset
-       (sit-for (+ org-safe-prohibited-duration 0.01))
-       (expect nil :to-be (org-safe-prohibited-p))))))
+     (lambda nil
+       (let ((org-safe-prohibited-duration 0.1))
+         (org-safe-mode)
+         ;; Verify start not prohibited
+         (expect nil :to-be (org-safe-prohibited-p))
+         ;; Temporarily prohibit
+         (call-interactively 'org-safe-temp-allow-deletion)
+         (expect t :to-be (org-safe-prohibited-p))
+         ;; Verify prohibit status is reset
+         (sit-for (+ org-safe-prohibited-duration 0.01))
+         (expect nil :to-be (org-safe-prohibited-p)))))))
 
 (describe "org-safe-temp-allow-deletion"
   (it "allows backwards delete"
