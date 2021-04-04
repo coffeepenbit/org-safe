@@ -282,7 +282,6 @@ FUNC is what is ran after creating the buffer."
 
 
 ;; (describe "test-org-safe-temp-allow-deletion nil
-;;   :tags '(org-safe-temp-allow-deletion)
 ;;   (should (equal
 ;;            "* hadline"
 ;;            (org-temp-buffer
@@ -295,28 +294,26 @@ FUNC is what is ran after creating the buffer."
 
 
 
-(describe "test-org-safe-temp-allow-deletion nil
-  :tags '(org-safe-temp-allow-deletion)
-  (org-temp-buffer
-   "
-          * headline"
-   (lambda nil
-     (let ((org-safe-prohibited-duration 0.1))
-       (org-safe-mode)
-       ;; Verify start not prohibited
-       (should (equal nil (org-safe-prohibited-p)))
+(describe "test-org-safe-temp-allow-deletion" nil
+          (org-temp-buffer
+           "
+ * headline"
+           (lambda nil
+             (let ((org-safe-prohibited-duration 0.1))
+               (org-safe-mode)
+               ;; Verify start not prohibited
+               (should (equal nil (org-safe-prohibited-p)))
 
-       ;; Temporarily prohibit
-       (call-interactively 'org-safe-temp-allow-deletion)
-       (should (equal t (org-safe-prohibited-p)))
+               ;; Temporarily prohibit
+               (call-interactively 'org-safe-temp-allow-deletion)
+               (should (equal t (org-safe-prohibited-p)))
 
-       ;; Verify prohibit status is reset
-       (sit-for (+ org-safe-prohibited-duration 0.01))
-       (should (equal nil (org-safe-prohibited-p)))))))
+               ;; Verify prohibit status is reset
+               (sit-for (+ org-safe-prohibited-duration 0.01))
+               (should (equal nil (org-safe-prohibited-p)))))))
 
 
-(describe "test-org-safe-temp-allow-deletion/allow-backward-delete nil
-          :tags '(org-safe-temp-allow-deletion)
+(describe "test-org-safe-temp-allow-deletion/allow-backward-delete" nil
           (org-temp-buffer
            "** headline"
            (lambda nil
