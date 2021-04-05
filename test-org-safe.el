@@ -51,7 +51,7 @@ FUNC is what is ran after creating the buffer."
                (org-safe-delete-char)
                (buffer-string))))))
 
-(describe "delete-backward-char"
+(describe "org-safe-delete-backward-char"
           (it "allows deletion of title characters"
               (expect "* hadline" :to-equal
                       (org-temp-buffer
@@ -104,7 +104,7 @@ FUNC is what is ran after creating the buffer."
                          (org-safe-delete-backward-char)
                          (buffer-string))))))
 
-(describe "point-looking-at-headline-stars-p"
+(describe "org-safe-point-looking-at-headline-stars-p"
   (it "should be t when looking at a headline"
     (expect t :to-be
             (org-temp-buffer
@@ -158,7 +158,7 @@ FUNC is what is ran after creating the buffer."
                (org-safe-mode)
                (org-safe-point-looking-at-headline-stars-p))))))
 
-(describe "point-on-headline-stars-p"
+(describe "org-safe-point-on-headline-stars-p"
   (it "should be t when point is on headline"
     (expect t :should-be
             (org-temp-buffer
@@ -199,7 +199,7 @@ FUNC is what is ran after creating the buffer."
                (goto-char (point-max)) ; After first asterisk
                (org-safe-point-on-headline-stars-p))))))
 
-(describe "prohibited-p"
+(describe "org-safe-prohibited-p"
   (it "should be t when org-safe--prohibited-var t"
     (expect t :to-equal
             (org-temp-buffer
