@@ -40,6 +40,11 @@ FUNC is what is ran after creating the buffer."
         (funcall func)
       (buffer-string))))
 
+(xdescribe "org-safe-mode"
+           (xit "remaps bindings")
+           ;; TODO add tests for bindings
+           )
+
 (describe "org-safe-delete-char"
           (it "deletes headline title chars"
               (expect "* hedline" :to-equal
