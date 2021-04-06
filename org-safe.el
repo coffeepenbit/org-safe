@@ -44,23 +44,21 @@
 ;;;; Vars
 (defvar org-safe-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map [remap org-delete-backward-char] 'org-safe-delete-backward-char)
-    (define-key map [remap org-delete-char] 'org-safe-delete-char)
+    ;; FIXME make this remap instead of keybinding
+    (define-key map (kbd "DEL") 'org-safe-delete-backward-char)
+    (define-key map (kbd "C-d") 'org-safe-delete-char)
     map)
   "Keymap used for `org-safe-mode.'.")
-
-
-(defvar org-safe--prohibited-var nil
-  "If true, prevent function from activating.")
-
 
 (define-minor-mode org-safe-mode
   "For keeping org-mode content safe from butter-fingers."
   :init-value nil
   :lighter " org-safe"
   :group 'org-safe
-  :keymap org-safe-mode-map)
+  :keymap 'org-safe-mode-map)
 
+(defvar org-safe--prohibited-var nil
+  "If true, prevent function from activating.")
 
 (defun org-safe-temp-allow-deletion nil
   "Prohibit `org-safe' protection."
