@@ -262,18 +262,6 @@ FUNC is what is ran after creating the buffer."
          ;; Verify that `org-safe' is re-enabled
          (expect nil :to-be (org-safe-prohibited-p)))))))
 
-;; (describe "test-org-safe-temp-allow-deletion nil
-;;   (should (equal
-;;            "* hadline"
-;;            (org-temp-buffer
-;;             "* headline"
-;;             (lambda nil
-;;               (org-safe-mode)
-;;               (goto-char 5)
-;;               (org-safe-delete-backward-char)
-;;               (buffer-string))))))
-
-
 (describe "org-safe-temp-allow-deletion"
   (it "needs a description"
     (org-temp-buffer
