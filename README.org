@@ -1,3 +1,35 @@
 * Org-safe
 
-For keeping org-mode content safe from butter-fingers.
+** Introduction
+
+~org-safe~ keeps ~org-mode~ content safe from butterfingers.
+
+This is particularly useful if ~auto-save-visited-mode~ is enabled.
+
+** Installation
+
+*** Straight
+
+With ~use-package~:
+#+begin_src elisp
+(use-package org-safe
+  :straight (org-safe :type git :host github :repo "coffeepenbit/org-safe"))
+#+end_src
+
+Without ~use-package~:
+#+begin_src elisp
+(straight-use-package '(org-safe :type git :host github :repo "coffeepenbit/org-safe"))
+#+end_src
+
+*** Quelpa
+
+With ~use-package~:
+#+begin_src elisp
+(use-package org-safe
+  :quelpa (org-safe :fetcher github :repo "coffeepenbit/org-safe"))
+#+end_src
+
+Without ~use-package~:
+#+begin_src elisp
+(quelpa '(org-safe :fetcher github :repo "coffeepenbit/org-safe"))
+#+end_src
