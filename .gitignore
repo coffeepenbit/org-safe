@@ -1,4 +1,5 @@
 /coverage
+flycheck*
 
 # Added automatically by `eldev init'.
 /.eldev
