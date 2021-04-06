@@ -160,43 +160,44 @@ FUNC is what is ran after creating the buffer."
                (org-safe-point-looking-at-headline-stars-p))))))
 
 (describe "org-safe-looking-back-at-headline-stars-p"
-  (it "should be t when looking back at single headline star"
-    (expect t :to-be (org-temp-buffer
-                      "* headline"
-                      (lambda nil
-                        (org-safe-mode)
-                        (goto-char 2) ; After first asterisk
-                        (org-safe-looking-back-at-headline-stars-p)))))
-  (it "should be t when looking back at two headline stars"
-    (expect t :to-be (org-temp-buffer
-                      "** headline"
-                      (lambda nil
-                        (org-safe-mode)
-                        (goto-char 3) ; After first asterisk
-                        (org-safe-looking-back-at-headline-stars-p)))))
-  (it "should be t when between two headline stars"
-    (expect t :to-be (org-temp-buffer
-                      "** headline"
-                      (lambda nil
-                        (org-safe-mode)
-                        (goto-char 3) ; After first asterisk
-                        (org-safe-looking-back-at-headline-stars-p)))))
-  (it "should be t when looking at stars without titles"
-    ;; org-mode considers these titles still
-    (expect t :to-be (org-temp-buffer
-                      "* " ; Title
-                      (lambda nil
-                        (org-safe-mode)
-                        (goto-char 2) ; After first asterisk
-                        (org-safe-looking-back-at-headline-stars-p)))))
-  (describe "when NOT looking back at headline stars"
-    (it "should be nil when asterisk belongs to bold phrase"
-      (expect nil :to-be (org-temp-buffer
-                          "*headline*"
-                          (lambda nil
-                            (org-safe-mode)
-                            (goto-char 2) ; After first asterisk
-                            (org-safe-looking-back-at-headline-stars-p)))))))
+          (describe "when looking at headline stars"
+                    (it "should be t when looking back at single headline star"
+                        (expect t :to-be (org-temp-buffer
+                                          "* headline"
+                                          (lambda nil
+                                            (org-safe-mode)
+                                            (goto-char 2) ; After first asterisk
+                                            (org-safe-looking-back-at-headline-stars-p)))))
+                    (it "should be t when looking back at two headline stars"
+                        (expect t :to-be (org-temp-buffer
+                                          "** headline"
+                                          (lambda nil
+                                            (org-safe-mode)
+                                            (goto-char 3) ; After first asterisk
+                                            (org-safe-looking-back-at-headline-stars-p)))))
+                    (it "should be t when between two headline stars"
+                        (expect t :to-be (org-temp-buffer
+                                          "** headline"
+                                          (lambda nil
+                                            (org-safe-mode)
+                                            (goto-char 3) ; After first asterisk
+                                            (org-safe-looking-back-at-headline-stars-p)))))
+                    (it "should be t when looking at stars without titles"
+                        ;; org-mode considers these titles still
+                        (expect t :to-be (org-temp-buffer
+                                          "* " ; Title
+                                          (lambda nil
+                                            (org-safe-mode)
+                                            (goto-char 2) ; After first asterisk
+                                            (org-safe-looking-back-at-headline-stars-p))))))
+          (describe "when NOT looking back at headline stars"
+                    (it "should be nil when asterisk belongs to bold phrase"
+                        (expect nil :to-be (org-temp-buffer
+                                            "*headline*"
+                                            (lambda nil
+                                              (org-safe-mode)
+                                              (goto-char 2) ; After first asterisk
+                                              (org-safe-looking-back-at-headline-stars-p)))))))
 
 (describe "org-safe-prohibited-p"
   (it "should be t when org-safe--prohibited-var t"
