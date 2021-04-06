@@ -1,3 +1,3 @@
-  * Org-safe
+* Org-safe
 
-  For keeping org-mode content safe from butter-fingers.
+For keeping org-mode content safe from butter-fingers.
