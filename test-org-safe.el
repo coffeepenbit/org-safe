@@ -262,47 +262,47 @@ FUNC is what is ran after creating the buffer."
          (expect nil :to-be (org-safe-prohibited-p)))))))
 
 (describe "org-safe-temp-allow-deletion"
-  (it "needs a description"
-    (org-temp-buffer
-     "
+          :var ((org-safe-prohibited-duration 0.1)
+                (org-safe-prohibited nil))
+          (org-temp-buffer
+           "
  * headline"
-     (lambda nil
-       (let ((org-safe-prohibited-duration 0.1))
-         (org-safe-mode)
-         ;; Verify start not prohibited
-         (expect nil :to-be (org-safe-prohibited-p))
-         ;; Temporarily prohibit
-         (call-interactively 'org-safe-temp-allow-deletion)
-         (expect t :to-be (org-safe-prohibited-p))
-         ;; Verify prohibit status is reset
-         (sit-for (+ org-safe-prohibited-duration 0.01))
-         (expect nil :to-be (org-safe-prohibited-p)))))))
+           (lambda nil
+             (let ((org-safe-prohibited-duration 0.1)
+                   (org-safe-prohibited-p nil))
+               (org-safe-mode)
+               (it "switches org-safe from enabled to prohibited"
+                   (call-interactively 'org-safe-temp-allow-deletion)
+                   (expect t :to-be (org-safe-prohibited-p)))
+               (it "re-enables org-safe after org-safe-prohibited-duration"
+                   (sit-for (+ org-safe-prohibited-duration 0.01))
+                   (expect nil :to-be (org-safe-prohibited-p)))))))
 
 (describe "org-safe-temp-allow-deletion"
-  (it "allows backwards delete"
-    (org-temp-buffer
-     "** headline"
-     (lambda nil
-       (let ((org-safe-prohibited-duration 0.1))
-         (org-safe-mode)
-         (goto-char 3)
-         ;; Verify start not prohibited
-         (expect nil :to-be (org-safe-prohibited-p))
-         ;; Verify looking back at two stars
-         (expect t :to-be (looking-back "^\\*\\*" nil))
-         (call-interactively 'org-safe-delete-backward-char)
-         ;; Still looking back at two stars
-         (expect t :to-be (looking-back "^\\*" nil))
-         (call-interactively 'org-safe-temp-allow-deletion)
-         ;; Now it should be deleted (one star)
-         (expect t :to-be (looking-back "^\\*" nil))
-         ;; Verify prohibit status is reset
-         (sit-for (+ org-safe-prohibited-duration 0.01))
-         (expect nil :to-be (org-safe-prohibited-p))
-         ;; Try deleting remaining star
-         (call-interactively 'org-safe-delete-backward-char)
-         ;; Verify that trying to delete again doesn't work
-         (expect t :to-be (looking-back "^\\*" nil)))))))
+          (it "allows backwards delete"
+              (org-temp-buffer
+               "** headline"
+               (lambda nil
+                 (let ((org-safe-prohibited-duration 0.1))
+                   (org-safe-mode)
+                   (goto-char 3)
+                   ;; Verify start not prohibited
+                   (expect nil :to-be (org-safe-prohibited-p))
+                   ;; Verify looking back at two stars
+                   (expect t :to-be (looking-back "^\\*\\*" nil))
+                   (call-interactively 'org-safe-delete-backward-char)
+                   ;; Still looking back at two stars
+                   (expect t :to-be (looking-back "^\\*" nil))
+                   (call-interactively 'org-safe-temp-allow-deletion)
+                   ;; Now it should be deleted (one star)
+                   (expect t :to-be (looking-back "^\\*" nil))
+                   ;; Verify prohibit status is reset
+                   (sit-for (+ org-safe-prohibited-duration 0.01))
+                   (expect nil :to-be (org-safe-prohibited-p))
+                   ;; Try deleting remaining star
+                   (call-interactively 'org-safe-delete-backward-char)
+                   ;; Verify that trying to delete again doesn't work
+                   (expect t :to-be (looking-back "^\\*" nil)))))))
 
 (provide 'test-org-safe)
 ;;; test-org-safe.el ends here
