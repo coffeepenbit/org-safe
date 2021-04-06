@@ -46,6 +46,7 @@ FUNC is what is ran after creating the buffer."
            )
 
 (describe "org-safe-delete-char"
+          (before-each (setq (inhibit-message t)))
           (it "deletes headline title chars"
               (expect "* hedline" :to-equal
                       (org-temp-buffer
