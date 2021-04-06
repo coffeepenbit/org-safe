@@ -94,17 +94,16 @@
 
 N is number of chars to consider."
   (interactive)
-  (if (not (org-safe-point-on-headline-stars-p))
+  (if (not (org-safe-looking-back-at-headline-stars-p))
       (org-delete-backward-char 1)
     (message "Cant delete headline stars")))
 
 
-(defun org-safe-point-on-headline-stars-p nil
-  "Return non-nil if point is within or immediately after headline stars."
-  (or (and (looking-back "^[*]+")
-           (looking-at "[*]? "))
-      (looking-at "
-[*]? ")))
+(defun org-safe-looking-back-at-headline-stars-p nil
+  "Return non-nil if point is looking back at headline stars."
+  (and (looking-back "^\\*+" nil)
+       ;; A space must follow the last headline star
+       (looking-at "\\*? ")))
 
 
 (defun org-safe-point-looking-at-headline-stars-p nil
@@ -116,7 +115,7 @@ N is number of chars to consider."
 (defun org-safe-delete-char nil
   "Execute org-delete-char if non-protected content."
   (interactive)
-  (if (not (org-safe-point-on-headline-stars-p))
+  (if (not (org-safe-looking-back-at-headline-stars-p))
       (org-delete-char 1)
     (message "Cant delete headline stars")))
 
