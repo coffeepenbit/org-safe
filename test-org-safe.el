@@ -52,57 +52,58 @@ FUNC is what is ran after creating the buffer."
                (buffer-string))))))
 
 (describe "org-safe-delete-backward-char"
-          (it "allows deletion of title characters"
-              (expect "* hadline" :to-equal
-                      (org-temp-buffer
-                       "* headline"
-                       (lambda nil
-                         (org-safe-mode)
-                         (goto-char 5)
-                         (org-safe-delete-backward-char)
-                         (buffer-string)))))
-          (it "prohibits deleting headline asteriks"
-              (expect "* headline" :to-equal
-                      (org-temp-buffer
-                       "* headline"
-                       (lambda nil
-                         (org-safe-mode)
-                         (goto-char 2) ; After first asterisk
-                         (org-safe-delete-backward-char)
-                         (buffer-string))))
-              (expect "** headline" :to-equal
-                      (org-temp-buffer
-                       "** headline"
-                       (lambda nil
-                         (org-safe-mode)
-                         (goto-char 2) ; After first asterisk
-                         (org-safe-delete-backward-char)
-                         (buffer-string)))))
-          (it "allows deletion of non-headline asterisks"
-              (expect "this is not a headline*" :to-equal
-                      (org-temp-buffer
-                       "*this is not a headline*"
-                       (lambda nil
-                         (org-safe-mode)
-                         (goto-char 2) ; After first asterisk
-                         (org-safe-delete-backward-char)
-                         (buffer-string))))
-              (expect "*this is not a headline" :to-equal
-                      (org-temp-buffer
-                       "*this is not a headline*"
-                       (lambda nil
-                         (org-safe-mode)
-                         (goto-char (point-max)) ; After last asterisk
-                         (org-safe-delete-backward-char)
-                         (buffer-string))))
-              (expect "asterisk" :to-equal
-                      (org-temp-buffer
-                       "asterisk*"
-                       (lambda nil
-                         (org-safe-mode)
-                         (goto-char (point-max)) ; After first asterisk
-                         (org-safe-delete-backward-char)
-                         (buffer-string))))))
+  (before-each (setq inhibit-message t))
+  (it "allows deletion of title characters"
+    (expect "* hadline" :to-equal
+            (org-temp-buffer
+             "* headline"
+             (lambda nil
+               (org-safe-mode)
+               (goto-char 5)
+               (org-safe-delete-backward-char)
+               (buffer-string)))))
+  (it "prohibits deleting headline asteriks"
+    (expect "* headline" :to-equal
+            (org-temp-buffer
+             "* headline"
+             (lambda nil
+               (org-safe-mode)
+               (goto-char 2) ; After first asterisk
+               (org-safe-delete-backward-char)
+               (buffer-string))))
+    (expect "** headline" :to-equal
+            (org-temp-buffer
+             "** headline"
+             (lambda nil
+               (org-safe-mode)
+               (goto-char 2) ; After first asterisk
+               (org-safe-delete-backward-char)
+               (buffer-string)))))
+  (it "allows deletion of non-headline asterisks"
+    (expect "this is not a headline*" :to-equal
+            (org-temp-buffer
+             "*this is not a headline*"
+             (lambda nil
+               (org-safe-mode)
+               (goto-char 2) ; After first asterisk
+               (org-safe-delete-backward-char)
+               (buffer-string))))
+    (expect "*this is not a headline" :to-equal
+            (org-temp-buffer
+             "*this is not a headline*"
+             (lambda nil
+               (org-safe-mode)
+               (goto-char (point-max)) ; After last asterisk
+               (org-safe-delete-backward-char)
+               (buffer-string))))
+    (expect "asterisk" :to-equal
+            (org-temp-buffer
+             "asterisk*"
+             (lambda nil
+               (org-safe-mode)
+               (goto-char (point-max)) ; After first asterisk
+               (org-safe-delete-backward-char)
+               (buffer-string))))))
 
 (describe "org-safe-point-looking-at-headline-stars-p"
   (it "should be t when looking at a headline"
