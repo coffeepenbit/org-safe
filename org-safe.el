@@ -34,12 +34,10 @@
   "org-safe minor mode."
   :group 'editing)
 
-
 (defcustom org-safe-prohibited-duration 1
   "Disables org-safe protection for specified numebr of seconds."
   :group 'org-safe
   :type 'float)
-
 
 ;;;; Vars
 (defvar org-safe-mode-map
@@ -66,26 +64,21 @@
   (org-safe--prohibit)
   (org-safe-start-prohibited-timer))
 
-
 (defun org-safe-start-prohibited-timer nil
   "Enable `org-safe' again after timer is done."
   (run-with-timer org-safe-prohibited-duration nil 'org-safe--enable))
-
 
 (defun org-safe-prohibited-p nil
   "Check if `org-safe' protection is prohibited."
   org-safe--prohibited-var)
 
-
 (defun org-safe--prohibit nil
   "Prohibit `org-safe' safety functions."
   (setq org-safe--prohibited-var t))
 
-
 (defun org-safe--enable nil
   "Re-enables org safe after prohibited."
   (setq org-safe--prohibited-var nil))
-
 
 (defun org-safe-delete-backward-char nil
   "Execute org-delete-backward-char if non-protected content.
@@ -96,19 +89,16 @@ N is number of chars to consider."
       (org-delete-backward-char 1)
     (message "Cant delete headline stars")))
 
-
 (defun org-safe-looking-back-at-headline-stars-p nil
   "Return non-nil if point is looking back at headline stars."
   (and (looking-back "^\\*+" nil)
        ;; A space must follow the last headline star
        (looking-at "\\*? ")))
 
-
 (defun org-safe-point-looking-at-headline-stars-p nil
   "Return non-nil if point is within or immediately after headline stars."
   (looking-at "\\(
 \\)?\\*+\\ [^\\ ]?"))
-
 
 (defun org-safe-delete-char nil
   "Execute org-delete-char if non-protected content."
@@ -116,7 +106,6 @@ N is number of chars to consider."
   (if (not (org-safe-looking-back-at-headline-stars-p))
       (org-delete-char 1)
     (message "Cant delete headline stars")))
-
 
 (provide 'org-safe)
 ;;; org-safe.el ends here
