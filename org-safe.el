@@ -97,8 +97,9 @@ N is number of chars to consider."
 
 (defun org-safe-point-looking-at-headline-stars-p nil
   "Return non-nil if point is within or immediately after headline stars."
-  (looking-at "\\(
-\\)?\\*+\\ [^\\ ]?"))
+  (looking-at (concat "\\(
+\\)?" ; Count org headlines and next line as well
+                      org-outline-regexp)))
 
 (defun org-safe-delete-char nil
   "Execute org-delete-char if non-protected content."
