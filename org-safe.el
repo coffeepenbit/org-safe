@@ -55,30 +55,30 @@
   :group 'org-safe
   :keymap 'org-safe-mode-map)
 
-(defvar org-safe--prohibited-var nil
+(defvar org-safe-prohibited-var nil
   "If true, prevent function from activating.")
 
 (defun org-safe-temp-allow-deletion nil
   "Prohibit `org-safe' protection."
   (interactive)
-  (org-safe--prohibit)
+  (org-safe-prohibit)
   (org-safe-start-prohibited-timer))
 
 (defun org-safe-start-prohibited-timer nil
   "Enable `org-safe' again after timer is done."
-  (run-with-timer org-safe-prohibited-duration nil 'org-safe--enable))
+  (run-with-timer org-safe-prohibited-duration nil 'org-safe-enable))
 
 (defun org-safe-prohibited-p nil
   "Check if `org-safe' protection is prohibited."
-  org-safe--prohibited-var)
+  org-safe-prohibited-var)
 
-(defun org-safe--prohibit nil
+(defun org-safe-prohibit nil
   "Prohibit `org-safe' safety functions."
-  (setq org-safe--prohibited-var t))
+  (setq org-safe-prohibited-var t))
 
-(defun org-safe--enable nil
+(defun org-safe-enable nil
   "Re-enables org safe after prohibited."
-  (setq org-safe--prohibited-var nil))
+  (setq org-safe-prohibited-var nil))
 
 (defun org-safe-delete-backward-char nil
   "Execute org-delete-backward-char if non-protected content.

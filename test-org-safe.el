@@ -206,32 +206,32 @@ FUNC is what is ran after creating the buffer."
                             (org-safe-looking-back-at-headline-stars-p)))))))
 
 (describe "org-safe-prohibited-p"
-  (it "should be t when org-safe--prohibited-var t"
-    (let ((org-safe--prohibited-var t))
+  (it "should be t when org-safe-prohibited-var t"
+    (let ((org-safe-prohibited-var t))
       (expect t :to-equal (org-safe-prohibited-p))))
-  (it "should be nil when org-safe--prohibited-var nil"
-    (let ((org-safe--prohibited-var nil))
+  (it "should be nil when org-safe-prohibited-var nil"
+    (let ((org-safe-prohibited-var nil))
       (expect nil :to-be (org-safe-prohibited-p)))))
 
-(describe "org-safe--prohibit"
+(describe "org-safe-prohibit"
   (it "should cause prohibited-p to be t after being nil"
-    (let ((org-safe--prohibited-var nil))
+    (let ((org-safe-prohibited-var nil))
       (expect nil :to-be (org-safe-prohibited-p)))
-    (org-safe--prohibit)
+    (org-safe-prohibit)
     (expect t :to-be (org-safe-prohibited-p))))
 
-(describe "org-safe--enable"
+(describe "org-safe-enable"
   (it "should cause prohibited-p to be nil after being t"
-    (let ((org-safe--prohibited-var t))
+    (let ((org-safe-prohibited-var t))
       (expect t :to-be (org-safe-prohibited-p)))
-    (org-safe--enable)
+    (org-safe-enable)
     (expect nil :to-be (org-safe-prohibited-p))))
 
 (describe "org-safe-disabled-timer"
   :var ((org-safe-prohibited-duration 0.1))
   (it "re-enables org-safe after prohibited duration passes"
     ;; Start in prohibited state
-    (org-safe--prohibit)
+    (org-safe-prohibit)
     (expect t :to-be( org-safe-prohibited-p))
     ;; Run prohibited timer and wait for it to finish
     (org-safe-start-prohibited-timer)
