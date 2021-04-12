@@ -55,7 +55,14 @@ FUNC is what is ran after creating the buffer."
                (org-safe-mode)
                (goto-char 5)
                (org-safe-delete-char)
-               (buffer-string))))))
+               (buffer-string)))))
+  (it "prohibits forward-deleting headline asterisk"
+    (org-temp-buffer
+     "* headline"
+     (lambda nil
+       (org-safe-mode)
+       (org-safe-delete-char)
+       (expect (buffer-string) :to-equal "* headline")))))
 
 (describe "org-safe-delete-backward-char"
   (before-each (setq inhibit-message t))

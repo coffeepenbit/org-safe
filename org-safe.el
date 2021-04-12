@@ -104,9 +104,9 @@ N is number of chars to consider."
 (defun org-safe-delete-char nil
   "Execute org-delete-char if non-protected content."
   (interactive)
-  (if (not (org-safe-looking-back-at-headline-stars-p))
+  (if (not (org-safe-point-looking-at-headline-stars-p))
       (org-delete-char 1)
-    (message "Cant delete headline stars")))
+    (message "Can't delete headline stars")))
 
 (provide 'org-safe)
 ;;; org-safe.el ends here
