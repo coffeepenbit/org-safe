@@ -46,7 +46,7 @@
     (define-key map (kbd "DEL") 'org-safe-delete-backward-char)
     (define-key map (kbd "C-d") 'org-safe-delete-char)
     map)
-  "Keymap used for `org-safe-mode.'.")
+  "Keymap used for `org-safe-mode'.")
 
 (define-minor-mode org-safe-mode
   "For keeping org-mode content safe from butter-fingers."
