@@ -47,35 +47,61 @@ FUNC is what is ran after creating the buffer."
 
 (describe "org-safe-delete-char"
   (before-each (setq inhibit-message t))
-  (it "deletes headline title chars"
-    (expect "* hedline" :to-equal
-            (org-temp-buffer
-             "* headline"
-             (lambda nil
-               (org-safe-mode)
-               (goto-char 5)
-               (org-safe-delete-char)
-               (buffer-string)))))
-  (it "prohibits forward-deleting headline asterisk"
+  (it "deletes title chars in headline"
+    (org-temp-buffer
+     "* headline"
+     (lambda nil
+       (org-safe-mode)
+       (goto-char 5)
+       (org-safe-delete-char)
+       (expect (buffer-string) :to-equal "* hedline"))))
+  (it "prohibits deleting headline asterisks"
     (org-temp-buffer
      "* headline"
      (lambda nil
        (org-safe-mode)
        (org-safe-delete-char)
-       (expect (buffer-string) :to-equal "* headline")))))
+       (expect (buffer-string) :to-equal "* headline")))
+    (org-temp-buffer
+     "** headline" ; Point after first asterisk
+     (lambda nil
+       (org-safe-mode)
+       (forward-char 1)
+       (org-safe-delete-char)
+       (expect (buffer-string) :to-equal "** headline"))))
+  (it "deletes non-headline asterisks"
+    (org-temp-buffer
+     "*this is not a headline*"
+     (lambda nil
+       (org-safe-mode) ; After first asterisk
+       (org-safe-delete-char)
+       (expect (buffer-string) :to-equal "this is not a headline*")))
+    (org-temp-buffer
+     "*this is not a headline*"
+     (lambda nil
+       (org-safe-mode)
+       (goto-char (- (point-max) 1)) ; After last asterisk
+       (org-safe-delete-char)
+       (expect (buffer-string) :to-equal "*this is not a headline")))
+    (org-temp-buffer
+     "asterisk*"
+     (lambda nil
+       (org-safe-mode)
+       (goto-char (- (point-max) 1)) ; After first asterisk
+       (org-safe-delete-char)
+       (expect (buffer-string) :to-equal "asterisk")))))
 
 (describe "org-safe-delete-backward-char"
   (before-each (setq inhibit-message t))
-  (it "allows deletion of title characters"
-    (expect "* hadline" :to-equal
-            (org-temp-buffer
-             "* headline"
-             (lambda nil
-               (org-safe-mode)
-               (goto-char 5)
-               (org-safe-delete-backward-char)
-               (buffer-string)))))
-  (it "prohibits deleting headline asteriks"
+  (it "deletes title chars in headline"
+    (org-temp-buffer
+     "* headline"
+     (lambda nil
+       (org-safe-mode)
+       (goto-char 5)
+       (org-safe-delete-backward-char)
+       (expect (buffer-string) :to-equal "* hadline"))))
+  (it "prohibits deleting headline asterisks"
     (expect "* headline" :to-equal
             (org-temp-buffer
              "* headline"
