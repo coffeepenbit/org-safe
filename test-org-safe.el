@@ -70,6 +70,17 @@ FUNC is what is ran after creating the buffer."
        (forward-char 1)
        (org-safe-delete-char)
        (expect (buffer-string) :to-equal "** headline"))))
+  (it "prohibits deleting linebreak in front of headline asterisks"
+    (org-temp-buffer
+     ;; Point at end of first line
+     "this is some test
+** headline on next line"
+     (lambda nil
+       (org-safe-mode)
+       (end-of-line)
+       (org-safe-delete-char)
+       (expect (buffer-string) :to-equal "this is some test
+** headline on next line"))))
   (it "deletes non-headline asterisks"
     (org-temp-buffer
      "*this is not a headline*"
