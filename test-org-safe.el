@@ -102,185 +102,172 @@ FUNC is what is ran after creating the buffer."
        (org-safe-delete-backward-char)
        (expect (buffer-string) :to-equal "* hadline"))))
   (it "prohibits deleting headline asterisks"
-    (expect "* headline" :to-equal
-            (org-temp-buffer
-             "* headline"
-             (lambda nil
-               (org-safe-mode)
-               (goto-char 2) ; After first asterisk
-               (org-safe-delete-backward-char)
-               (buffer-string))))
-    (expect "** headline" :to-equal
-            (org-temp-buffer
-             "** headline"
-             (lambda nil
-               (org-safe-mode)
-               (goto-char 2) ; After first asterisk
-               (org-safe-delete-backward-char)
-               (buffer-string)))))
+    (org-temp-buffer
+     "* headline"
+     (lambda nil
+       (org-safe-mode)
+       (goto-char 2) ; After first asterisk
+       (org-safe-delete-backward-char)
+       (expect (buffer-string) :to-equal "* headline")))
+    (org-temp-buffer
+     "** headline"
+     (lambda nil
+       (org-safe-mode)
+       (goto-char 2) ; After first asterisk
+       (org-safe-delete-backward-char)
+       (expect "** headline" :to-equal (buffer-string)))))
   (it "allows deletion of non-headline asterisks"
-    (expect "this is not a headline*" :to-equal
-            (org-temp-buffer
-             "*this is not a headline*"
-             (lambda nil
-               (org-safe-mode)
-               (goto-char 2) ; After first asterisk
-               (org-safe-delete-backward-char)
-               (buffer-string))))
-    (expect "*this is not a headline" :to-equal
-            (org-temp-buffer
-             "*this is not a headline*"
-             (lambda nil
-               (org-safe-mode)
-               (goto-char (point-max)) ; After last asterisk
-               (org-safe-delete-backward-char)
-               (buffer-string))))
-    (expect "asterisk" :to-equal
-            (org-temp-buffer
-             "asterisk*"
-             (lambda nil
-               (org-safe-mode)
-               (goto-char (point-max)) ; After first asterisk
-               (org-safe-delete-backward-char)
-               (buffer-string))))))
+    (org-temp-buffer
+     "*this is not a headline*"
+     (lambda nil
+       (org-safe-mode)
+       (goto-char 2) ; After first asterisk
+       (org-safe-delete-backward-char)
+       (expect (buffer-string) :to-equal "this is not a headline*")))
+    (org-temp-buffer
+     "*this is not a headline*"
+     (lambda nil
+       (org-safe-mode)
+       (goto-char (point-max))
+       (org-safe-delete-backward-char)
+       (expect (buffer-string) :to-equal "*this is not a headline")))
+    (org-temp-buffer
+     "asterisk*"
+     (lambda nil
+       (org-safe-mode)
+       (goto-char (point-max))
+       (org-safe-delete-backward-char)
+       (expect (buffer-string) :to-equal "asterisk")))))
 
 (describe "org-safe-point-looking-at-headline-stars-p"
   (it "should be t when looking at a headline"
-    (expect t :to-be
-            (org-temp-buffer
-             "* headline"
-             (lambda nil
-               (org-safe-mode)
-               (org-safe-point-looking-at-headline-stars-p))))
-    (expect t :to-be
-            (org-temp-buffer
-             "** headline"
-             (lambda nil
-               (org-safe-mode)
-               (org-safe-point-looking-at-headline-stars-p))))
-    (expect t :to-be
-            (org-temp-buffer
-             "** headline"
-             (lambda nil
-               (org-safe-mode)
-               (goto-char 2)
-               (org-safe-point-looking-at-headline-stars-p))))
-    (expect t :to-be
-            (org-temp-buffer
-             "* headline*"
-             (lambda nil
-               (org-safe-mode)
-               (org-safe-point-looking-at-headline-stars-p))))
-    (expect t :to-be
-            (org-temp-buffer
-             "*    headline"
-             (lambda nil
-               (org-safe-mode)
-               (org-safe-point-looking-at-headline-stars-p))))
-    (expect t :to-be
-            (org-temp-buffer
-             "
+    (org-temp-buffer
+     "* headline"
+     (lambda nil
+       (org-safe-mode)
+       (expect (org-safe-point-looking-at-headline-stars-p) :to-be t)))
+    (org-temp-buffer
+     "** headline"
+     (lambda nil
+       (org-safe-mode)
+       (expect (org-safe-point-looking-at-headline-stars-p) :to-be t)))
+    (org-temp-buffer
+     "** headline"
+     (lambda nil
+       (org-safe-mode)
+       (goto-char 2)
+       (expect (org-safe-point-looking-at-headline-stars-p) :to-be t)))
+    (org-temp-buffer
+     "* headline*"
+     (lambda nil
+       (org-safe-mode)
+       (expect (org-safe-point-looking-at-headline-stars-p) :to-be t)))
+    (org-temp-buffer
+     "*    headline"
+     (lambda nil
+       (org-safe-mode)
+       (expect (org-safe-point-looking-at-headline-stars-p) :to-be t)))
+    (org-temp-buffer
+     "
 * headline"
-             (lambda nil
-               (org-safe-mode)
-               (org-safe-point-looking-at-headline-stars-p)))))
+     (lambda nil
+       (org-safe-mode)
+       (expect (org-safe-point-looking-at-headline-stars-p)) :to-be t)))
   (it "should be nil when looking at non-headlines"
-    (expect nil :to-be
-            (org-temp-buffer
-             "*headline"
-             (lambda nil
-               (org-safe-mode)
-               (org-safe-point-looking-at-headline-stars-p))))
-    (expect nil :to-be
-            (org-temp-buffer
-             "*headline*"
-             (lambda nil
-               (org-safe-mode)
-               (org-safe-point-looking-at-headline-stars-p))))))
+    (org-temp-buffer
+     "*headline"
+     (lambda nil
+       (org-safe-mode)
+       (expect (null (org-safe-point-looking-at-headline-stars-p)))))
+    (org-temp-buffer
+     "*headline*"
+     (lambda nil
+       (org-safe-mode)
+       (expect (null (org-safe-point-looking-at-headline-stars-p)))))))
 
 (describe "org-safe-looking-back-at-headline-stars-p"
   (describe "when looking at headline stars"
     (it "should be t when looking back at single headline star"
-      (expect t :to-be (org-temp-buffer
-                        "* headline"
-                        (lambda nil
-                          (org-safe-mode)
-                          (goto-char 2) ; After first asterisk
-                          (org-safe-looking-back-at-headline-stars-p)))))
+      (org-temp-buffer
+       "* headline"
+       (lambda nil
+         (org-safe-mode)
+         (goto-char 2) ; After first asterisk
+         (expect (org-safe-looking-back-at-headline-stars-p)))))
     (it "should be t when looking back at two headline stars"
-      (expect t :to-be (org-temp-buffer
-                        "** headline"
-                        (lambda nil
-                          (org-safe-mode)
-                          (goto-char 3) ; After first asterisk
-                          (org-safe-looking-back-at-headline-stars-p)))))
+      (org-temp-buffer
+       "** headline"
+       (lambda nil
+         (org-safe-mode)
+         (goto-char 3) ; After first asterisk
+         (expect (org-safe-looking-back-at-headline-stars-p)))))
     (it "should be t when between two headline stars"
-      (expect t :to-be (org-temp-buffer
-                        "** headline"
-                        (lambda nil
-                          (org-safe-mode)
-                          (goto-char 3) ; After first asterisk
-                          (org-safe-looking-back-at-headline-stars-p)))))
+      (org-temp-buffer
+       "** headline"
+       (lambda nil
+         (org-safe-mode)
+         (goto-char 3) ; After first asterisk
+         (expect (org-safe-looking-back-at-headline-stars-p)))))
     (it "should be t when looking at stars without titles"
       ;; org-mode considers these titles still
-      (expect t :to-be (org-temp-buffer
-                        "* " ; Title
-                        (lambda nil
-                          (org-safe-mode)
-                          (goto-char 2) ; After first asterisk
-                          (org-safe-looking-back-at-headline-stars-p))))))
-  (describe "when NOT looking back at headline stars"
-    (it "should be nil when asterisk belongs to bold phrase"
-      (expect nil :to-be (org-temp-buffer
-                          "*headline*"
-                          (lambda nil
-                            (org-safe-mode)
-                            (goto-char 2) ; After first asterisk
-                            (org-safe-looking-back-at-headline-stars-p)))))))
+      "* " ; Title
+      (lambda nil
+        (org-safe-mode)
+        (goto-char 2) ; After first asterisk
+        (expect (org-safe-looking-back-at-headline-stars-p))))))
+
+(describe "when NOT looking back at headline stars"
+  (it "should be nil when asterisk belongs to bold phrase"
+    (org-temp-buffer
+     "*headline*"
+     (lambda nil
+       (org-safe-mode)
+       (goto-char 2) ; After first asterisk
+       (expect (null (org-safe-looking-back-at-headline-stars-p)))))))
 
 (describe "org-safe-prohibited-p"
   (it "should be t when org-safe-prohibited-var t"
     (let ((org-safe-prohibited-var t))
-      (expect t :to-equal (org-safe-prohibited-p))))
+      (expect (org-safe-prohibited-p))))
   (it "should be nil when org-safe-prohibited-var nil"
     (let ((org-safe-prohibited-var nil))
-      (expect nil :to-be (org-safe-prohibited-p)))))
+      (expect (null (org-safe-prohibited-p))))))
 
 (describe "org-safe-prohibit"
   (it "should cause prohibited-p to be t after being nil"
     (let ((org-safe-prohibited-var nil))
-      (expect nil :to-be (org-safe-prohibited-p)))
-    (org-safe-prohibit)
-    (expect t :to-be (org-safe-prohibited-p))))
+      (expect (null (org-safe-prohibited-p)))
+      (org-safe-prohibit)
+      (expect (org-safe-prohibited-p)))))
 
 (describe "org-safe-enable"
   (it "should cause prohibited-p to be nil after being t"
     (let ((org-safe-prohibited-var t))
-      (expect t :to-be (org-safe-prohibited-p)))
+      (expect (org-safe-prohibited-p)))
     (org-safe-enable)
-    (expect nil :to-be (org-safe-prohibited-p))))
+    (expect (null (org-safe-prohibited-p)))))
 
 (describe "org-safe-disabled-timer"
   :var ((org-safe-prohibited-duration 0.1))
   (it "re-enables org-safe after prohibited duration passes"
     ;; Start in prohibited state
     (org-safe-prohibit)
-    (expect t :to-be( org-safe-prohibited-p))
+    (expect (org-safe-prohibited-p))
     ;; Run prohibited timer and wait for it to finish
     (org-safe-start-prohibited-timer)
     (sit-for (+ org-safe-prohibited-duration 0.01))
     ;; Verify that `org-safe' is re-enabled
-    (expect nil :to-be (org-safe-prohibited-p))))
+    (expect (null (org-safe-prohibited-p)))))
 
 (describe "org-safe-temp-allow-deletion"
   :var ((org-safe-prohibited-duration 0.1)
         (org-safe-prohibited nil))
   (it "switches org-safe from enabled to prohibited"
     (call-interactively 'org-safe-temp-allow-deletion)
-    (expect t :to-be (org-safe-prohibited-p)))
+    (expect (org-safe-prohibited-p)))
   (it "re-enables org-safe after org-safe-prohibited-duration"
     (sit-for (+ org-safe-prohibited-duration 0.01))
-    (expect nil :to-be (org-safe-prohibited-p))))
+    (expect (null (org-safe-prohibited-p)))))
 
 (provide 'test-org-safe)
 ;;; test-org-safe.el ends here
