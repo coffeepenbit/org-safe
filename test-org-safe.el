@@ -155,51 +155,51 @@ FUNC is what is ran after creating the buffer."
   (xit "does NOT delete property drawer")
   (xit "does NOT delete logbook drawer"))
 
-(describe "org-safe-point-looking-at-headline-stars-p"
+(describe "org-safe-looking-at-headline-stars-p"
   (it "should be t when looking at a headline"
     (org-temp-buffer
      "* headline"
      (lambda nil
        (org-safe-mode)
-       (expect (org-safe-point-looking-at-headline-stars-p) :to-be t)))
+       (expect (org-safe-looking-at-headline-stars-p) :to-be t)))
     (org-temp-buffer
      "** headline"
      (lambda nil
        (org-safe-mode)
-       (expect (org-safe-point-looking-at-headline-stars-p) :to-be t)))
+       (expect (org-safe-looking-at-headline-stars-p) :to-be t)))
     (org-temp-buffer
      "** headline"
      (lambda nil
        (org-safe-mode)
        (goto-char 2)
-       (expect (org-safe-point-looking-at-headline-stars-p) :to-be t)))
+       (expect (org-safe-looking-at-headline-stars-p) :to-be t)))
     (org-temp-buffer
      "* headline*"
      (lambda nil
        (org-safe-mode)
-       (expect (org-safe-point-looking-at-headline-stars-p) :to-be t)))
+       (expect (org-safe-looking-at-headline-stars-p) :to-be t)))
     (org-temp-buffer
      "*    headline"
      (lambda nil
        (org-safe-mode)
-       (expect (org-safe-point-looking-at-headline-stars-p) :to-be t)))
+       (expect (org-safe-looking-at-headline-stars-p) :to-be t)))
     (org-temp-buffer
      "
 * headline"
      (lambda nil
        (org-safe-mode)
-       (expect (org-safe-point-looking-at-headline-stars-p)) :to-be t)))
+       (expect (org-safe-looking-at-headline-stars-p)) :to-be t)))
   (it "should be nil when looking at non-headlines"
     (org-temp-buffer
      "*headline"
      (lambda nil
        (org-safe-mode)
-       (expect (null (org-safe-point-looking-at-headline-stars-p)))))
+       (expect (null (org-safe-looking-at-headline-stars-p)))))
     (org-temp-buffer
      "*headline*"
      (lambda nil
        (org-safe-mode)
-       (expect (null (org-safe-point-looking-at-headline-stars-p)))))))
+       (expect (null (org-safe-looking-at-headline-stars-p)))))))
 
 (describe "org-safe-looking-back-at-headline-stars-p"
   (describe "when looking at headline stars"

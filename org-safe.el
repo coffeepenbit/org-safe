@@ -95,7 +95,7 @@ N is number of chars to consider."
        ;; A space must follow the last headline star
        (looking-at "\\*? ")))
 
-(defun org-safe-point-looking-at-headline-stars-p nil
+(defun org-safe-looking-at-headline-stars-p nil
   "Return non-nil if point is within or immediately after headline stars."
   (looking-at (concat "\\(
 \\)?" ; Count org headlines and next line as well
@@ -104,7 +104,7 @@ N is number of chars to consider."
 (defun org-safe-delete-char nil
   "Execute org-delete-char if non-protected content."
   (interactive)
-  (if (not (org-safe-point-looking-at-headline-stars-p))
+  (if (not (org-safe-looking-at-headline-stars-p))
       (org-delete-char 1)
     (message "Can't delete headline stars")))
 
