@@ -22,6 +22,8 @@
 
 ;; Test cases for `org-safe-mode'
 
+;; TODO replace "expect (null ..." with "expect * :to-be nil"
+
 ;;; Code:
 (require 'buttercup)
 (require 'org-safe)
@@ -40,10 +42,9 @@ FUNC is what is ran after creating the buffer."
         (funcall func)
       (buffer-string))))
 
+;; TODO add tests for bindings
 (xdescribe "org-safe-mode"
-  (xit "remaps bindings")
-  ;; TODO add tests for bindings
-  )
+  (xit "remaps bindings"))
 
 (describe "org-safe-delete-char"
   (before-each (setq inhibit-message t))
@@ -89,7 +90,9 @@ FUNC is what is ran after creating the buffer."
        (org-safe-mode)
        (goto-char (- (point-max) 1)) ; After first asterisk
        (org-safe-delete-char)
-       (expect (buffer-string) :to-equal "asterisk")))))
+       (expect (buffer-string) :to-equal "asterisk"))))
+  (xit "does NOT delete property drawer")
+  (xit "does NOT delete logbook drawer"))
 
 (describe "org-safe-delete-backward-char"
   (before-each (setq inhibit-message t))
@@ -137,7 +140,9 @@ FUNC is what is ran after creating the buffer."
        (org-safe-mode)
        (goto-char (point-max))
        (org-safe-delete-backward-char)
-       (expect (buffer-string) :to-equal "asterisk")))))
+       (expect (buffer-string) :to-equal "asterisk"))))
+  (xit "does NOT delete property drawer")
+  (xit "does NOT delete logbook drawer"))
 
 (describe "org-safe-point-looking-at-headline-stars-p"
   (it "should be t when looking at a headline"
@@ -268,6 +273,11 @@ FUNC is what is ran after creating the buffer."
   (it "re-enables org-safe after org-safe-prohibited-duration"
     (sit-for (+ org-safe-prohibited-duration 0.01))
     (expect (null (org-safe-prohibited-p)))))
+
+(xdescribe "org-safe-looking-at-property-drawer")
+(xdescribe "org-safe-looking-at-logbook")
+(xdescribe "org-safe-looking-back-at-property-drawer")
+(xdescribe "org-safe-looking-back-at-logbook")
 
 (provide 'test-org-safe)
 ;;; test-org-safe.el ends here
