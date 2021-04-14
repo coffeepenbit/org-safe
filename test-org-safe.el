@@ -285,9 +285,104 @@ FUNC is what is ran after creating the buffer."
     (sit-for (+ org-safe-prohibited-duration 0.01))
     (expect (null (org-safe-prohibited-p)))))
 
-(xdescribe "org-safe-looking-at-property-drawer")
+(describe "org-safe-looking-at-drawer-p"
+  (it "returns non-nil when looking at :PROPERTIES:"
+    (org-temp-buffer
+     "* headline
+:PROPERTIES:
+:foo: bar
+:END:"
+     (lambda nil
+       (org-safe-mode)
+       (forward-line)
+       (expect (looking-at (regexp-quote ":PROPERTIES:")))
+       (expect (org-safe-looking-at-drawer-p)))))
+  (it "returns non-nil when looking at a property key"
+    (org-temp-buffer
+     "* headline
+:PROPERTIES:
+:foo: bar
+:END:"
+     (lambda nil
+       (org-safe-mode)
+       (forward-line 2)
+       (expect (looking-at (regexp-quote ":foo:")))
+       (expect (org-safe-looking-at-drawer-p)))))
+  (it "returns non-nil when looking at a property value"
+    (org-temp-buffer
+     "* headline
+:PROPERTIES:
+:foo: bar
+:END:"
+     (lambda nil
+       (org-safe-mode)
+       (forward-line 2)
+       (forward-char 6)
+       (expect (looking-at (regexp-quote "bar")))
+       (expect (org-safe-looking-at-drawer-p)))))
+  (it "returns non-nil when drawer is on next line"
+    (org-temp-buffer
+     "* headline
+:PROPERTIES:
+:foo: bar
+:END:"
+     (lambda nil
+       (org-safe-mode)
+       (end-of-line)
+       (expect (org-safe-looking-at-drawer-p)))))
+  (it "returns nil when drawer is NOT on next line"
+    (org-temp-buffer
+     "* headline
+foo bar"
+     (lambda nil
+       (org-safe-mode)
+       (end-of-line)
+       (expect (regexp-quote "\n"))
+       (expect (org-safe-looking-at-drawer-p) :to-be nil))))
+  (it "returns non-nil when looking at :something:"
+    (org-temp-buffer
+     ":something:" ; org-mode considers this to be a drawer
+     (lambda nil
+       (org-safe-mode)
+       (expect (looking-at (regexp-quote ":something:")))
+       (expect (org-safe-looking-at-drawer-p)))))
+  (it "returns non-nil when looking at :END:"
+    (org-temp-buffer
+     "* headline
+:PROPERTIES:
+:foo: bar
+:END:"
+     (lambda nil
+       (org-safe-mode)
+       (forward-line 3)
+       (expect (looking-at (regexp-quote ":END:")))
+       (expect (org-safe-looking-at-drawer-p)))))
+  (it "returns non-nil when looking at :LOGBOOK:"
+    (org-temp-buffer
+     "* headline
+:LOGBOOK:
+- Note taken on [2021-04-14 Wed 07:53] \\
+  foobar eggs and spam
+:END:"
+     (lambda nil
+       (org-safe-mode)
+       (forward-line)
+       (expect (looking-at (regexp-quote ":LOGBOOK:")))
+       (expect (org-safe-looking-at-drawer-p)))))
+  (it "returns nil when NOT looking at a drawer"
+    (org-temp-buffer
+     ""
+     (lambda nil
+       (org-safe-mode)
+       (expect (org-safe-looking-at-drawer-p) :to-be nil)))
+    (org-temp-buffer
+     "* headline"
+     (lambda nil
+       (org-safe-mode)
+       (expect (org-safe-looking-at-drawer-p) :to-be nil)))))
+
+;; (xdescribe "org-safe-looking-back-at-drawer"
 (xdescribe "org-safe-looking-at-logbook")
-(xdescribe "org-safe-looking-back-at-property-drawer")
 (xdescribe "org-safe-looking-back-at-logbook")
 
 (provide 'test-org-safe)

@@ -5,6 +5,7 @@
 ;; Author:  coffeepenbit@gmail.com
 ;; Keywords: outlines
 ;; Version: 0.0.1
+;; Package-requires: ((org "9.4.4"))
 
 ;;; Commentary:
 
@@ -42,7 +43,7 @@
 ;;;; Vars
 (defvar org-safe-mode-map
   (let ((map (make-sparse-keymap)))
-    ;; FIXME make this remap instead of keybinding
+    ;; FIXME: make this remap instead of keybinding
     (define-key map (kbd "DEL") 'org-safe-delete-backward-char)
     (define-key map (kbd "C-d") 'org-safe-delete-char)
     map)
@@ -107,6 +108,20 @@ N is number of chars to consider."
   (if (not (org-safe-looking-at-headline-stars-p))
       (org-delete-char 1)
     (message "Can't delete headline stars")))
+
+(defun org-safe-looking-at-drawer-p nil
+  "Return non-nil when point is looking at drawer."
+  (save-excursion
+    (move-beginning-of-line 1)
+    (let ((looking-at-drawer-p (lambda nil
+                                 (or (looking-at org-drawer-regexp)
+                                     (looking-at org-property-drawer-re)
+                                     (looking-at org-property-re)
+                                     (looking-at org-logbook-drawer-re)))))
+      (or (funcall looking-at-drawer-p)
+          (progn
+            (move-beginning-of-line 2)
+            (funcall looking-at-drawer-p))))))
 
 (provide 'org-safe)
 ;;; org-safe.el ends here
