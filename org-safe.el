@@ -113,6 +113,7 @@ N is number of chars to consider."
   "Return non-nil when point is looking at drawer."
   (save-excursion
     (move-beginning-of-line 1)
+    ;; NOTE: `looking-at' is faster than `face-at-point'
     (let ((looking-at-drawer-p (lambda nil
                                  (or (looking-at org-drawer-regexp)
                                      (looking-at org-property-drawer-re)
