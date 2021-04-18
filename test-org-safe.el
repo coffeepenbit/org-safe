@@ -194,12 +194,12 @@ FUNC is what is ran after creating the buffer."
      "*headline"
      (lambda nil
        (org-safe-mode)
-       (expect (null (org-safe-looking-at-headline-stars-p)))))
+       (expect (org-safe-looking-at-headline-stars-p) :to-be nil)))
     (org-temp-buffer
      "*headline*"
      (lambda nil
        (org-safe-mode)
-       (expect (null (org-safe-looking-at-headline-stars-p)))))))
+       (expect (org-safe-looking-at-headline-stars-p) :to-be nil)))))
 
 (describe "org-safe-looking-back-at-headline-stars-p"
   (describe "when looking at headline stars"
@@ -239,7 +239,7 @@ FUNC is what is ran after creating the buffer."
      (lambda nil
        (org-safe-mode)
        (goto-char 2) ; After first asterisk
-       (expect (null (org-safe-looking-back-at-headline-stars-p)))))))
+       (expect (org-safe-looking-back-at-headline-stars-p) :to-be nil)))))
 
 (describe "org-safe-prohibited-p"
   (it "should be t when org-safe-prohibited-var t"
@@ -247,12 +247,12 @@ FUNC is what is ran after creating the buffer."
       (expect (org-safe-prohibited-p))))
   (it "should be nil when org-safe-prohibited-var nil"
     (let ((org-safe-prohibited-var nil))
-      (expect (null (org-safe-prohibited-p))))))
+      (expect (org-safe-prohibited-p) :to-be nil))))
 
 (describe "org-safe-prohibit"
   (it "should cause prohibited-p to be t after being nil"
     (let ((org-safe-prohibited-var nil))
-      (expect (null (org-safe-prohibited-p)))
+      (expect (org-safe-prohibited-p) :to-be nil)
       (org-safe-prohibit)
       (expect (org-safe-prohibited-p)))))
 
@@ -261,7 +261,7 @@ FUNC is what is ran after creating the buffer."
     (let ((org-safe-prohibited-var t))
       (expect (org-safe-prohibited-p)))
     (org-safe-enable)
-    (expect (null (org-safe-prohibited-p)))))
+    (expect (org-safe-prohibited-p) :to-be nil)))
 
 (describe "org-safe-disabled-timer"
   :var ((org-safe-prohibited-duration 0.1))
@@ -273,7 +273,7 @@ FUNC is what is ran after creating the buffer."
     (org-safe-start-prohibited-timer)
     (sit-for (+ org-safe-prohibited-duration 0.01))
     ;; Verify that `org-safe' is re-enabled
-    (expect (null (org-safe-prohibited-p)))))
+    (expect (org-safe-prohibited-p) :to-be nil)))
 
 (describe "org-safe-temp-allow-deletion"
   :var ((org-safe-prohibited-duration 0.1)
@@ -283,7 +283,7 @@ FUNC is what is ran after creating the buffer."
     (expect (org-safe-prohibited-p)))
   (it "re-enables org-safe after org-safe-prohibited-duration"
     (sit-for (+ org-safe-prohibited-duration 0.01))
-    (expect (null (org-safe-prohibited-p)))))
+    (expect (org-safe-prohibited-p) :to-be nil)))
 
 (describe "org-safe-looking-at-drawer-p"
   (it "returns non-nil when looking at :PROPERTIES:"
