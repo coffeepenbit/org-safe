@@ -438,8 +438,5 @@ okay
        (goto-char (point-max))
        (expect (org-safe-looking-back-at-drawer-p) :to-be nil)))))
 
-(xdescribe "org-safe-looking-at-logbook")
-(xdescribe "org-safe-looking-back-at-logbook")
-
 (provide 'test-org-safe)
 ;;; test-org-safe.el ends here
