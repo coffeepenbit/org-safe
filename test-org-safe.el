@@ -3,7 +3,9 @@
 ;; Copyright (C) 2021  coffeepenbit
 
 ;; Author: coffeepenbit@gmail.com
+;; Version: 0.0.1
 ;; Keywords: outline
+;; Package-requires: ((org "9.4.4"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -21,8 +23,6 @@
 ;;; Commentary:
 
 ;; Test cases for `org-safe-mode'
-
-;; TODO replace "expect (null ..." with "expect * :to-be nil"
 
 ;;; Code:
 (require 'buttercup)
@@ -437,6 +437,41 @@ okay
      (lambda nil
        (goto-char (point-max))
        (expect (org-safe-looking-back-at-drawer-p) :to-be nil)))))
+
+(xdescribe "org-safe-looking-at-header-properties-p"
+  (xit "returns non-nil when looking at header properties")
+  (xit "returns non-nil when looking at header properties anywhere on line")
+  (xit "returns nil when NOT looking at header properties"))
+
+(xdescribe "org-safe-looking-back-at-header-properties-p"
+  (xit "returns non-nil when looking back at header properties")
+  (xit "returns nil when NOT looking back at header properties"))
+
+(xdescribe "org-safe-header-properties-in-region-p"
+  (xit "returns non-nil when header properties fully in region")
+  (xit "returns non-nil when header properties partially in region")
+  (xit "returns non-nil when header properties not in region"))
+
+(xdescribe "org-safe-looking-at-footer-properties-p"
+  (xit "returns non-nil when looking at footer properties")
+  (xit "returns non-nil when looking at footer properties anywhere on line")
+  (xit "returns non-nil when looking at footer properties on next line")
+  (xit "returns nil when NOT looking at footer properties"))
+
+(xdescribe "org-safe-footer-properties-in-region-p"
+  (xit "returns non-nil when footer properties fully in region")
+  (xit "returns non-nil when footer properties partially in region")
+  (xit "returns non-nil when footer properties not in region"))
+
+(xdescribe "org-safe-headline-in-region-p"
+  (xit "returns non-nil when headline fully in region")
+  (xit "returns non-nil when headline partially in region")
+  (xit "returns non-nil when headline not in region"))
+
+(xdescribe "org-safe-drawer-in-region-p"
+  (xit "returns non-nil when drawer fully in region")
+  (xit "returns non-nil when drawer partially in region")
+  (xit "returns non-nil when drawer not in region"))
 
 (provide 'test-org-safe)
 ;;; test-org-safe.el ends here
