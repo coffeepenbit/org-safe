@@ -462,9 +462,28 @@ okay
        (forward-line) ; point position: #+TITLE: ti|tle
        (expect (org-safe-looking-at-document-header-properties-p) :to-be nil)))))
 
-(xdescribe "org-safe-looking-back-at-document-header-properties-p"
-  (xit "returns non-nil when looking back at document header properties")
-  (xit "returns nil when NOT looking back at document header properties"))
+(describe "org-safe-looking-back-at-document-header-properties-p"
+  (it "returns non-nil when looking back at document header properties"
+    (org-temp-buffer
+     "#+TITLE: title"
+     (lambda nil
+       (goto-char (point-max))
+       (expect (org-safe-looking-back-at-document-header-properties-p)))))
+  (it "returns non-nil when looking back at document header previous line"
+    (org-temp-buffer
+     "#+TITLE: title
+"
+     (lambda nil
+       (goto-char (point-max))
+       (expect (org-safe-looking-back-at-document-header-properties-p)))))
+  (it "returns nil when NOT looking back at document header properties"
+    (org-temp-buffer
+     "#+TITLE: title
+
+"
+     (lambda nil
+       (goto-char (point-max))
+       (expect (org-safe-looking-back-at-document-header-properties-p) :to-be nil)))))
 
 (xdescribe "org-safe-document-header-properties-in-region-p"
   (xit "returns non-nil when document header properties fully in region")
