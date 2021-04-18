@@ -485,10 +485,60 @@ okay
        (goto-char (point-max))
        (expect (org-safe-looking-back-at-document-header-properties-p) :to-be nil)))))
 
-(xdescribe "org-safe-document-header-properties-in-region-p"
-  (xit "returns non-nil when document header properties fully in region")
-  (xit "returns non-nil when document header properties partially in region")
-  (xit "returns non-nil when document header properties not in region"))
+(describe "org-safe-document-header-properties-in-region-p"
+  (it "returns non-nil when document header properties fully in region"
+    (org-temp-buffer
+     "#+TITLE: title
+
+"
+     (lambda nil
+       (set-mark (point-min))
+       (goto-char (point-max))
+       (expect (org-safe-document-header-properties-in-region-p)))))
+  (it "returns non-nil when document header properties fully in region (reversed)"
+    (org-temp-buffer
+     "#+TITLE: title
+
+"
+     (lambda nil
+       (set-mark (point-max))
+       (goto-char (point-min))
+       (expect (org-safe-document-header-properties-in-region-p)))))
+  (it "returns non-nil when document header properties partially in region"
+    (org-temp-buffer
+     "#+TITLE: title
+
+"
+     (lambda nil
+       (set-mark 11) ; Point at: #+TITLE: ti|tle
+       (goto-char (point-max))
+       (expect (org-safe-document-header-properties-in-region-p)))))
+  (it "returns non-nil when document header properties partially in region (reversed)"
+    (org-temp-buffer
+     "#+TITLE: title
+
+"
+     (lambda nil
+       (set-mark (point-max)) ; Point at: #+TITLE: ti|tle
+       (goto-char 11)
+       (expect (org-safe-document-header-properties-in-region-p)))))
+  (it "returns nil when document header properties not in region"
+    (org-temp-buffer
+     "title
+
+"
+     (lambda nil
+       (set-mark (point-min)) ; Point at: #+TITLE: ti|tle
+       (goto-char (point-max))
+       (expect (org-safe-document-header-properties-in-region-p) :to-be nil))))
+  (it "returns nil when marker is inactive"
+    (org-temp-buffer
+     "title
+
+"
+     (lambda nil
+       (deactivate-mark)
+       (expect (org-safe-document-header-properties-in-region-p) :to-be nil)))))
 
 (xdescribe "org-safe-looking-at-document-footer-properties-p"
   (xit "returns non-nil when looking at document footer properties")

@@ -153,5 +153,28 @@ N is number of chars to consider."
         (backward-char)
         (org-safe-looking-at-document-header-properties-p))))
 
-(provide 'org-safe)
+(defun org-safe-document-header-properties-in-region-p nil
+  "Return non-nil if document header properties in region."
+  (when mark-active
+    (save-excursion
+      (if (org-safe-looking-at-document-header-properties-p)
+          t
+        (let* ((direction (if (> (point) (mark))
+                              -1 ; Move upwards from point
+                            1))  ; Move downwards from point
+               (mark-line-pos (line-number-at-pos (mark)))
+               (last-loop nil)
+               (looking-at-document-header-properties-p nil))
+          (catch 'looking-at-document-header-properties-p
+            (while (and (if (> direction 0)
+                            (<= (point) (mark))
+                          (>= (point) (mark)))
+                        (not last-loop))
+              (when (eq (line-number-at-pos) mark-line-pos)
+                (setq last-loop t))
+              (forward-line direction)
+              (when (org-safe-looking-at-document-header-properties-p)
+                (throw 'looking-at-document-header-properties-p t)))))))))
+
+  (provide 'org-safe)
 ;;; org-safe.el ends here
