@@ -147,7 +147,7 @@ N is number of chars to consider."
     (looking-at "#\[^ ]*:\ ")))
 
 (defun org-safe-looking-back-at-document-header-properties-p nil
-  "Return non-nil if looking at org docuent header properties."
+  "Return non-nil if looking back at org document header properties."
   (or (org-safe-looking-at-document-header-properties-p)
       (save-excursion
         (backward-char)
