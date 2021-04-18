@@ -438,30 +438,49 @@ okay
        (goto-char (point-max))
        (expect (org-safe-looking-back-at-drawer-p) :to-be nil)))))
 
-(xdescribe "org-safe-looking-at-header-properties-p"
-  (xit "returns non-nil when looking at header properties")
-  (xit "returns non-nil when looking at header properties anywhere on line")
-  (xit "returns nil when NOT looking at header properties"))
+(describe "org-safe-looking-at-document-header-properties-p"
+  (it "returns non-nil when looking at document header properties"
+    (org-temp-buffer
+     "#+TITLE: title
+#+COLUMNS: columns"
+     (lambda nil
+       (goto-char (point-min))
+       (expect (looking-at (regexp-quote "#+TITLE: title")))
+       (expect (equal major-mode 'org-mode))
+       (expect (org-safe-looking-at-document-header-properties-p)))))
+  (it "returns non-nil when looking at document header properties anywhere on line"
+    (org-temp-buffer
+     "#+TITLE: title"
+     (lambda nil
+       (goto-char 11) ; point position: #+TITLE: ti|tle
+       (expect (org-safe-looking-at-document-header-properties-p)))))
+  (it "returns nil when NOT looking at document header properties"
+    (org-temp-buffer
+     "#+TITLE: title
+" ; Point at next line
+     (lambda nil
+       (forward-line) ; point position: #+TITLE: ti|tle
+       (expect (org-safe-looking-at-document-header-properties-p) :to-be nil)))))
 
-(xdescribe "org-safe-looking-back-at-header-properties-p"
-  (xit "returns non-nil when looking back at header properties")
-  (xit "returns nil when NOT looking back at header properties"))
+(xdescribe "org-safe-looking-back-at-document-header-properties-p"
+  (xit "returns non-nil when looking back at document header properties")
+  (xit "returns nil when NOT looking back at document header properties"))
 
-(xdescribe "org-safe-header-properties-in-region-p"
-  (xit "returns non-nil when header properties fully in region")
-  (xit "returns non-nil when header properties partially in region")
-  (xit "returns non-nil when header properties not in region"))
+(xdescribe "org-safe-document-header-properties-in-region-p"
+  (xit "returns non-nil when document header properties fully in region")
+  (xit "returns non-nil when document header properties partially in region")
+  (xit "returns non-nil when document header properties not in region"))
 
-(xdescribe "org-safe-looking-at-footer-properties-p"
-  (xit "returns non-nil when looking at footer properties")
-  (xit "returns non-nil when looking at footer properties anywhere on line")
-  (xit "returns non-nil when looking at footer properties on next line")
-  (xit "returns nil when NOT looking at footer properties"))
+(xdescribe "org-safe-looking-at-document-footer-properties-p"
+  (xit "returns non-nil when looking at document footer properties")
+  (xit "returns non-nil when looking at document footer properties anywhere on line")
+  (xit "returns non-nil when looking at document footer properties on next line")
+  (xit "returns nil when NOT looking at document footer properties"))
 
-(xdescribe "org-safe-footer-properties-in-region-p"
-  (xit "returns non-nil when footer properties fully in region")
-  (xit "returns non-nil when footer properties partially in region")
-  (xit "returns non-nil when footer properties not in region"))
+(xdescribe "org-safe-document-footer-properties-in-region-p"
+  (xit "returns non-nil when document footer properties fully in region")
+  (xit "returns non-nil when document footer properties partially in region")
+  (xit "returns non-nil when document footer properties not in region"))
 
 (xdescribe "org-safe-headline-in-region-p"
   (xit "returns non-nil when headline fully in region")

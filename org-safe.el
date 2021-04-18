@@ -140,5 +140,11 @@ N is number of chars to consider."
               (org-safe-looking-at-drawer-this-line-p))
           (error nil)))))
 
+(defun org-safe-looking-at-document-header-properties-p nil
+  "Return non-nil if looking at org docuent header properties."
+  (save-excursion
+    (beginning-of-line)
+    (looking-at "#\[^ ]*:\ ")))
+
 (provide 'org-safe)
 ;;; org-safe.el ends here
