@@ -381,7 +381,63 @@ foo bar"
        (org-safe-mode)
        (expect (org-safe-looking-at-drawer-p) :to-be nil)))))
 
-;; (xdescribe "org-safe-looking-back-at-drawer"
+(describe "org-safe-looking-back-at-drawer-p"
+  (it "returns non-nil when looking back at :PROPERTIES:"
+    (org-temp-buffer
+     "* headline
+:PROPERTIES:
+:foo: bar
+:END:"
+     (lambda nil
+       (forward-line)
+       (end-of-line)
+       (expect (org-safe-looking-back-at-drawer-p)))))
+  (it "returns non-nil when looking back at :END:"
+    (org-temp-buffer
+     "* headline
+:PROPERTIES:
+:foo: bar
+:END:"
+     (lambda nil
+       (forward-line 3)
+       (end-of-line)
+       (expect (org-safe-looking-back-at-drawer-p)))))
+  (it "returns non-nil when looking back at :LOGBOOK:"
+    (org-temp-buffer
+     "* headline
+:PROPERTIES:
+:foo: bar
+:END:"
+     (lambda nil
+       (forward-line 3)
+       (end-of-line)
+       (expect (org-safe-looking-back-at-drawer-p)))))
+  (it "returns nil when looking back at nothing"
+    (org-temp-buffer
+     ""
+     (lambda nil
+       (forward-line 3)
+       (end-of-line)
+       (expect (org-safe-looking-back-at-drawer-p) :to-be nil))))
+  (it "returns non-nil when looking back at drawer on prevoius line"
+    (org-temp-buffer
+     "* headline
+:PROPERTIES:
+:foo: bar
+:END:
+"
+     (lambda nil
+       (goto-char (point-max))
+       (expect (org-safe-looking-back-at-drawer-p)))))
+  (it "returns nil when looking back at non-drawer"
+    (org-temp-buffer
+     "* headline
+okay
+"
+     (lambda nil
+       (goto-char (point-max))
+       (expect (org-safe-looking-back-at-drawer-p) :to-be nil)))))
+
 (xdescribe "org-safe-looking-at-logbook")
 (xdescribe "org-safe-looking-back-at-logbook")
 

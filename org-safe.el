@@ -110,19 +110,35 @@ N is number of chars to consider."
     (message "Can't delete headline stars")))
 
 (defun org-safe-looking-at-drawer-p nil
-  "Return non-nil when point is looking at drawer."
+  "Return non-nil if point is looking at drawer."
+  (save-excursion
+    (move-beginning-of-line 1)
+    (or (org-safe-looking-at-drawer-this-line-p)
+        (progn
+          (move-beginning-of-line 2)
+          (org-safe-looking-at-drawer-this-line-p)))))
+
+(defun org-safe-looking-at-drawer-this-line-p nil
+  "Return non-nil if point is looking at drawer on current line."
   (save-excursion
     (move-beginning-of-line 1)
     ;; NOTE: `looking-at' is faster than `face-at-point'
-    (let ((looking-at-drawer-p (lambda nil
-                                 (or (looking-at org-drawer-regexp)
-                                     (looking-at org-property-drawer-re)
-                                     (looking-at org-property-re)
-                                     (looking-at org-logbook-drawer-re)))))
-      (or (funcall looking-at-drawer-p)
-          (progn
-            (move-beginning-of-line 2)
-            (funcall looking-at-drawer-p))))))
+    (or (looking-at org-drawer-regexp)
+        (looking-at org-property-drawer-re)
+        (looking-at org-property-re)
+        (looking-at org-logbook-drawer-re))))
+
+(defun org-safe-looking-back-at-drawer-p nil
+  "Return non-nil if point is looking back at drawer."
+  (save-excursion
+    (move-beginning-of-line 1)
+    (or (org-safe-looking-at-drawer-this-line-p)
+        (condition-case nil
+            (progn
+              (backward-char)
+              (move-beginning-of-line 1)
+              (org-safe-looking-at-drawer-this-line-p))
+          (error nil)))))
 
 (provide 'org-safe)
 ;;; org-safe.el ends here
