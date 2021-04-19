@@ -28,7 +28,7 @@
 (require 'buttercup)
 (require 'org-safe)
 
-(defun org-temp-buffer (buffer-text &optional func)
+(defun org-temp-buffer (buffer-text func)
   "Useful for testing `org-mode' functions.
 
 BUFFER-TEXT is the initial state of the `org-mode' buffer.
@@ -36,11 +36,9 @@ BUFFER-TEXT is the initial state of the `org-mode' buffer.
 FUNC is what is ran after creating the buffer."
   (with-temp-buffer
     (insert buffer-text)
-    (goto-char (point-min))
     (org-mode)
-    (if func
-        (funcall func)
-      (buffer-string))))
+    (goto-char (point-min))
+    (funcall func)))
 
 ;; TODO add tests for bindings
 (xdescribe "org-safe-mode"
