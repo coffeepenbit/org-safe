@@ -27,7 +27,7 @@
 (require 'buttercup)
 (require 'org-safe)
 
-(defun org-temp-buffer (buffer-text func)
+(defun with-org-temp-buffer (buffer-text func)
   "Useful for testing `org-mode' functions.
 
 BUFFER-TEXT is the initial state of the `org-mode' buffer.
@@ -46,7 +46,7 @@ FUNC is what is ran after creating the buffer."
 (describe "org-safe-delete-char"
   (before-each (setq inhibit-message t))
   (it "deletes title chars in headline"
-    (org-temp-buffer
+    (with-org-temp-buffer
      "* headline"
      (lambda nil
        (org-safe-mode)
@@ -54,13 +54,13 @@ FUNC is what is ran after creating the buffer."
        (org-safe-delete-char)
        (expect (buffer-string) :to-equal "* hedline"))))
   (it "prohibits deleting headline asterisks"
-    (org-temp-buffer
+    (with-org-temp-buffer
      "* headline"
      (lambda nil
        (org-safe-mode)
        (org-safe-delete-char)
        (expect (buffer-string) :to-equal "* headline")))
-    (org-temp-buffer
+    (with-org-temp-buffer
      "** headline" ; Point after first asterisk
      (lambda nil
        (org-safe-mode)
@@ -68,7 +68,7 @@ FUNC is what is ran after creating the buffer."
        (org-safe-delete-char)
        (expect (buffer-string) :to-equal "** headline"))))
   (it "prohibits deleting linebreak in front of headline asterisks"
-    (org-temp-buffer
+    (with-org-temp-buffer
      ;; Point at end of first line
      "this is some test
 ** headline on next line"
@@ -79,20 +79,20 @@ FUNC is what is ran after creating the buffer."
        (expect (buffer-string) :to-equal "this is some test
 ** headline on next line"))))
   (it "deletes non-headline asterisks"
-    (org-temp-buffer
+    (with-org-temp-buffer
      "*this is not a headline*"
      (lambda nil
        (org-safe-mode) ; After first asterisk
        (org-safe-delete-char)
        (expect (buffer-string) :to-equal "this is not a headline*")))
-    (org-temp-buffer
+    (with-org-temp-buffer
      "*this is not a headline*"
      (lambda nil
        (org-safe-mode)
        (goto-char (- (point-max) 1)) ; After last asterisk
        (org-safe-delete-char)
        (expect (buffer-string) :to-equal "*this is not a headline")))
-    (org-temp-buffer
+    (with-org-temp-buffer
      "asterisk*"
      (lambda nil
        (org-safe-mode)
@@ -105,7 +105,7 @@ FUNC is what is ran after creating the buffer."
 (describe "org-safe-delete-backward-char"
   (before-each (setq inhibit-message t))
   (it "deletes title chars in headline"
-    (org-temp-buffer
+    (with-org-temp-buffer
      "* headline"
      (lambda nil
        (org-safe-mode)
@@ -113,14 +113,14 @@ FUNC is what is ran after creating the buffer."
        (org-safe-delete-backward-char)
        (expect (buffer-string) :to-equal "* hadline"))))
   (it "prohibits deleting headline asterisks"
-    (org-temp-buffer
+    (with-org-temp-buffer
      "* headline"
      (lambda nil
        (org-safe-mode)
        (goto-char 2) ; After first asterisk
        (org-safe-delete-backward-char)
        (expect (buffer-string) :to-equal "* headline")))
-    (org-temp-buffer
+    (with-org-temp-buffer
      "** headline"
      (lambda nil
        (org-safe-mode)
@@ -128,21 +128,21 @@ FUNC is what is ran after creating the buffer."
        (org-safe-delete-backward-char)
        (expect "** headline" :to-equal (buffer-string)))))
   (it "allows deletion of non-headline asterisks"
-    (org-temp-buffer
+    (with-org-temp-buffer
      "*this is not a headline*"
      (lambda nil
        (org-safe-mode)
        (goto-char 2) ; After first asterisk
        (org-safe-delete-backward-char)
        (expect (buffer-string) :to-equal "this is not a headline*")))
-    (org-temp-buffer
+    (with-org-temp-buffer
      "*this is not a headline*"
      (lambda nil
        (org-safe-mode)
        (goto-char (point-max))
        (org-safe-delete-backward-char)
        (expect (buffer-string) :to-equal "*this is not a headline")))
-    (org-temp-buffer
+    (with-org-temp-buffer
      "asterisk*"
      (lambda nil
        (org-safe-mode)
@@ -154,84 +154,83 @@ FUNC is what is ran after creating the buffer."
 
 (describe "org-safe-looking-at-headline-stars-p"
   (it "should be t when looking at a headline"
-    (org-temp-buffer
+    (with-org-temp-buffer
      "* headline"
      (lambda nil
        (org-safe-mode)
        (expect (org-safe-looking-at-headline-stars-p) :to-be t)))
-    (org-temp-buffer
+    (with-org-temp-buffer
      "** headline"
      (lambda nil
        (org-safe-mode)
        (expect (org-safe-looking-at-headline-stars-p) :to-be t)))
-    (org-temp-buffer
+    (with-org-temp-buffer
      "** headline"
      (lambda nil
        (org-safe-mode)
        (goto-char 2)
        (expect (org-safe-looking-at-headline-stars-p) :to-be t)))
-    (org-temp-buffer
+    (with-org-temp-buffer
      "* headline*"
      (lambda nil
        (org-safe-mode)
        (expect (org-safe-looking-at-headline-stars-p) :to-be t)))
-    (org-temp-buffer
+    (with-org-temp-buffer
      "*    headline"
      (lambda nil
        (org-safe-mode)
        (expect (org-safe-looking-at-headline-stars-p) :to-be t)))
-    (org-temp-buffer
+    (with-org-temp-buffer
      "
 * headline"
      (lambda nil
        (org-safe-mode)
        (expect (org-safe-looking-at-headline-stars-p)) :to-be t)))
   (it "should be nil when looking at non-headlines"
-    (org-temp-buffer
+    (with-org-temp-buffer
      "*headline"
      (lambda nil
        (org-safe-mode)
        (expect (org-safe-looking-at-headline-stars-p) :to-be nil)))
-    (org-temp-buffer
+    (with-org-temp-buffer
      "*headline*"
      (lambda nil
        (org-safe-mode)
        (expect (org-safe-looking-at-headline-stars-p) :to-be nil)))))
 
 (describe "org-safe-looking-back-at-headline-stars-p"
-  (describe "when looking at headline stars"
-    (it "should be t when looking back at single headline star"
-      (org-temp-buffer
-       "* headline"
-       (lambda nil
-         (org-safe-mode)
-         (goto-char 2) ; After first asterisk
-         (expect (org-safe-looking-back-at-headline-stars-p)))))
-    (it "should be t when looking back at two headline stars"
-      (org-temp-buffer
-       "** headline"
-       (lambda nil
-         (org-safe-mode)
-         (goto-char 3) ; After first asterisk
-         (expect (org-safe-looking-back-at-headline-stars-p)))))
-    (it "should be t when between two headline stars"
-      (org-temp-buffer
-       "** headline"
-       (lambda nil
-         (org-safe-mode)
-         (goto-char 3) ; After first asterisk
-         (expect (org-safe-looking-back-at-headline-stars-p)))))
-    (it "should be t when looking at stars without titles"
-      ;; org-mode considers these titles still
-      "* " ; Title
-      (lambda nil
-        (org-safe-mode)
-        (goto-char 2) ; After first asterisk
-        (expect (org-safe-looking-back-at-headline-stars-p))))))
+  (it "should be t when looking back at single headline star"
+    (with-org-temp-buffer
+     "* headline"
+     (lambda nil
+       (org-safe-mode)
+       (goto-char 2) ; After first asterisk
+       (expect (org-safe-looking-back-at-headline-stars-p)))))
+  (it "should be t when looking back at two headline stars"
+    (with-org-temp-buffer
+     "** headline"
+     (lambda nil
+       (org-safe-mode)
+       (goto-char 3) ; After first asterisk
+       (expect (org-safe-looking-back-at-headline-stars-p)))))
+  (it "should be t when between two headline stars"
+    (with-org-temp-buffer
+     "** headline"
+     (lambda nil
+       (org-safe-mode)
+       (goto-char 3) ; After first asterisk
+       (expect (org-safe-looking-back-at-headline-stars-p)))))
+  (it "should be t when looking at stars without titles"
+    ;; org-mode considers these titles still
+    "* " ; Title
+    (lambda nil
+      (org-safe-mode)
+      (goto-char 2) ; After first asterisk
+      (expect (org-safe-looking-back-at-headline-stars-p)))))
 
 (describe "when NOT looking back at headline stars"
   (it "should be nil when asterisk belongs to bold phrase"
-    (org-temp-buffer
+    (with-org-temp-buffer
      "*headline*"
      (lambda nil
        (org-safe-mode)
@@ -284,7 +283,7 @@ FUNC is what is ran after creating the buffer."
 
 (describe "org-safe-looking-at-drawer-p"
   (it "returns non-nil when looking at :PROPERTIES:"
-    (org-temp-buffer
+    (with-org-temp-buffer
      "* headline
 :PROPERTIES:
 :foo: bar
@@ -295,7 +294,7 @@ FUNC is what is ran after creating the buffer."
        (expect (looking-at (regexp-quote ":PROPERTIES:")))
        (expect (org-safe-looking-at-drawer-p)))))
   (it "returns non-nil when looking at a property key"
-    (org-temp-buffer
+    (with-org-temp-buffer
      "* headline
 :PROPERTIES:
 :foo: bar
@@ -306,7 +305,7 @@ FUNC is what is ran after creating the buffer."
        (expect (looking-at (regexp-quote ":foo:")))
        (expect (org-safe-looking-at-drawer-p)))))
   (it "returns non-nil when looking at a property value"
-    (org-temp-buffer
+    (with-org-temp-buffer
      "* headline
 :PROPERTIES:
 :foo: bar
@@ -318,7 +317,7 @@ FUNC is what is ran after creating the buffer."
        (expect (looking-at (regexp-quote "bar")))
        (expect (org-safe-looking-at-drawer-p)))))
   (it "returns non-nil when drawer is on next line"
-    (org-temp-buffer
+    (with-org-temp-buffer
      "* headline
 :PROPERTIES:
 :foo: bar
@@ -328,7 +327,7 @@ FUNC is what is ran after creating the buffer."
        (end-of-line)
        (expect (org-safe-looking-at-drawer-p)))))
   (it "returns nil when drawer is NOT on next line"
-    (org-temp-buffer
+    (with-org-temp-buffer
      "* headline
 foo bar"
      (lambda nil
@@ -337,14 +336,14 @@ foo bar"
        (expect (regexp-quote "\n"))
        (expect (org-safe-looking-at-drawer-p) :to-be nil))))
   (it "returns non-nil when looking at :something:"
-    (org-temp-buffer
+    (with-org-temp-buffer
      ":something:" ; org-mode considers this to be a drawer
      (lambda nil
        (org-safe-mode)
        (expect (looking-at (regexp-quote ":something:")))
        (expect (org-safe-looking-at-drawer-p)))))
   (it "returns non-nil when looking at :END:"
-    (org-temp-buffer
+    (with-org-temp-buffer
      "* headline
 :PROPERTIES:
 :foo: bar
@@ -355,7 +354,7 @@ foo bar"
        (expect (looking-at (regexp-quote ":END:")))
        (expect (org-safe-looking-at-drawer-p)))))
   (it "returns non-nil when looking at :LOGBOOK:"
-    (org-temp-buffer
+    (with-org-temp-buffer
      "* headline
 :LOGBOOK:
 - Note taken on [2021-04-14 Wed 07:53] \\
@@ -367,12 +366,12 @@ foo bar"
        (expect (looking-at (regexp-quote ":LOGBOOK:")))
        (expect (org-safe-looking-at-drawer-p)))))
   (it "returns nil when NOT looking at a drawer"
-    (org-temp-buffer
+    (with-org-temp-buffer
      ""
      (lambda nil
        (org-safe-mode)
        (expect (org-safe-looking-at-drawer-p) :to-be nil)))
-    (org-temp-buffer
+    (with-org-temp-buffer
      "* headline"
      (lambda nil
        (org-safe-mode)
@@ -380,7 +379,7 @@ foo bar"
 
 (describe "org-safe-looking-back-at-drawer-p"
   (it "returns non-nil when looking back at :PROPERTIES:"
-    (org-temp-buffer
+    (with-org-temp-buffer
      "* headline
 :PROPERTIES:
 :foo: bar
@@ -390,7 +389,7 @@ foo bar"
        (end-of-line)
        (expect (org-safe-looking-back-at-drawer-p)))))
   (it "returns non-nil when looking back at :END:"
-    (org-temp-buffer
+    (with-org-temp-buffer
      "* headline
 :PROPERTIES:
 :foo: bar
@@ -400,7 +399,7 @@ foo bar"
        (end-of-line)
        (expect (org-safe-looking-back-at-drawer-p)))))
   (it "returns non-nil when looking back at :LOGBOOK:"
-    (org-temp-buffer
+    (with-org-temp-buffer
      "* headline
 :PROPERTIES:
 :foo: bar
@@ -410,14 +409,14 @@ foo bar"
        (end-of-line)
        (expect (org-safe-looking-back-at-drawer-p)))))
   (it "returns nil when looking back at nothing"
-    (org-temp-buffer
+    (with-org-temp-buffer
      ""
      (lambda nil
        (forward-line 3)
        (end-of-line)
        (expect (org-safe-looking-back-at-drawer-p) :to-be nil))))
   (it "returns non-nil when looking back at drawer on previous line"
-    (org-temp-buffer
+    (with-org-temp-buffer
      "* headline
 :PROPERTIES:
 :foo: bar
@@ -427,7 +426,7 @@ foo bar"
        (goto-char (point-max))
        (expect (org-safe-looking-back-at-drawer-p)))))
   (it "returns nil when looking back at non-drawer"
-    (org-temp-buffer
+    (with-org-temp-buffer
      "* headline
 okay
 "
@@ -437,7 +436,7 @@ okay
 
 (describe "org-safe-looking-at-document-header-properties-p"
   (it "returns non-nil when looking at document header properties"
-    (org-temp-buffer
+    (with-org-temp-buffer
      "#+TITLE: title
 #+COLUMNS: columns"
      (lambda nil
@@ -446,13 +445,13 @@ okay
        (expect (equal major-mode 'org-mode))
        (expect (org-safe-looking-at-document-header-properties-p)))))
   (it "returns non-nil when looking at document header properties anywhere on line"
-    (org-temp-buffer
+    (with-org-temp-buffer
      "#+TITLE: title"
      (lambda nil
        (goto-char 11) ; point position: #+TITLE: ti|tle
        (expect (org-safe-looking-at-document-header-properties-p)))))
   (it "returns nil when NOT looking at document header properties"
-    (org-temp-buffer
+    (with-org-temp-buffer
      "#+TITLE: title
 " ; Point at next line
      (lambda nil
@@ -461,20 +460,20 @@ okay
 
 (describe "org-safe-looking-back-at-document-header-properties-p"
   (it "returns non-nil when looking back at document header properties"
-    (org-temp-buffer
+    (with-org-temp-buffer
      "#+TITLE: title"
      (lambda nil
        (goto-char (point-max))
        (expect (org-safe-looking-back-at-document-header-properties-p)))))
   (it "returns non-nil when looking back at document header previous line"
-    (org-temp-buffer
+    (with-org-temp-buffer
      "#+TITLE: title
 "
      (lambda nil
        (goto-char (point-max))
        (expect (org-safe-looking-back-at-document-header-properties-p)))))
   (it "returns nil when NOT looking back at document header properties"
-    (org-temp-buffer
+    (with-org-temp-buffer
      "#+TITLE: title
 
 "
@@ -484,7 +483,7 @@ okay
 
 (describe "org-safe-document-header-properties-in-region-p"
   (it "returns non-nil when document header properties fully in region"
-    (org-temp-buffer
+    (with-org-temp-buffer
      "#+TITLE: title
 
 "
@@ -493,7 +492,7 @@ okay
        (goto-char (point-max))
        (expect (org-safe-document-header-properties-in-region-p)))))
   (it "returns non-nil when document header properties fully in region (reversed)"
-    (org-temp-buffer
+    (with-org-temp-buffer
      "#+TITLE: title
 
 "
@@ -502,7 +501,7 @@ okay
        (goto-char (point-min))
        (expect (org-safe-document-header-properties-in-region-p)))))
   (it "returns non-nil when document header properties partially in region"
-    (org-temp-buffer
+    (with-org-temp-buffer
      "#+TITLE: title
 
 "
@@ -511,7 +510,7 @@ okay
        (goto-char (point-max))
        (expect (org-safe-document-header-properties-in-region-p)))))
   (it "returns non-nil when document header properties partially in region (reversed)"
-    (org-temp-buffer
+    (with-org-temp-buffer
      "#+TITLE: title
 
 "
@@ -520,7 +519,7 @@ okay
        (goto-char 11)
        (expect (org-safe-document-header-properties-in-region-p)))))
   (it "returns nil when document header properties not in region"
-    (org-temp-buffer
+    (with-org-temp-buffer
      "title
 
 "
@@ -529,7 +528,7 @@ okay
        (goto-char (point-max))
        (expect (org-safe-document-header-properties-in-region-p) :to-be nil))))
   (it "returns nil when marker is inactive"
-    (org-temp-buffer
+    (with-org-temp-buffer
      "title
 
 "
@@ -548,8 +547,9 @@ okay
   (xit "returns non-nil when document footer properties partially in region")
   (xit "returns non-nil when document footer properties not in region"))
 
-(xdescribe "org-safe-headline-in-region-p"
-  (xit "returns non-nil when headline fully in region")
+(describe "org-safe-headline-in-region-p"
+  ;; (it "returns non-nil when headline fully in region" ;
+  ;;   (with-org-temp-buffer))
   (xit "returns non-nil when headline partially in region")
   (xit "returns non-nil when headline not in region"))
 
