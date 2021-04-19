@@ -565,12 +565,12 @@ okay
   (it "returns function value if no exit-condition provided"
     (with-temp-buffer
       (expect (org-safe-dolines 1 1 (lambda nil
-                                      'foobar)) :to-be 'foobar))
+                                      'foobar)) :to-equal '(foobar)))
     (with-temp-buffer
       (insert "
 ")
       (expect (org-safe-dolines 1 2 (lambda nil
-                                      'foobar)) :to-be 'foobar))
+                                      'foobar)) :to-equal '(foobar foobar)))
     (with-temp-buffer ; end greater than point max
       (expect (org-safe-dolines 1 2 (lambda nil
                                       'foobar)) :to-throw 'error))
@@ -582,7 +582,7 @@ okay
       (expect (org-safe-dolines 1 1) :to-be nil)))
   (it "does NOT error if exit-condition is provided"
     (with-temp-buffer
-      (expect (org-safe-dolines 1 1 'ignore nil 'ignore) :to-be nil)))
+      (expect (org-safe-dolines 1 1 'ignore 'ignore) :to-be nil)))
   (it "immediately returns value if exit-condition is met"
     (with-temp-buffer
       (insert "
@@ -591,12 +591,58 @@ okay
 ")
       (expect (org-safe-dolines 1
                                 4
-                                'ignore nil (lambda nil
-                                              (when (eq (line-number-at-pos)
-                                                        3)) :to-be 3)))))
-  (xdescribe "runs ntimes"
-    (xit "runs correct number of lines down when up is nil")
-    (xit "runs correct number of lines up when up is non-nil")))
+                                'ignore
+                                (lambda nil
+                                  (when (eq (line-number-at-pos)
+                                            3)) :to-be 3)))))
+  (describe "runs ntimes"
+    :var (foo)
+    (before-each
+      (setf (symbol-function 'foo) 'ignore)
+      (spy-on 'foo))
+    (it "call func once when one line"
+      (with-temp-buffer
+        (org-safe-dolines 1 1 'foo)
+        (expect 'foo :to-have-been-called-times 1)))
+    (it "runs correct number of lines (top-to-bottom)"
+      (with-temp-buffer
+        (insert "
+
+
+")
+
+        (org-safe-dolines 1 4 'foo)
+        (expect 'foo :to-have-been-called-times 4)))
+    (it "runs correct number of lines (bottom-to-top)"
+      (with-temp-buffer
+        (insert "
+
+
+")
+        (org-safe-dolines 4 1 'foo)
+        (expect 'foo :to-have-been-called-times 4)))
+    (it "returns values in proper order (top-to-bottom)"
+      (with-temp-buffer
+        (insert "a
+b
+c
+d")
+        (expect (org-safe-dolines (point-min)
+                                  (point-max)
+                                  (lambda nil
+                                    (char-after)))
+                :to-equal (list ?a ?b ?c ?d))))
+    (it "returns values in proper order (bottom-to-top)"
+      (with-temp-buffer
+        (insert "a
+b
+c
+d") ; Point look at d
+        (expect (org-safe-dolines 7 ; Needs to be 7, not 8, to look at "d"
+                                  1
+                                  (lambda nil
+                                    (char-after)))
+                :to-equal (list ?d ?c ?b ?a))))))
 
 (provide 'test-org-safe)
 ;;; test-org-safe.el ends here

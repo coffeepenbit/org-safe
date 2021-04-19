@@ -165,52 +165,45 @@ N is number of chars to consider."
     (save-excursion
       (if (org-safe-looking-at-document-header-properties-p)
           t
-        (let* ((direction (if (> (point) (mark))
-                              'up
-                            'down))
-               (looking-at-document-header-properties-p nil))
+        (let* ((looking-at-document-header-properties-p nil))
           (org-safe-dolines (point)
                             (mark)
                             nil
-                            direction
                             'org-safe-looking-at-document-header-properties-p))))))
 
-(defun org-safe-dolines (beg end &optional func direction exit-condition)
-  "Loop over lines from line belonging to BEG to line belonging to END in buffer.
+(defun org-safe-dolines (beg end &optional func exit-condition)
+  "Loop over lines from line at belonging to BEG to END in buffer.
 
 Perform FUNC at each line.
 
-Moves from bottom-to-top UP is non-nil or point < mark.  Moves
-from top-to-bottom if UP is nil and point > mark.
-
 Exits from loop is EXIT-CONDITION is satisfied."
-  (cond ((< beg (point-min))
-         (error "BEG is less-than point-min"))
-        ((> end (point-max))
-         (error "END is greater-than point-max"))
-        ((eq beg end)
-         (when (not (null func))
-           (funcall func)))
-        (t
-         (catch 'loop-exit
-           (let ((last-line-p nil)
-                 (direction (cond ((eq direction 'up)
-                                   -1)
-                                  ((or (eq direction 'down)
-                                       (eq direction nil))
-                                   1)))
-                 (return-value nil))
-             (while (not last-line-p)
-               (when (or (eq (line-number-at-pos) end)
-                         (not (eq (forward-line direction)
-                                  0)))
-                 (setq last-line-p t))
-               (when (not (null func))
-                 (setq return-value (funcall func))))
-             (when (not (null exit-condition))
-               (when (funcall exit-condition)
-                 (throw 'loop-exit t)))
-             return-value)))))
+  (when (< beg (point-min))
+    (error "BEG is less-than point-min"))
+  (when (> end (point-max))
+    (error "END is greater-than point-max"))
+  (let ((beg-line-num (line-number-at-pos beg))
+        (end-line-num (line-number-at-pos end)))
+    (if (and (eq beg-line-num end-line-num)
+             (not (null func)))
+        (let ((return-value (funcall func)))
+          (when return-value
+            (list return-value)))
+      (let ((direction (if (> beg end) -1 1))
+            (nlines-to-loop (abs (- end-line-num beg-line-num)))
+            (return-value nil))
+        (save-excursion
+          (goto-char beg)
+          (when (not (null func))
+            (push (funcall func) return-value))
+          (catch 'loop-exit
+            (dotimes (_ nlines-to-loop)
+              (forward-line direction)
+              (when (not (null func))
+                (push (funcall func) return-value))
+              (when (and (not (null exit-condition))
+                         (funcall exit-condition))
+                (throw 'loop-exit t)))
+            (nreverse return-value)))))))
 
 (provide 'org-safe)
 ;;; org-safe.el ends here
