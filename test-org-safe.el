@@ -596,7 +596,10 @@ okay
                                 4
                                 'ignore nil (lambda nil
                                               (when (eq (line-number-at-pos)
-                                                        3)) :to-be 3))))))
+                                                        3)) :to-be 3)))))
+  (xdescribe "runs ntimes"
+    (xit "runs correct number of lines down when up is nil")
+    (xit "runs correct number of lines up when up is non-nil")))
 
 (provide 'test-org-safe)
 ;;; test-org-safe.el ends here
