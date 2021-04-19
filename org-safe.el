@@ -163,20 +163,20 @@ N is number of chars to consider."
   "Return non-nil if document header properties in region."
   (when mark-active
     (save-excursion
-      (if (org-safe-looking-at-document-header-properties-p)
-          t
-        (let* ((looking-at-document-header-properties-p nil))
-          (org-safe-dolines (point)
-                            (mark)
-                            nil
-                            'org-safe-looking-at-document-header-properties-p))))))
+      (let* ((looking-at-document-header-properties-p nil))
+        (org-safe-dolines (point)
+                          (mark)
+                          'org-safe-looking-at-document-header-properties-p
+                          'org-safe-looking-at-document-header-properties-p)))))
 
 (defun org-safe-dolines (beg end &optional func exit-condition)
   "Loop over lines from line at belonging to BEG to END in buffer.
 
-Perform FUNC at each line.
+BEG and END are points.
 
-Exits from loop is EXIT-CONDITION is satisfied."
+FUNC is ran on each line and its results are collected.
+
+Exits from loop if EXIT-CONDITION is satisfied."
   (when (< beg (point-min))
     (error "BEG is less-than point-min"))
   (when (> end (point-max))
