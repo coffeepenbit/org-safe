@@ -160,21 +160,44 @@ N is number of chars to consider."
       (if (org-safe-looking-at-document-header-properties-p)
           t
         (let* ((direction (if (> (point) (mark))
-                              -1 ; Move upwards from point
-                            1))  ; Move downwards from point
-               (mark-line-pos (line-number-at-pos (mark)))
-               (last-loop nil)
+                              'up
+                            'down))
                (looking-at-document-header-properties-p nil))
-          (catch 'looking-at-document-header-properties-p
-            (while (and (if (> direction 0)
-                            (<= (point) (mark))
-                          (>= (point) (mark)))
-                        (not last-loop))
-              (when (eq (line-number-at-pos) mark-line-pos)
-                (setq last-loop t))
-              (forward-line direction)
-              (when (org-safe-looking-at-document-header-properties-p)
-                (throw 'looking-at-document-header-properties-p t)))))))))
+          (org-safe-dolines (point)
+                            (mark)
+                            nil
+                            direction
+                            'org-safe-looking-at-document-header-properties-p))))))
 
-  (provide 'org-safe)
+(defun org-safe-dolines (beg end &optional func direction exit-condition)
+  ""
+  (cond ((< beg (point-min))
+         (error "BEG is less-than point-min"))
+        ((> end (point-max))
+         (error "END is greater-than point-max"))
+        ((eq beg end)
+         (when (not (null func))
+           (funcall func)))
+        (t
+         (catch 'loop-exit
+           (let ((last-line-p nil)
+                 (direction (cond ((eq direction 'up)
+                                   -1)
+                                  ((or (eq direction 'down)
+                                       (eq direction nil))
+                                   1)))
+                 (return-value nil))
+             (while (not last-line-p)
+               (when (or (eq (line-number-at-pos) end)
+                         (not (eq (forward-line direction)
+                                  0)))
+                 (setq last-line-p t))
+               (when (not (null func))
+                 (setq return-value (funcall func))))
+             (when (not (null exit-condition))
+               (when (funcall exit-condition)
+                 (throw 'loop-exit t)))
+             return-value)))))
+
+(provide 'org-safe)
 ;;; org-safe.el ends here

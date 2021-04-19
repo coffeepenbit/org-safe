@@ -561,5 +561,42 @@ okay
   (xit "returns non-nil when drawer partially in region")
   (xit "returns non-nil when drawer not in region"))
 
+(describe "org-safe-dolines"
+  (it "does NOT error when beginning and ending line is the same"
+    (with-temp-buffer
+      (expect (org-safe-dolines 1 1 'ignore) :to-be nil)))
+  (it "returns function value if no exit-condition provided"
+    (with-temp-buffer
+      (expect (org-safe-dolines 1 1 (lambda nil
+                                      'foobar)) :to-be 'foobar))
+    (with-temp-buffer
+      (insert "
+")
+      (expect (org-safe-dolines 1 2 (lambda nil
+                                      'foobar)) :to-be 'foobar))
+    (with-temp-buffer ; end greater than point max
+      (expect (org-safe-dolines 1 2 (lambda nil
+                                      'foobar)) :to-throw 'error))
+    (with-temp-buffer ; beginning less than point min
+      (expect (org-safe-dolines 0 1 (lambda nil
+                                      'foobar)) :to-throw 'error)))
+  (it "does NOT error when no func is provided"
+    (with-temp-buffer
+      (expect (org-safe-dolines 1 1) :to-be nil)))
+  (it "does NOT error if exit-condition is provided"
+    (with-temp-buffer
+      (expect (org-safe-dolines 1 1 'ignore nil 'ignore) :to-be nil)))
+  (it "immediately returns value if exit-condition is met"
+    (with-temp-buffer
+      (insert "
+
+
+")
+      (expect (org-safe-dolines 1
+                                4
+                                'ignore nil (lambda nil
+                                              (when (eq (line-number-at-pos)
+                                                        3)) :to-be 3))))))
+
 (provide 'test-org-safe)
 ;;; test-org-safe.el ends here
