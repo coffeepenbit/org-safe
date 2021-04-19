@@ -526,7 +526,7 @@ okay
      (lambda nil
        (set-mark (point-min)) ; Point at: #+TITLE: ti|tle
        (goto-char (point-max))
-       (expect (org-safe-document-header-properties-in-region-p) :to-be nil))))
+       (expect (org-safe-document-header-properties-in-region-p)))))
   (it "returns nil when marker is inactive"
     (with-org-temp-buffer
      "title
@@ -561,7 +561,7 @@ okay
 (describe "org-safe-dolines"
   (it "does NOT error when beginning and ending line is the same"
     (with-temp-buffer
-      (expect (org-safe-dolines 1 1 'ignore) :to-be nil)))
+      (expect (org-safe-dolines 1 1 'ignore) :to-equal '(nil))))
   (it "returns function value if no exit-condition provided"
     (with-temp-buffer
       (expect (org-safe-dolines 1 1 (lambda nil
@@ -579,10 +579,10 @@ okay
                                       'foobar)) :to-throw 'error)))
   (it "does NOT error when no func is provided"
     (with-temp-buffer
-      (expect (org-safe-dolines 1 1) :to-be nil)))
+      (expect (org-safe-dolines 1 1) :to-equal '(nil))))
   (it "does NOT error if exit-condition is provided"
     (with-temp-buffer
-      (expect (org-safe-dolines 1 1 'ignore 'ignore) :to-be nil)))
+      (expect (org-safe-dolines 1 1 'ignore 'ignore) :to-equal '(nil))))
   (it "immediately returns value if exit-condition is met"
     (with-temp-buffer
       (insert "
