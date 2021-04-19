@@ -419,7 +419,7 @@ foo bar"
        (forward-line 3)
        (end-of-line)
        (expect (org-safe-looking-back-at-drawer-p) :to-be nil))))
-  (it "returns non-nil when looking back at drawer on prevoius line"
+  (it "returns non-nil when looking back at drawer on previous line"
     (org-temp-buffer
      "* headline
 :PROPERTIES:
