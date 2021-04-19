@@ -5,7 +5,6 @@
 ;; Author:  coffeepenbit@gmail.com
 ;; Keywords: outlines
 ;; Version: 0.0.1
-;; Package-requires: ((org "9.4.4"))
 
 ;;; Commentary:
 
@@ -109,35 +108,42 @@ N is number of chars to consider."
       (org-delete-char 1)
     (message "Can't delete headline stars")))
 
+(defconst org-safe-logbook-drawer-re
+  ;; NOTE: This constant is defined in `org' 9.4. Defining it here
+  ;; to remove dependency on `org' 9.4
+  (rx (seq bol (0+ (any "\t ")) ":LOGBOOK:" (0+ (any "\t ")) "\n"
+	       (*? (0+ nonl) "\n")
+	       (0+ (any "\t ")) ":END:" (0+ (any "\t ")) eol))
+  "Matches an entire LOGBOOK drawer.")
+
 (defun org-safe-looking-at-drawer-p nil
   "Return non-nil if point is looking at drawer."
-  (save-excursion
-    (move-beginning-of-line 1)
-    (or (org-safe-looking-at-drawer-this-line-p)
-        (progn
-          (move-beginning-of-line 2)
-          (org-safe-looking-at-drawer-this-line-p)))))
+  (or (org-safe-drawer-on-this-line-p)
+      (save-excursion
+        (forward-line)
+        (org-safe-drawer-on-this-line-p))))
 
-(defun org-safe-looking-at-drawer-this-line-p nil
+(defun org-safe-drawer-on-this-line-p nil
   "Return non-nil if point is looking at drawer on current line."
+  (beginning-of-line)
+  ;; NOTE: `looking-at' is faster than `face-at-point'
   (save-excursion
-    (move-beginning-of-line 1)
-    ;; NOTE: `looking-at' is faster than `face-at-point'
+    (beginning-of-line)
     (or (looking-at org-drawer-regexp)
         (looking-at org-property-drawer-re)
         (looking-at org-property-re)
-        (looking-at org-logbook-drawer-re))))
+        (looking-at org-safe-logbook-drawer-re))))
 
 (defun org-safe-looking-back-at-drawer-p nil
   "Return non-nil if point is looking back at drawer."
   (save-excursion
-    (move-beginning-of-line 1)
-    (or (org-safe-looking-at-drawer-this-line-p)
+    (beginning-of-line)
+    (or (org-safe-drawer-on-this-line-p)
         (condition-case nil
             (progn
               (backward-char)
-              (move-beginning-of-line 1)
-              (org-safe-looking-at-drawer-this-line-p))
+              (beginning-of-line)
+              (org-safe-drawer-on-this-line-p))
           (error nil)))))
 
 (defun org-safe-looking-at-document-header-properties-p nil
@@ -170,7 +176,14 @@ N is number of chars to consider."
                             'org-safe-looking-at-document-header-properties-p))))))
 
 (defun org-safe-dolines (beg end &optional func direction exit-condition)
-  ""
+  "Loop over lines from line belonging to BEG to line belonging to END in buffer.
+
+Perform FUNC at each line.
+
+Moves from bottom-to-top UP is non-nil or point < mark.  Moves
+from top-to-bottom if UP is nil and point > mark.
+
+Exits from loop is EXIT-CONDITION is satisfied."
   (cond ((< beg (point-min))
          (error "BEG is less-than point-min"))
         ((> end (point-max))
