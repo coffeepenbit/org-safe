@@ -166,7 +166,6 @@ N is number of chars to consider."
                            (point)
                            'org-safe-looking-at-document-header-properties-p))
 
-
 (defun org-safe-dolines (beg end &optional func exit-condition)
   "Loop over lines from line at belonging to BEG to END in buffer.
 
@@ -214,7 +213,10 @@ BEG and END are points."
   "Return non-nil if headline in region."
   (org-safe-dolines-some-p (mark)
                            (point)
-                           'org-safe-looking-at-headline-stars-p))
+                           (lambda nil
+                             (save-excursion
+                               (beginning-of-line)
+                               (org-safe-looking-at-headline-stars-p)))))
 
 (provide 'org-safe)
 ;;; org-safe.el ends here
