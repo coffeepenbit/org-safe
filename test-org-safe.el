@@ -526,7 +526,7 @@ okay
      (lambda nil
        (push-mark (point-min)) ; Point at: #+TITLE: ti|tle
        (goto-char (point-max))
-       (expect (org-safe-document-header-properties-in-region-p)))))
+       (expect (org-safe-document-header-properties-in-region-p) :to-be nil))))
   (it "returns nil when marker is inactive"
     (with-org-temp-buffer
      "title

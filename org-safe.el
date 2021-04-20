@@ -27,6 +27,7 @@
 
 ;;; Code:
 ;;;; Required packages
+(require 'cl-lib)
 (require 'org)
 
 ;;;; Customization
@@ -161,13 +162,10 @@ N is number of chars to consider."
 
 (defun org-safe-document-header-properties-in-region-p nil
   "Return non-nil if document header properties in region."
-  (when mark-active
-    (save-excursion
-      (let* ((looking-at-document-header-properties-p nil))
-        (org-safe-dolines (point)
-                          (mark)
-                          'org-safe-looking-at-document-header-properties-p
-                          'org-safe-looking-at-document-header-properties-p)))))
+  (org-safe-dolines-some-p (mark)
+                           (point)
+                           'org-safe-looking-at-document-header-properties-p))
+
 
 (defun org-safe-dolines (beg end &optional func exit-condition)
   "Loop over lines from line at belonging to BEG to END in buffer.
