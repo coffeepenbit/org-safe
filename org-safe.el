@@ -204,5 +204,19 @@ Exits from loop if EXIT-CONDITION is satisfied."
                 (throw 'loop-exit t)))
             (nreverse return-value)))))))
 
+(defun org-safe-dolines-some-p (beg end pred)
+  "Return non-nil if PRED is true on any line from BEG to END.
+
+BEG and END are points."
+  (when mark-active
+    (save-excursion
+      (cl-some 'identity (org-safe-dolines beg end pred)))))
+
+(defun org-safe-headline-in-region-p nil
+  "Return non-nil if headline in region."
+  (org-safe-dolines-some-p (mark)
+                           (point)
+                           'org-safe-looking-at-headline-stars-p))
+
 (provide 'org-safe)
 ;;; org-safe.el ends here

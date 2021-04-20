@@ -548,10 +548,39 @@ okay
   (xit "returns non-nil when document footer properties not in region"))
 
 (describe "org-safe-headline-in-region-p"
-  ;; (it "returns non-nil when headline fully in region" ;
-  ;;   (with-org-temp-buffer))
-  (xit "returns non-nil when headline partially in region")
-  (xit "returns non-nil when headline not in region"))
+  (it "returns non-nil when headline fully in region"
+    (with-org-temp-buffer
+     "* headline
+foobar
+"
+     (lambda nil
+       (push-mark (point))
+       (goto-char (point-max))
+       (expect (org-safe-headline-in-region-p)))))
+  (it "returns non-nil when headline partially in region"
+    (with-org-temp-buffer
+     "* headline
+foobar
+"
+     (lambda nil
+       (forward-char 2)
+       (push-mark (point))
+       (goto-char (point-max))
+       (expect (org-safe-headline-in-region-p)))))
+  (it "returns nil when headline not in region"
+    (with-org-temp-buffer
+     "
+"
+     (lambda nil
+       (push-mark (point))
+       (forward-char)
+       (expect (org-safe-headline-in-region-p) :to-be nil))))
+  (it "returns nil mark is inactive"
+    (with-org-temp-buffer
+     ""
+     (lambda nil
+       (expect mark-active :to-be nil)
+       (expect (org-safe-headline-in-region-p) :to-be nil)))))
 
 (xdescribe "org-safe-drawer-in-region-p"
   (xit "returns non-nil when drawer fully in region")
