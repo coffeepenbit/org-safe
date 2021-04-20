@@ -562,6 +562,12 @@ okay
   (it "does NOT error when beginning and ending line is the same"
     (with-temp-buffer
       (expect (org-safe-dolines 1 1 'ignore) :to-equal '(nil))))
+  (it "does NOT error when no func is provided"
+    (with-temp-buffer
+      (expect (org-safe-dolines 1 1) :to-equal '(nil))))
+  (it "does NOT error if exit-condition is provided"
+    (with-temp-buffer
+      (expect (org-safe-dolines 1 1 'ignore 'ignore) :to-equal '(nil))))
   (it "returns function value if no exit-condition provided"
     (with-temp-buffer
       (expect (org-safe-dolines 1 1 (lambda nil
@@ -577,12 +583,6 @@ okay
     (with-temp-buffer ; beginning less than point min
       (expect (org-safe-dolines 0 1 (lambda nil
                                       'foobar)) :to-throw 'error)))
-  (it "does NOT error when no func is provided"
-    (with-temp-buffer
-      (expect (org-safe-dolines 1 1) :to-equal '(nil))))
-  (it "does NOT error if exit-condition is provided"
-    (with-temp-buffer
-      (expect (org-safe-dolines 1 1 'ignore 'ignore) :to-equal '(nil))))
   (it "immediately returns value if exit-condition is met"
     (with-temp-buffer
       (insert "
@@ -595,6 +595,28 @@ okay
                                 (lambda nil
                                   (when (eq (line-number-at-pos)
                                             3)) :to-be 3)))))
+  (it "returns values in proper order (top-to-bottom)"
+    (with-temp-buffer
+      (insert "a
+b
+c
+d")
+      (expect (org-safe-dolines (point-min)
+                                (point-max)
+                                (lambda nil
+                                  (char-after)))
+              :to-equal (list ?a ?b ?c ?d))))
+  (it "returns values in proper order (bottom-to-top)"
+    (with-temp-buffer
+      (insert "a
+b
+c
+d") ; Point look at d
+      (expect (org-safe-dolines 7 ; Needs to be 7, not 8, to look at "d"
+                                1
+                                (lambda nil
+                                  (char-after)))
+              :to-equal (list ?d ?c ?b ?a))))
   (describe "runs ntimes"
     :var (foo)
     (before-each
@@ -620,29 +642,7 @@ okay
 
 ")
         (org-safe-dolines 4 1 'foo)
-        (expect 'foo :to-have-been-called-times 4)))
-    (it "returns values in proper order (top-to-bottom)"
-      (with-temp-buffer
-        (insert "a
-b
-c
-d")
-        (expect (org-safe-dolines (point-min)
-                                  (point-max)
-                                  (lambda nil
-                                    (char-after)))
-                :to-equal (list ?a ?b ?c ?d))))
-    (it "returns values in proper order (bottom-to-top)"
-      (with-temp-buffer
-        (insert "a
-b
-c
-d") ; Point look at d
-        (expect (org-safe-dolines 7 ; Needs to be 7, not 8, to look at "d"
-                                  1
-                                  (lambda nil
-                                    (char-after)))
-                :to-equal (list ?d ?c ?b ?a))))))
+        (expect 'foo :to-have-been-called-times 4)))))
 
 (provide 'test-org-safe)
 ;;; test-org-safe.el ends here
