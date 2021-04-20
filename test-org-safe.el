@@ -488,7 +488,7 @@ okay
 
 "
      (lambda nil
-       (set-mark (point-min))
+       (push-mark (point-min))
        (goto-char (point-max))
        (expect (org-safe-document-header-properties-in-region-p)))))
   (it "returns non-nil when document header properties fully in region (reversed)"
@@ -497,7 +497,7 @@ okay
 
 "
      (lambda nil
-       (set-mark (point-max))
+       (push-mark (point-max))
        (goto-char (point-min))
        (expect (org-safe-document-header-properties-in-region-p)))))
   (it "returns non-nil when document header properties partially in region"
@@ -506,7 +506,7 @@ okay
 
 "
      (lambda nil
-       (set-mark 11) ; Point at: #+TITLE: ti|tle
+       (push-mark 11) ; Point at: #+TITLE: ti|tle
        (goto-char (point-max))
        (expect (org-safe-document-header-properties-in-region-p)))))
   (it "returns non-nil when document header properties partially in region (reversed)"
@@ -515,7 +515,7 @@ okay
 
 "
      (lambda nil
-       (set-mark (point-max)) ; Point at: #+TITLE: ti|tle
+       (push-mark (point-max)) ; Point at: #+TITLE: ti|tle
        (goto-char 11)
        (expect (org-safe-document-header-properties-in-region-p)))))
   (it "returns nil when document header properties not in region"
@@ -524,7 +524,7 @@ okay
 
 "
      (lambda nil
-       (set-mark (point-min)) ; Point at: #+TITLE: ti|tle
+       (push-mark (point-min)) ; Point at: #+TITLE: ti|tle
        (goto-char (point-max))
        (expect (org-safe-document-header-properties-in-region-p)))))
   (it "returns nil when marker is inactive"
