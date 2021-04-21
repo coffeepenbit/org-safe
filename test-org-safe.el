@@ -157,45 +157,37 @@ FUNC is what is ran after creating the buffer."
     (with-org-temp-buffer
      "* headline"
      (lambda nil
-       (org-safe-mode)
        (expect (org-safe-looking-at-headline-stars-p) :to-be t)))
     (with-org-temp-buffer
      "** headline"
      (lambda nil
-       (org-safe-mode)
        (expect (org-safe-looking-at-headline-stars-p) :to-be t)))
     (with-org-temp-buffer
      "** headline"
      (lambda nil
-       (org-safe-mode)
        (goto-char 2)
        (expect (org-safe-looking-at-headline-stars-p) :to-be t)))
     (with-org-temp-buffer
      "* headline*"
      (lambda nil
-       (org-safe-mode)
        (expect (org-safe-looking-at-headline-stars-p) :to-be t)))
     (with-org-temp-buffer
      "*    headline"
      (lambda nil
-       (org-safe-mode)
        (expect (org-safe-looking-at-headline-stars-p) :to-be t)))
     (with-org-temp-buffer
      "
 * headline"
      (lambda nil
-       (org-safe-mode)
        (expect (org-safe-looking-at-headline-stars-p)) :to-be t)))
   (it "should be nil when looking at non-headlines"
     (with-org-temp-buffer
      "*headline"
      (lambda nil
-       (org-safe-mode)
        (expect (org-safe-looking-at-headline-stars-p) :to-be nil)))
     (with-org-temp-buffer
      "*headline*"
      (lambda nil
-       (org-safe-mode)
        (expect (org-safe-looking-at-headline-stars-p) :to-be nil)))))
 
 (describe "org-safe-looking-back-at-headline-stars-p"
@@ -203,28 +195,24 @@ FUNC is what is ran after creating the buffer."
     (with-org-temp-buffer
      "* headline"
      (lambda nil
-       (org-safe-mode)
        (goto-char 2) ; After first asterisk
        (expect (org-safe-looking-back-at-headline-stars-p)))))
   (it "should be t when looking back at two headline stars"
     (with-org-temp-buffer
      "** headline"
      (lambda nil
-       (org-safe-mode)
        (goto-char 3) ; After first asterisk
        (expect (org-safe-looking-back-at-headline-stars-p)))))
   (it "should be t when between two headline stars"
     (with-org-temp-buffer
      "** headline"
      (lambda nil
-       (org-safe-mode)
        (goto-char 3) ; After first asterisk
        (expect (org-safe-looking-back-at-headline-stars-p)))))
   (it "should be t when looking at stars without titles"
     ;; org-mode considers these titles still
     "* " ; Title
     (lambda nil
-      (org-safe-mode)
       (goto-char 2) ; After first asterisk
       (expect (org-safe-looking-back-at-headline-stars-p)))))
 
@@ -233,7 +221,6 @@ FUNC is what is ran after creating the buffer."
     (with-org-temp-buffer
      "*headline*"
      (lambda nil
-       (org-safe-mode)
        (goto-char 2) ; After first asterisk
        (expect (org-safe-looking-back-at-headline-stars-p) :to-be nil)))))
 
@@ -289,7 +276,7 @@ FUNC is what is ran after creating the buffer."
 :foo: bar
 :END:"
      (lambda nil
-       (org-safe-mode)
+
        (forward-line)
        (expect (looking-at (regexp-quote ":PROPERTIES:")))
        (expect (org-safe-looking-at-drawer-p)))))
@@ -300,7 +287,6 @@ FUNC is what is ran after creating the buffer."
 :foo: bar
 :END:"
      (lambda nil
-       (org-safe-mode)
        (forward-line 2)
        (expect (looking-at (regexp-quote ":foo:")))
        (expect (org-safe-looking-at-drawer-p)))))
@@ -311,7 +297,6 @@ FUNC is what is ran after creating the buffer."
 :foo: bar
 :END:"
      (lambda nil
-       (org-safe-mode)
        (forward-line 2)
        (forward-char 6)
        (expect (looking-at (regexp-quote "bar")))
@@ -323,7 +308,6 @@ FUNC is what is ran after creating the buffer."
 :foo: bar
 :END:"
      (lambda nil
-       (org-safe-mode)
        (end-of-line)
        (expect (org-safe-looking-at-drawer-p)))))
   (it "returns nil when drawer is NOT on next line"
@@ -331,7 +315,6 @@ FUNC is what is ran after creating the buffer."
      "* headline
 foo bar"
      (lambda nil
-       (org-safe-mode)
        (end-of-line)
        (expect (regexp-quote "\n"))
        (expect (org-safe-looking-at-drawer-p) :to-be nil))))
@@ -339,7 +322,6 @@ foo bar"
     (with-org-temp-buffer
      ":something:" ; org-mode considers this to be a drawer
      (lambda nil
-       (org-safe-mode)
        (expect (looking-at (regexp-quote ":something:")))
        (expect (org-safe-looking-at-drawer-p)))))
   (it "returns non-nil when looking at :END:"
@@ -349,7 +331,6 @@ foo bar"
 :foo: bar
 :END:"
      (lambda nil
-       (org-safe-mode)
        (forward-line 3)
        (expect (looking-at (regexp-quote ":END:")))
        (expect (org-safe-looking-at-drawer-p)))))
@@ -361,7 +342,6 @@ foo bar"
   foobar eggs and spam
 :END:"
      (lambda nil
-       (org-safe-mode)
        (forward-line)
        (expect (looking-at (regexp-quote ":LOGBOOK:")))
        (expect (org-safe-looking-at-drawer-p)))))
@@ -369,12 +349,10 @@ foo bar"
     (with-org-temp-buffer
      ""
      (lambda nil
-       (org-safe-mode)
        (expect (org-safe-looking-at-drawer-p) :to-be nil)))
     (with-org-temp-buffer
      "* headline"
      (lambda nil
-       (org-safe-mode)
        (expect (org-safe-looking-at-drawer-p) :to-be nil)))))
 
 (describe "org-safe-drawer-on-this-line-p"
