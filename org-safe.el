@@ -218,5 +218,14 @@ BEG and END are points."
                                (beginning-of-line)
                                (org-safe-looking-at-headline-stars-p)))))
 
+(defun org-safe-drawer-in-region-p nil
+  "Return non-nil if drawer in region."
+  (org-safe-dolines-some-p (mark)
+                           (point)
+                           (lambda nil
+                             (save-excursion
+                               (beginning-of-line)
+                               (org-safe-looking-at-drawer-p)))))
+
 (provide 'org-safe)
 ;;; org-safe.el ends here

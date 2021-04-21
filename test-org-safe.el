@@ -582,10 +582,35 @@ foobar
        (expect mark-active :to-be nil)
        (expect (org-safe-headline-in-region-p) :to-be nil)))))
 
-(xdescribe "org-safe-drawer-in-region-p"
-  (xit "returns non-nil when drawer fully in region")
-  (xit "returns non-nil when drawer partially in region")
-  (xit "returns non-nil when drawer not in region"))
+(describe "org-safe-drawer-in-region-p"
+  (it "returns non-nil when drawer fully in region"
+    (with-org-temp-buffer
+     "* headline
+:PROPERTIES:
+:property: nil
+:END:"
+     (lambda nil
+       (push-mark (point))
+       (goto-char (point-max))
+       (expect (org-safe-drawer-in-region-p)))))
+  (it "returns non-nil when drawer partially in region"
+    (with-org-temp-buffer
+     "* headline
+:PROPERTIES:
+:property: nil
+:END:"
+     (lambda nil
+       (forward-line 2)
+       (forward-char 5) ; Point at :prop|erty: nil
+       (expect (looking-at (regexp-quote "erty: nil")))
+       (push-mark (point))
+       (end-of-line)
+       (expect (org-safe-drawer-in-region-p)))))
+  (it "returns nil when drawer not in region"
+    (with-org-temp-buffer
+     ""
+     (lambda nil
+       (expect (org-safe-drawer-in-region-p) :to-be nil)))))
 
 (describe "org-safe-dolines"
   (it "does NOT error when beginning and ending line is the same"
