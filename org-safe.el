@@ -120,13 +120,13 @@ N is number of chars to consider."
 (defun org-safe-looking-at-drawer-p nil
   "Return non-nil if point is looking at drawer."
   (or (org-safe-drawer-on-this-line-p)
-      (save-excursion
-        (forward-line)
-        (org-safe-drawer-on-this-line-p))))
+      (when (not (eq (point) (point-max)))
+        (save-excursion
+          (forward-char)
+          (org-safe-drawer-on-this-line-p)))))
 
 (defun org-safe-drawer-on-this-line-p nil
   "Return non-nil if point is looking at drawer on current line."
-  (beginning-of-line)
   ;; NOTE: `looking-at' is faster than `face-at-point'
   (save-excursion
     (beginning-of-line)

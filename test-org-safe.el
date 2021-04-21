@@ -377,6 +377,18 @@ foo bar"
        (org-safe-mode)
        (expect (org-safe-looking-at-drawer-p) :to-be nil)))))
 
+(describe "org-safe-drawer-on-this-line-p"
+  (it "does not change users point"
+    (with-org-temp-buffer
+     "* headline
+:PROPERTIES:
+:foo: bar
+:END:"
+     (lambda nil
+       (end-of-line)
+       (org-safe-drawer-on-this-line-p)
+       (expect (point) :to-be 11)))))
+
 (describe "org-safe-looking-back-at-drawer-p"
   (it "returns non-nil when looking back at :PROPERTIES:"
     (with-org-temp-buffer
