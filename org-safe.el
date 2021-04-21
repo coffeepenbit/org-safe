@@ -117,6 +117,12 @@ N is number of chars to consider."
 	       (0+ (any "\t ")) ":END:" (0+ (any "\t ")) eol))
   "Matches an entire LOGBOOK drawer.")
 
+(defconst org-comment-regexp
+  ;; NOTE: This constant is defined in `org' 9.4. Defining it here
+  ;; to remove dependency on `org' 9.4
+  (rx (seq bol (zero-or-more (any "\t ")) "#" (or " " eol)))
+  "Regular expression for comment lines.")
+
 (defun org-safe-looking-at-drawer-p nil
   "Return non-nil if point is looking at drawer."
   (or (org-safe-drawer-on-this-line-p)
@@ -226,6 +232,20 @@ BEG and END are points."
                              (save-excursion
                                (beginning-of-line)
                                (org-safe-looking-at-drawer-p)))))
+
+(defun org-safe-looking-at-document-footer-properties-p nil
+  "Return non-nil if looking at document footer properties."
+  (looking-at (concat
+               "\(
+\)?"
+               "^[ ]*"
+               (regexp-quote "# Local variables:"))))
+
+(defun org-safe-looking-at-document-footer-properties-on-this-line-p nil
+  ""
+  (looking-at (concat
+               "^[ ]*"
+               (regexp-quote "# Local variables:"))))
 
 (provide 'org-safe)
 ;;; org-safe.el ends here

@@ -548,11 +548,34 @@ okay
        (deactivate-mark)
        (expect (org-safe-document-header-properties-in-region-p) :to-be nil)))))
 
-(xdescribe "org-safe-looking-at-document-footer-properties-p"
-  (xit "returns non-nil when looking at document footer properties")
+(describe "org-safe-looking-at-document-footer-properties-p"
+  (it "returns non-nil when looking at document footer properties"
+    (with-org-temp-buffer
+     "# Local Variables:
+# mode: org
+# org-complete-tags-always-offer-all-agenda-tags: nil
+# End:"
+     (lambda nil
+       (expect (org-safe-looking-at-document-footer-properties-p)))))
   (xit "returns non-nil when looking at document footer properties anywhere on line")
-  (xit "returns non-nil when looking at document footer properties on next line")
-  (xit "returns nil when NOT looking at document footer properties"))
+  (it "returns non-nil when looking at document footer properties on next line"
+    (with-org-temp-buffer
+     "foobar
+# Local Variables:
+# mode: org
+# org-complete-tags-always-offer-all-agenda-tags: nil
+# End:"
+     (lambda nil
+       (expect (org-safe-looking-at-document-footer-properties-p)))))
+  (it "returns nil when NOT looking at document footer properties"
+    (with-org-temp-buffer
+     ""
+     (lambda nil
+       (expect (org-safe-looking-at-document-footer-properties-p) :to-be nil)))
+    (with-org-temp-buffer
+     "# some comment"
+     (lambda nil
+       (expect (org-safe-looking-at-document-footer-properties-p) :to-be nil)))))
 
 (xdescribe "org-safe-document-footer-properties-in-region-p"
   (xit "returns non-nil when document footer properties fully in region")
