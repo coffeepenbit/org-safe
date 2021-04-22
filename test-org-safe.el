@@ -535,7 +535,16 @@ okay
 # End:"
      (lambda nil
        (expect (org-safe-looking-at-document-footer-properties-p)))))
-  (xit "returns non-nil when looking at document footer properties anywhere on line")
+  (it "returns non-nil when looking at document footer properties anywhere on line"
+    (with-org-temp-buffer
+     "# Local Variables:
+# mode: org
+# org-complete-tags-always-offer-all-agenda-tags: nil
+# End:"
+     (lambda nil
+       (forward-char 4)
+       (expect (looking-at "cal Variables:"))
+       (expect (org-safe-looking-at-document-footer-properties-p)))))
   (it "returns non-nil when looking at document footer properties on next line"
     (with-org-temp-buffer
      "foobar
@@ -544,6 +553,7 @@ okay
 # org-complete-tags-always-offer-all-agenda-tags: nil
 # End:"
      (lambda nil
+       (end-of-line)
        (expect (org-safe-looking-at-document-footer-properties-p)))))
   (it "returns nil when NOT looking at document footer properties"
     (with-org-temp-buffer

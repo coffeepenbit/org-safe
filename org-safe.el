@@ -235,11 +235,11 @@ BEG and END are points."
 
 (defun org-safe-looking-at-document-footer-properties-p nil
   "Return non-nil if looking at document footer properties."
-  (looking-at (concat
-               "\(
-\)?"
-               "^[ ]*"
-               (regexp-quote "# Local variables:"))))
+  (or (org-safe-looking-at-document-footer-properties-on-this-line-p)
+      (when (not (eq (point) (point-max)))
+        (save-excursion
+          (forward-char)
+          (org-safe-looking-at-document-footer-properties-on-this-line-p)))))
 
 (defun org-safe-looking-at-document-footer-properties-on-this-line-p nil
   "Return non-nil if looking at document footer properties on current line."
