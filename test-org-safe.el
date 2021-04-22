@@ -555,6 +555,33 @@ okay
      (lambda nil
        (expect (org-safe-looking-at-document-footer-properties-p) :to-be nil)))))
 
+(describe "org-safe-looking-at-document-footer-properties-on-this-line-p"
+  (it "returns nil when document footer properties NOT on current line"
+    (with-org-temp-buffer
+     ""
+     (lambda nil
+       (expect
+        (org-safe-looking-at-document-footer-properties-on-this-line-p) :to-be nil))))
+  (describe "when footer properties on current line"
+    (it "returns non-nil when looking at footer property"
+      (with-org-temp-buffer
+       "# Local Variables:
+# mode: org
+# org-complete-tags-always-offer-all-agenda-tags: nil
+# End:"
+       (lambda nil
+         (expect
+          (org-safe-looking-at-document-footer-properties-on-this-line-p)))))
+    (it "returns non-nil when looking at footer property not from beginnig of line"
+      (with-org-temp-buffer
+       "# Local Variables:
+# mode: org
+# org-complete-tags-always-offer-all-agenda-tags: nil
+# End:"
+       (lambda nil
+         (forward-char 5)
+         (expect (org-safe-looking-at-document-footer-properties-on-this-line-p)))))))
+
 (xdescribe "org-safe-document-footer-properties-in-region-p"
   (xit "returns non-nil when document footer properties fully in region")
   (xit "returns non-nil when document footer properties partially in region")

@@ -242,10 +242,12 @@ BEG and END are points."
                (regexp-quote "# Local variables:"))))
 
 (defun org-safe-looking-at-document-footer-properties-on-this-line-p nil
-  ""
-  (looking-at (concat
-               "^[ ]*"
-               (regexp-quote "# Local variables:"))))
+  "Return non-nil if looking at document footer properties on current line."
+  (save-excursion
+    (beginning-of-line)
+    (looking-at (concat
+                 "^[ ]*"
+                 (regexp-quote "# Local variables:")))))
 
 (provide 'org-safe)
 ;;; org-safe.el ends here
