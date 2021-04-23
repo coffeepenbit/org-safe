@@ -658,8 +658,11 @@ foobar
        (expect (org-safe-drawer-in-region-p)))))
   (it "returns nil when drawer not in region"
     (with-org-temp-buffer
-     ""
+     "
+"
      (lambda nil
+       (push-mark (point))
+       (forward-char)
        (expect (org-safe-drawer-in-region-p) :to-be nil)))))
 
 (describe "org-safe-dolines"
