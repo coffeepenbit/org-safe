@@ -592,10 +592,37 @@ okay
          (forward-char 5)
          (expect (org-safe-looking-at-document-footer-properties-on-this-line-p)))))))
 
-(xdescribe "org-safe-document-footer-properties-in-region-p"
-  (xit "returns non-nil when document footer properties fully in region")
-  (xit "returns non-nil when document footer properties partially in region")
-  (xit "returns non-nil when document footer properties not in region"))
+(describe "org-safe-document-footer-properties-in-region-p"
+  (it "returns non-nil when document footer properties fully in region"
+    (with-org-temp-buffer
+     "# Local Variables:
+# mode: org
+# org-complete-tags-always-offer-all-agenda-tags: nil
+# End:"
+     (lambda nil
+       (push-mark (point-min))
+       (goto-char (point-max))
+       (expect (org-safe-document-footer-properties-in-region-p) :to-be nil))))
+  (it "returns non-nil when document footer properties partially in region"
+    (with-org-temp-buffer
+     "# Local Variables:
+# mode: org
+# org-complete-tags-always-offer-all-agenda-tags: nil
+# End:"
+     (lambda nil
+       (forward-char 5)
+       (expect (looking-at (regexp-quote "al Variables:")))
+       (push-mark (point-min))
+       (goto-char (point-max))
+       (expect (org-safe-document-footer-properties-in-region-p) :to-be nil))))
+  (it "returns non-nil when document footer properties not in region"
+    (with-org-temp-buffer
+     "
+"
+     (lambda nil
+       (push-mark (point))
+       (forward-char)
+       (expect (org-safe-document-footer-properties-in-region-p) :to-be nil)))))
 
 (describe "org-safe-headline-in-region-p"
   (it "returns non-nil when headline fully in region"

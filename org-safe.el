@@ -1,3 +1,4 @@
+
 ;;; org-safe.el --- For keeping org-mode content safe from butter-fingers  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2021  coffeepenbit
@@ -224,6 +225,15 @@ BEG and END are points."
                                (beginning-of-line)
                                (org-safe-looking-at-headline-stars-p)))))
 
+(defun org-safe-document-footer-properties-in-region-p nil
+  "Return non-nil if headline in region."
+  (org-safe-dolines-some-p (mark)
+                           (point)
+                           (lambda nil
+                             (save-excursion
+                               (beginning-of-line)
+                               (org-safe-looking-at-document-header-properties-p)))))
+
 (defun org-safe-drawer-in-region-p nil
   "Return non-nil if drawer in region."
   (org-safe-dolines-some-p (mark)
@@ -232,6 +242,7 @@ BEG and END are points."
                              (save-excursion
                                (beginning-of-line)
                                (org-safe-looking-at-drawer-p)))))
+
 
 (defun org-safe-looking-at-document-footer-properties-p nil
   "Return non-nil if looking at document footer properties."
