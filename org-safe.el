@@ -92,9 +92,8 @@ N is number of chars to consider."
 
 (defun org-safe-looking-back-at-headline-stars-p nil
   "Return non-nil if point is looking back at headline stars."
-  (and (looking-back "^\\*+" nil)
-       ;; A space must follow the last headline star
-       (looking-at "\\*? ")))
+  (and (eq (char-before) ?*)
+       (org-at-heading-p)))
 
 (defun org-safe-looking-at-headline-stars-p nil
   "Return non-nil if point is within or immediately after headline stars."

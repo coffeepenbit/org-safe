@@ -393,15 +393,14 @@ foobar"
     "* " ; Title
     (lambda nil
       (goto-char 2) ; After first asterisk
-      (expect (org-safe-looking-back-at-headline-stars-p)))))
-
-(describe "when NOT looking back at headline stars"
-  (it "should be nil when asterisk belongs to bold phrase"
-    (test-org-safe-with-org-temp-buffer
-     "*headline*"
-     (lambda nil
-       (goto-char 2) ; After first asterisk
-       (expect (org-safe-looking-back-at-headline-stars-p) :to-be nil)))))
+      (expect (org-safe-looking-back-at-headline-stars-p))))
+  (describe "when NOT looking back at headline stars"
+    (it "should be nil when asterisk belongs to bold phrase"
+      (test-org-safe-with-org-temp-buffer
+       "*headline*"
+       (lambda nil
+         (goto-char 2) ; After first asterisk
+         (expect (org-safe-looking-back-at-headline-stars-p) :to-be nil))))))
 
 (describe "org-safe-prohibited-p"
   (it "should be t when org-safe-prohibited-var t"
