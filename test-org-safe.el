@@ -189,6 +189,30 @@
          (forward-line 2)
          (forward-char 5)
          (expect (looking-at (regexp-quote "e taken")))
+         (expect (org-safe-looking-at-logbook-note-p)))))
+    (it "returns non-nil when looking at deadline reschedule"
+      (test-org-safe-with-org-temp-buffer
+       "* headline
+:LOGBOOK:
+- New deadline from \"[2021-04-24 Sat]\" on [2021-04-24 Sat 10:15] \\
+  foobar eggs and spam
+:END:"
+       (lambda nil
+         (forward-line 2)
+         (forward-char 7)
+         (expect (looking-at (regexp-quote "eadline from")))
+         (expect (org-safe-looking-at-logbook-note-p)))))
+    (it "returns non-nil when looking at schedule reschedule"
+      (test-org-safe-with-org-temp-buffer
+       "* headline
+:LOGBOOK:
+- Rescheduled from \"[2021-04-24 Sat]\" to \"[2021-04-25 Sun]\" on [2021-04-24 Sat 10:23] \\
+    foobar eggs and spam
+:END:"
+       (lambda nil
+         (forward-line 2)
+         (forward-char 7)
+         (expect (looking-at (regexp-quote "eadline from")))
          (expect (org-safe-looking-at-logbook-note-p))))))
   (describe "NOT looking at logbook note"
     (it "returns nil when looking at empty buffer"
