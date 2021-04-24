@@ -153,11 +153,16 @@ N is number of chars to consider."
        (point-min)
        (lambda nil
          (beginning-of-line)
+         ;; FIXME this is not a robust solution to checking if looking at
+         ;; a logbook note
+         ;;
+         ;; Look at variable `org-log-note-headings'
          (when (looking-at (regexp-quote ":END:"))
            (throw 'looking-at-logbook-note-p nil))
-         (when (looking-at "[ -]+Note")
+         (when (or (looking-at "[ -]+Note")
+                   (looking-at "[ -]+New deadline")
+                   (looking-at "[ -]+Rescheduled"))
            (throw 'looking-at-logbook-note-p t)))))))
-
 
 (defun org-safe-looking-back-at-drawer-p nil
   "Return non-nil if point is looking back at drawer."

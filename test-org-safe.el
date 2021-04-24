@@ -212,7 +212,7 @@
        (lambda nil
          (forward-line 2)
          (forward-char 7)
-         (expect (looking-at (regexp-quote "eadline from")))
+         (expect (looking-at (regexp-quote "eduled from")))
          (expect (org-safe-looking-at-logbook-note-p))))))
   (describe "NOT looking at logbook note"
     (it "returns nil when looking at empty buffer"
