@@ -241,6 +241,18 @@
        (lambda nil
          (forward-line 4)
          (expect (looking-at (regexp-quote ":END:")))
+         (expect (org-safe-looking-at-logbook-note-p) :to-be nil))))
+    (it "returns nil when looking before first headline"
+      (test-org-safe-with-org-temp-buffer
+       "foobar
+
+* headline
+:LOGBOOK:
+- Note taken on [2021-04-14 Wed 07:53] \\
+  foobar eggs and spam
+:END:"
+       (lambda nil
+         (expect (looking-at (regexp-quote "foobar")))
          (expect (org-safe-looking-at-logbook-note-p) :to-be nil))))))
 
 (describe "org-safe-delete-backward-char"
