@@ -1,4 +1,3 @@
-
 ;;; org-safe.el --- For keeping org-mode content safe from butter-fingers  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2021  coffeepenbit
@@ -106,7 +105,9 @@ N is number of chars to consider."
 (defun org-safe-delete-char nil
   "Execute org-delete-char if non-protected content."
   (interactive)
-  (if (not (org-safe-looking-at-headline-stars-p))
+  (if (not (cl-some 'identity
+                    `(,(org-safe-looking-at-headline-stars-p)
+                      ,(org-safe-looking-at-drawer-p))))
       (org-delete-char 1)
     (message "Can't delete headline stars")))
 
@@ -140,7 +141,23 @@ N is number of chars to consider."
     (or (looking-at org-drawer-regexp)
         (looking-at org-property-drawer-re)
         (looking-at org-property-re)
-        (looking-at org-safe-logbook-drawer-re))))
+        (looking-at org-safe-logbook-drawer-re)
+        (org-safe-looking-at-logbook-note-p))))
+
+(defun org-safe-looking-at-logbook-note-p nil
+  "Return non-nil if point is in logbook note."
+  (save-excursion
+    (catch 'looking-at-logbook-note-p
+      (org-safe-dolines-some-p
+       (point)
+       (point-min)
+       (lambda nil
+         (beginning-of-line)
+         (when (looking-at (regexp-quote ":END:"))
+           (throw 'looking-at-logbook-note-p nil))
+         (when (looking-at "[ -]+Note")
+           (throw 'looking-at-logbook-note-p t)))))))
+
 
 (defun org-safe-looking-back-at-drawer-p nil
   "Return non-nil if point is looking back at drawer."
@@ -169,9 +186,10 @@ N is number of chars to consider."
 
 (defun org-safe-document-header-properties-in-region-p nil
   "Return non-nil if document header properties in region."
-  (org-safe-dolines-some-p (mark)
-                           (point)
-                           'org-safe-looking-at-document-header-properties-p))
+  (when mark-active
+    (org-safe-dolines-some-p (mark)
+                             (point)
+                             'org-safe-looking-at-document-header-properties-p)))
 
 (defun org-safe-dolines (beg end &optional func exit-condition)
   "Loop over lines from line at belonging to BEG to END in buffer.
@@ -212,37 +230,38 @@ Exits from loop if EXIT-CONDITION is satisfied."
   "Return non-nil if PRED is true on any line from BEG to END.
 
 BEG and END are points."
-  (when mark-active
-    (save-excursion
-      (cl-some 'identity (org-safe-dolines beg end pred)))))
+  (save-excursion
+    (cl-some 'identity (org-safe-dolines beg end pred))))
 
 (defun org-safe-headline-in-region-p nil
   "Return non-nil if headline in region."
-  (org-safe-dolines-some-p (mark)
-                           (point)
-                           (lambda nil
-                             (save-excursion
-                               (beginning-of-line)
-                               (org-safe-looking-at-headline-stars-p)))))
+  (when mark-active
+    (org-safe-dolines-some-p (mark)
+                             (point)
+                             (lambda nil
+                               (save-excursion
+                                 (beginning-of-line)
+                                 (org-safe-looking-at-headline-stars-p))))))
 
 (defun org-safe-document-footer-properties-in-region-p nil
   "Return non-nil if headline in region."
-  (org-safe-dolines-some-p (mark)
-                           (point)
-                           (lambda nil
-                             (save-excursion
-                               (beginning-of-line)
-                               (org-safe-looking-at-document-header-properties-p)))))
+  (when mark-active
+    (org-safe-dolines-some-p (mark)
+                             (point)
+                             (lambda nil
+                               (save-excursion
+                                 (beginning-of-line)
+                                 (org-safe-looking-at-document-header-properties-p))))))
 
 (defun org-safe-drawer-in-region-p nil
   "Return non-nil if drawer in region."
-  (org-safe-dolines-some-p (mark)
-                           (point)
-                           (lambda nil
-                             (save-excursion
-                               (beginning-of-line)
-                               (org-safe-looking-at-drawer-p)))))
-
+  (when mark-active
+    (org-safe-dolines-some-p (mark)
+                             (point)
+                             (lambda nil
+                               (save-excursion
+                                 (beginning-of-line)
+                                 (org-safe-looking-at-drawer-p))))))
 
 (defun org-safe-looking-at-document-footer-properties-p nil
   "Return non-nil if looking at document footer properties."
