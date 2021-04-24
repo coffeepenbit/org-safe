@@ -165,57 +165,58 @@
        (expect (looking-at (regexp-quote ":END:")))
        (org-safe-delete-char)
        (expect (looking-at (regexp-quote ":END:")))))))
-
 (describe "org-safe-looking-at-logbook-note-p"
-  (it "returns non-nil when looking-at logbook note"
-    (test-org-safe-with-org-temp-buffer
-     "* headline
+  (describe "looking at logbook note"
+    (it "returns non-nil when looking-at logbook note"
+      (test-org-safe-with-org-temp-buffer
+       "* headline
 :LOGBOOK:
 - Note taken on [2021-04-14 Wed 07:53] \\
   foobar eggs and spam
 :END:"
-     (lambda nil
-       (forward-line 2)
-       (expect (looking-at (regexp-quote "- Note taken")))
-       (expect (org-safe-looking-at-logbook-note-p)))))
-  (it "returns non-nil when in logbook note"
-    (test-org-safe-with-org-temp-buffer
-     "* headline
+       (lambda nil
+         (forward-line 2)
+         (expect (looking-at (regexp-quote "- Note taken")))
+         (expect (org-safe-looking-at-logbook-note-p)))))
+    (it "returns non-nil when in logbook note"
+      (test-org-safe-with-org-temp-buffer
+       "* headline
 :LOGBOOK:
 - Note taken on [2021-04-14 Wed 07:53] \\
   foobar eggs and spam
 :END:"
-     (lambda nil
-       (forward-line 2)
-       (expect (looking-at (regexp-quote "- Note taken")))
-       (expect (org-safe-looking-at-logbook-note-p)))))
-  (it "returns nil when NOT in logbook note"
-    (test-org-safe-with-org-temp-buffer
-     ""
-     (lambda nil
-       (expect (org-safe-looking-at-logbook-note-p) :to-be nil))))
-  (it "returns nil when looking at :LOGBOOK:"
-    (test-org-safe-with-org-temp-buffer
-     "* headline
+       (lambda nil
+         (forward-line 2)
+         (expect (looking-at (regexp-quote "- Note taken")))
+         (expect (org-safe-looking-at-logbook-note-p))))))
+  (describe "NOT looking at logbook note"
+    (it "returns nil when looking at empty buffer"
+      (test-org-safe-with-org-temp-buffer
+       ""
+       (lambda nil
+         (expect (org-safe-looking-at-logbook-note-p) :to-be nil))))
+    (it "returns nil when looking at :LOGBOOK:"
+      (test-org-safe-with-org-temp-buffer
+       "* headline
 :LOGBOOK:
 - Note taken on [2021-04-14 Wed 07:53] \\
   foobar eggs and spam
 :END:"
-     (lambda nil
-       (forward-line)
-       (expect (looking-at (regexp-quote ":LOGBOOK:")))
-       (expect (org-safe-looking-at-logbook-note-p) :to-be nil))))
-  (it "returns nil when looking at :END:"
-    (test-org-safe-with-org-temp-buffer
-     "* headline
+       (lambda nil
+         (forward-line)
+         (expect (looking-at (regexp-quote ":LOGBOOK:")))
+         (expect (org-safe-looking-at-logbook-note-p) :to-be nil))))
+    (it "returns nil when looking at :END:"
+      (test-org-safe-with-org-temp-buffer
+       "* headline
 :LOGBOOK:
 - Note taken on [2021-04-14 Wed 07:53] \\
   foobar eggs and spam
 :END:"
-     (lambda nil
-       (forward-line 4)
-       (expect (looking-at (regexp-quote ":END:")))
-       (expect (org-safe-looking-at-logbook-note-p) :to-be nil)))))
+       (lambda nil
+         (forward-line 4)
+         (expect (looking-at (regexp-quote ":END:")))
+         (expect (org-safe-looking-at-logbook-note-p) :to-be nil))))))
 
 (describe "org-safe-delete-backward-char"
   (before-each (setq inhibit-message t))
