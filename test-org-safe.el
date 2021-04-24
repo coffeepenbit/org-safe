@@ -187,7 +187,8 @@
 :END:"
        (lambda nil
          (forward-line 2)
-         (expect (looking-at (regexp-quote "- Note taken")))
+         (forward-char 5)
+         (expect (looking-at (regexp-quote "e taken")))
          (expect (org-safe-looking-at-logbook-note-p))))))
   (describe "NOT looking at logbook note"
     (it "returns nil when looking at empty buffer"
