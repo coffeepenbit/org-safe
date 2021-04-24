@@ -146,7 +146,9 @@ N is number of chars to consider."
 
 (defun org-safe-looking-at-logbook-note-p nil
   "Return non-nil if point is in logbook note."
-  (unless (org-before-first-heading-p)
+  (when (and (not (org-before-first-heading-p))
+             (member (car (org-element-at-point))
+                     '(paragraph list plain-list)))
     (save-excursion
       (catch 'looking-at-logbook-note-p
         (let ((beg (point))
@@ -162,12 +164,27 @@ N is number of chars to consider."
              ;; a logbook note
              ;;
              ;; Look at variable `org-log-note-headings'
-             (when (looking-at (regexp-quote ":END:"))
-               (throw 'looking-at-logbook-note-p nil))
-             (when (or (looking-at "[ -]+Note")
-                       (looking-at "[ -]+New deadline")
-                       (looking-at "[ -]+Rescheduled"))
-               (throw 'looking-at-logbook-note-p t)))))))))
+             (when (looking-at org-safe-logbook-drawer-re)
+               (throw 'looking-at-logbook-note-p t))
+             (unless (member (car (org-element-at-point))
+                             '(paragraph list plain-list))
+               (throw 'looking-at-logbook-note-p nil))))
+          ;; (org-safe-dolines-some-p
+          ;;  beg
+          ;;  end
+          ;;  (lambda nil
+          ;;    (beginning-of-line)
+          ;;    ;; FIXME this is not a robust solution to checking if looking at
+          ;;    ;; a logbook note
+          ;;    ;;
+          ;;    ;; Look at variable `org-log-note-headings'
+          ;;    (when (looking-at (regexp-quote ":END:"))
+          ;;      (throw 'looking-at-logbook-note-p nil))
+          ;;    (when (or (looking-at "[ -]+Note")
+          ;;              (looking-at "[ -]+New deadline")
+          ;;              (looking-at "[ -]+Rescheduled"))
+          ;;      (throw 'looking-at-logbook-note-p t))))
+          )))))
 
 (defun org-safe-looking-back-at-drawer-p nil
   "Return non-nil if point is looking back at drawer."
