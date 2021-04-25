@@ -33,138 +33,141 @@
 
 (describe "org-safe-delete-char"
   (before-each (setq inhibit-message t))
-  (it "deletes title chars in headline"
-    (test-org-safe-with-org-temp-buffer
-     "* headline"
-     (lambda nil
-       (org-safe-mode)
-       (goto-char 5)
-       (org-safe-delete-char)
-       (expect (buffer-string) :to-equal "* hedline"))))
-  (it "prohibits deleting headline asterisks"
-    (test-org-safe-with-org-temp-buffer
-     "* headline"
-     (lambda nil
-       (org-safe-mode)
-       (org-safe-delete-char)
-       (expect (buffer-string) :to-equal "* headline")))
-    (test-org-safe-with-org-temp-buffer
-     "** headline" ; Point after first asterisk
-     (lambda nil
-       (org-safe-mode)
-       (forward-char 1)
-       (org-safe-delete-char)
-       (expect (buffer-string) :to-equal "** headline"))))
-  (it "prohibits deleting linebreak in front of headline asterisks"
-    (test-org-safe-with-org-temp-buffer
-     ;; Point at end of first line
-     "this is some test
-** headline on next line"
-     (lambda nil
-       (org-safe-mode)
-       (end-of-line)
-       (org-safe-delete-char)
-       (expect (buffer-string) :to-equal "this is some test
-** headline on next line"))))
-  (it "deletes non-headline asterisks"
-    (test-org-safe-with-org-temp-buffer
-     "*this is not a headline*"
-     (lambda nil
-       (org-safe-mode) ; After first asterisk
-       (org-safe-delete-char)
-       (expect (buffer-string) :to-equal "this is not a headline*")))
-    (test-org-safe-with-org-temp-buffer
-     "*this is not a headline*"
-     (lambda nil
-       (org-safe-mode)
-       (goto-char (- (point-max) 1)) ; After last asterisk
-       (org-safe-delete-char)
-       (expect (buffer-string) :to-equal "*this is not a headline")))
-    (test-org-safe-with-org-temp-buffer
-     "asterisk*"
-     (lambda nil
-       (org-safe-mode)
-       (goto-char (- (point-max) 1)) ; After first asterisk
-       (org-safe-delete-char)
-       (expect (buffer-string) :to-equal "asterisk"))))
-  (it "does NOT delete property drawer characters"
-    (test-org-safe-with-org-temp-buffer
-     "* headline
-:PROPERTIES:
-:property: nil
-:END:"
-     (lambda nil
-       (forward-line)
-       (expect (looking-at (regexp-quote ":PROPERTIES:")))
-       (org-safe-delete-char)
-       (expect (looking-at (regexp-quote ":PROPERTIES:")))))
-    (test-org-safe-with-org-temp-buffer
-     "* headline
-:PROPERTIES:
-:property: nil
-:END:"
-     (lambda nil
-       (forward-line 2)
-       (expect (looking-at (regexp-quote ":property: nil")))
-       (org-safe-delete-char)
-       (expect (looking-at (regexp-quote ":property: nil")))))
-    (test-org-safe-with-org-temp-buffer
-     "* headline
-:PROPERTIES:
-:property: nil
-:END:"
-     (lambda nil
-       (forward-line 2)
-       (forward-char 5)
-       (expect (looking-at (regexp-quote "erty: nil")))
-       (org-safe-delete-char)
-       (expect (looking-at (regexp-quote "erty: nil")))))
-    (test-org-safe-with-org-temp-buffer
-     "* headline
-:PROPERTIES:
-:property: nil
-:END:"
-     (lambda nil
-       (forward-line 3)
-       (expect (looking-at (regexp-quote ":END:")))
-       (org-safe-delete-char)
-       (expect (looking-at (regexp-quote ":END:"))))))
-  (it "does NOT delete logbook drawer"
-    (test-org-safe-with-org-temp-buffer
-     "* headline
-:LOGBOOK:
-- Note taken on [2021-04-14 Wed 07:53] \\
-  foobar eggs and spam
-:END:"
-     (lambda nil
-       (forward-line)
-       (expect (looking-at (regexp-quote ":LOGBOOK:")))
-       (org-safe-delete-char)
-       (expect (looking-at (regexp-quote ":LOGBOOK:")))))
-    (test-org-safe-with-org-temp-buffer
-     "* headline
-:LOGBOOK:
-- Note taken on [2021-04-14 Wed 07:53] \\
-  foobar eggs and spam
-:END:"
-     (lambda nil
-       (forward-line 2)
-       (forward-char 5)
-       (let ((nchars (test-org-safe-nchars)))
-         (expect (looking-at (regexp-quote "e taken")))
+  (describe "does not prohibit"
+    (it "deletes title chars in headline"
+      (test-org-safe-with-org-temp-buffer
+       "* headline"
+       (lambda nil
+         (org-safe-mode)
+         (goto-char 5)
          (org-safe-delete-char)
-         (expect (test-org-safe-nchars) :to-be nchars))))
-    (test-org-safe-with-org-temp-buffer
-     "* headline
+         (expect (buffer-string) :to-equal "* hedline"))))
+    (it "deletes non-headline asterisks"
+      (test-org-safe-with-org-temp-buffer
+       "*this is not a headline*"
+       (lambda nil
+         (org-safe-mode) ; After first asterisk
+         (org-safe-delete-char)
+         (expect (buffer-string) :to-equal "this is not a headline*")))
+      (test-org-safe-with-org-temp-buffer
+       "*this is not a headline*"
+       (lambda nil
+         (org-safe-mode)
+         (goto-char (- (point-max) 1)) ; After last asterisk
+         (org-safe-delete-char)
+         (expect (buffer-string) :to-equal "*this is not a headline")))
+      (test-org-safe-with-org-temp-buffer
+       "asterisk*"
+       (lambda nil
+         (org-safe-mode)
+         (goto-char (- (point-max) 1)) ; After first asterisk
+         (org-safe-delete-char)
+         (expect (buffer-string) :to-equal "asterisk")))))
+  (describe "prohibits"
+    (it "prohibits deleting headline asterisks"
+      (test-org-safe-with-org-temp-buffer
+       "* headline"
+       (lambda nil
+         (org-safe-mode)
+         (org-safe-delete-char)
+         (expect (buffer-string) :to-equal "* headline")))
+      (test-org-safe-with-org-temp-buffer
+       "** headline" ; Point after first asterisk
+       (lambda nil
+         (org-safe-mode)
+         (forward-char 1)
+         (org-safe-delete-char)
+         (expect (buffer-string) :to-equal "** headline"))))
+    (it "prohibits deleting linebreak in front of headline asterisks"
+      (test-org-safe-with-org-temp-buffer
+       ;; Point at end of first line
+       "this is some test
+** headline on next line"
+       (lambda nil
+         (org-safe-mode)
+         (end-of-line)
+         (org-safe-delete-char)
+         (expect (buffer-string) :to-equal "this is some test
+** headline on next line"))))
+    (it "prohibits deleting property drawer characters"
+      (test-org-safe-with-org-temp-buffer
+       "* headline
+:PROPERTIES:
+:property: nil
+:END:"
+       (lambda nil
+         (forward-line)
+         (expect (looking-at (regexp-quote ":PROPERTIES:")))
+         (org-safe-delete-char)
+         (expect (looking-at (regexp-quote ":PROPERTIES:")))))
+      (test-org-safe-with-org-temp-buffer
+       "* headline
+:PROPERTIES:
+:property: nil
+:END:"
+       (lambda nil
+         (forward-line 2)
+         (expect (looking-at (regexp-quote ":property: nil")))
+         (org-safe-delete-char)
+         (expect (looking-at (regexp-quote ":property: nil")))))
+      (test-org-safe-with-org-temp-buffer
+       "* headline
+:PROPERTIES:
+:property: nil
+:END:"
+       (lambda nil
+         (forward-line 2)
+         (forward-char 5)
+         (expect (looking-at (regexp-quote "erty: nil")))
+         (org-safe-delete-char)
+         (expect (looking-at (regexp-quote "erty: nil")))))
+      (test-org-safe-with-org-temp-buffer
+       "* headline
+:PROPERTIES:
+:property: nil
+:END:"
+       (lambda nil
+         (forward-line 3)
+         (expect (looking-at (regexp-quote ":END:")))
+         (org-safe-delete-char)
+         (expect (looking-at (regexp-quote ":END:"))))))
+    (it "prohibits deleting logbook drawer"
+      (test-org-safe-with-org-temp-buffer
+       "* headline
 :LOGBOOK:
 - Note taken on [2021-04-14 Wed 07:53] \\
   foobar eggs and spam
 :END:"
-     (lambda nil
-       (forward-line 4)
-       (expect (looking-at (regexp-quote ":END:")))
-       (org-safe-delete-char)
-       (expect (looking-at (regexp-quote ":END:")))))))
+       (lambda nil
+         (forward-line)
+         (expect (looking-at (regexp-quote ":LOGBOOK:")))
+         (org-safe-delete-char)
+         (expect (looking-at (regexp-quote ":LOGBOOK:")))))
+      (test-org-safe-with-org-temp-buffer
+       "* headline
+:LOGBOOK:
+- Note taken on [2021-04-14 Wed 07:53] \\
+  foobar eggs and spam
+:END:"
+       (lambda nil
+         (forward-line 2)
+         (forward-char 5)
+         (let ((nchars (test-org-safe-nchars)))
+           (expect (looking-at (regexp-quote "e taken")))
+           (org-safe-delete-char)
+           (expect (test-org-safe-nchars) :to-be nchars))))
+      (test-org-safe-with-org-temp-buffer
+       "* headline
+:LOGBOOK:
+- Note taken on [2021-04-14 Wed 07:53] \\
+  foobar eggs and spam
+:END:"
+       (lambda nil
+         (forward-line 4)
+         (expect (looking-at (regexp-quote ":END:")))
+         (org-safe-delete-char)
+         (expect (looking-at (regexp-quote ":END:"))))))))
+
 (describe "org-safe-looking-at-logbook-note-p"
   (describe "looking at logbook note"
     (it "returns non-nil when looking-at logbook note"
