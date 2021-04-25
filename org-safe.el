@@ -40,6 +40,21 @@
   :group 'org-safe
   :type 'float)
 
+(defcustom org-safe-prohibit-functions
+  '(org-safe-looking-at-headline-stars-p
+    org-safe-looking-at-drawer-p
+    ;; org-safe-looking-at-logbook-note-p
+    ;; org-safe-looking-at-document-footer-properties-p
+    ;; org-safe-looking-at-document-header-properties-p
+    ;; org-safe-headline-in-region-p
+    ;; org-safe-drawer-in-region-p
+    ;; org-safe-document-header-properties-in-region-p
+    ;; org-safe-document-footer-properties-in-region-p
+    )
+  "Functions that prevent deletion when returning non-nil."
+  :group 'org-safe
+  :type 'list)
+
 ;;;; Vars
 (defvar org-safe-mode-map
   (let ((map (make-sparse-keymap)))
@@ -104,9 +119,7 @@ N is number of chars to consider."
 (defun org-safe-delete-char nil
   "Execute org-delete-char if non-protected content."
   (interactive)
-  (if (not (cl-some 'identity
-                    `(,(org-safe-looking-at-headline-stars-p)
-                      ,(org-safe-looking-at-drawer-p))))
+  (if (not (cl-some 'funcall org-safe-prohibit-functions))
       (org-delete-char 1)
     (message "Can't delete headline stars")))
 
