@@ -984,3 +984,8 @@ Works for narrowed buffers."
 
 (provide 'test-org-safe)
 ;;; test-org-safe.el ends here
+
+;; Local Variables:
+;; origami-fold-style: buttercup
+;; origami-mode: t
+;; End:
