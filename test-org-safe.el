@@ -28,8 +28,35 @@
 (require 'org-safe)
 
 ;; TODO add tests for bindings
-(xdescribe "org-safe-mode"
-  (xit "remaps bindings"))
+(describe "org-safe-mode"
+  (it "enables org-safe-mode"
+    (test-org-safe-with-org-temp-buffer
+     ""
+     (lambda nil
+       (expect (bound-and-true-p org-safe-mode) :to-be nil)
+       (org-safe-mode)
+       (expect (bound-and-true-p org-safe-mode)))))
+  (it "defines org-safe-mode keymap"
+    (test-org-safe-with-org-temp-buffer
+     ""
+     (lambda nil
+       (expect (bound-and-true-p org-safe-mode-map)))))
+  ;; FIXME: test not passing
+  (it "org-safe-mode enables org-safe-mode-map"
+    (test-org-safe-with-org-temp-buffer
+     "* headline"
+     (lambda nil
+       (expect (member 'org-safe-mode-map (current-minor-mode-maps 'olp)) :to-be nil)
+       (org-safe-mode)
+       (expect (member 'org-safe-mode-map (current-minor-mode-maps 'olp))))))
+  ;; FIXME: test not passing
+  (it "remaps org-delete-char to org-safe-delete-char"
+    (test-org-safe-with-org-temp-buffer
+     "* headline"
+     (lambda nil
+       (expect (key-binding "\C-d") :to-equal 'org-delete-char)
+       (org-safe-mode)
+       (expect (key-binding "\C-d") :to-equal 'org-safe-delete-char)))))
 
 (describe "org-safe-delete-char"
   (before-each (setq inhibit-message t))

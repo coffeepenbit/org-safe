@@ -43,14 +43,13 @@
 (defcustom org-safe-prohibit-functions
   '(org-safe-looking-at-headline-stars-p
     org-safe-looking-at-drawer-p
-    ;; org-safe-looking-at-logbook-note-p
-    ;; org-safe-looking-at-document-footer-properties-p
-    ;; org-safe-looking-at-document-header-properties-p
-    ;; org-safe-headline-in-region-p
-    ;; org-safe-drawer-in-region-p
-    ;; org-safe-document-header-properties-in-region-p
-    ;; org-safe-document-footer-properties-in-region-p
-    )
+    org-safe-looking-at-logbook-note-p
+    org-safe-looking-at-document-footer-properties-p
+    org-safe-looking-at-document-header-properties-p
+    org-safe-headline-in-region-p
+    org-safe-drawer-in-region-p
+    org-safe-document-header-properties-in-region-p
+    org-safe-document-footer-properties-in-region-p)
   "Functions that prevent deletion when returning non-nil."
   :group 'org-safe
   :type 'list)
@@ -59,8 +58,10 @@
 (defvar org-safe-mode-map
   (let ((map (make-sparse-keymap)))
     ;; FIXME: make this remap instead of keybinding
-    (define-key map (kbd "DEL") 'org-safe-delete-backward-char)
-    (define-key map (kbd "C-d") 'org-safe-delete-char)
+    (define-key map [remap org-delete-backward-char] 'org-safe-delete-backward-char)
+    (define-key map [remap org-delete-char] 'org-safe-delete-char)
+    ;; (define-key map (kbd "DEL") 'org-safe-delete-backward-char)
+    ;; (define-key map (kbd "C-d") 'org-safe-delete-char)
     map)
   "Keymap used for `org-safe-mode'.")
 
