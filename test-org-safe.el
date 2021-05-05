@@ -358,7 +358,9 @@ foobar"
        (goto-char (point-max))
        (org-safe-delete-backward-char)
        (expect (buffer-string) :to-equal "asterisk"))))
+  ;; TODO implement this test
   (xit "does NOT delete property drawer")
+  ;; TODO implement this test
   (xit "does NOT delete logbook drawer"))
 
 (describe "org-safe-looking-at-headline-stars-p"
