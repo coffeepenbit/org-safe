@@ -57,16 +57,17 @@
 ;;;; Vars
 (defvar org-safe-mode-map
   (let ((map (make-sparse-keymap)))
-    ;; FIXME: make this remap instead of keybinding
-    (define-key map [remap org-delete-backward-char] 'org-safe-delete-backward-char)
-    (define-key map [remap org-delete-char] 'org-safe-delete-char)
-    ;; (define-key map (kbd "DEL") 'org-safe-delete-backward-char)
-    ;; (define-key map (kbd "C-d") 'org-safe-delete-char)
+    (define-key map [remap delete-backward-char] 'org-safe-delete-backward-char)
+    (define-key map [remap delete-char] 'org-safe-delete-char)
     map)
   "Keymap used for `org-safe-mode'.")
 
 (define-minor-mode org-safe-mode
-  "For keeping org-mode content safe from butter-fingers."
+  "For keeping org-mode content safe from butter-fingers.
+
+`org-safe-mode-map' bindings:
+
+\\{org-safe-mode-map}"
   :init-value nil
   :lighter " org-safe"
   :group 'org-safe

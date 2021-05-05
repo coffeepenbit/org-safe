@@ -27,36 +27,39 @@
 (require 'buttercup)
 (require 'org-safe)
 
-;; TODO add tests for bindings
-(describe "org-safe-mode"
-  (it "enables org-safe-mode"
+(describe "Enabling and disabling org-safe-mode"
+  (it "Toggles org-safe-mode"
     (test-org-safe-with-org-temp-buffer
      ""
      (lambda nil
        (expect (bound-and-true-p org-safe-mode) :to-be nil)
        (org-safe-mode)
-       (expect (bound-and-true-p org-safe-mode)))))
+       (expect (bound-and-true-p org-safe-mode))
+       (org-safe-mode -1)
+       (expect (bound-and-true-p org-safe-mode) :to-be nil))))
   (it "defines org-safe-mode keymap"
     (test-org-safe-with-org-temp-buffer
      ""
      (lambda nil
        (expect (bound-and-true-p org-safe-mode-map)))))
-  ;; FIXME: test not passing
-  (it "org-safe-mode enables org-safe-mode-map"
+  (it "toggles remapping org-delete-char to org-safe-delete-char"
     (test-org-safe-with-org-temp-buffer
-     "* headline"
+     ""
      (lambda nil
-       (expect (member 'org-safe-mode-map (current-minor-mode-maps 'olp)) :to-be nil)
+       (expect (key-binding (kbd "C-d")) :to-equal 'org-delete-char)
        (org-safe-mode)
-       (expect (member 'org-safe-mode-map (current-minor-mode-maps 'olp))))))
-  ;; FIXME: test not passing
-  (it "remaps org-delete-char to org-safe-delete-char"
+       (expect (key-binding (kbd "C-d")) :to-equal 'org-safe-delete-char)
+       (org-safe-mode -1)
+       (expect (key-binding (kbd "C-d")) :to-equal 'org-delete-char))))
+  (it "toggles remapping org-delete-backward-char to org-safe-delete-backward-char"
     (test-org-safe-with-org-temp-buffer
-     "* headline"
+     ""
      (lambda nil
-       (expect (key-binding "\C-d") :to-equal 'org-delete-char)
+       (expect (key-binding (kbd "DEL")) :to-equal 'org-delete-backward-char)
        (org-safe-mode)
-       (expect (key-binding "\C-d") :to-equal 'org-safe-delete-char)))))
+       (expect (key-binding (kbd "DEL")) :to-equal 'org-safe-delete-backward-char)
+       (org-safe-mode -1)
+       (expect (key-binding (kbd "DEL")) :to-equal 'org-delete-backward-char)))))
 
 (describe "org-safe-delete-char"
   (before-each (setq inhibit-message t))
@@ -193,7 +196,9 @@
          (forward-line 4)
          (expect (looking-at (regexp-quote ":END:")))
          (org-safe-delete-char)
-         (expect (looking-at (regexp-quote ":END:"))))))))
+         (expect (looking-at (regexp-quote ":END:")))))))
+  ;; TODO implement this test
+  (xit "it does NOT delete space between headline and asterisk"))
 
 (describe "org-safe-looking-at-logbook-note-p"
   (describe "looking at logbook note"
@@ -361,7 +366,9 @@ foobar"
   ;; TODO implement this test
   (xit "does NOT delete property drawer")
   ;; TODO implement this test
-  (xit "does NOT delete logbook drawer"))
+  (xit "does NOT delete logbook drawer")
+  ;; TODO implement this test
+  (xit "it does NOT delete space between headline and asterisk"))
 
 (describe "org-safe-looking-at-headline-stars-p"
   (it "should be t when looking at a headline"
