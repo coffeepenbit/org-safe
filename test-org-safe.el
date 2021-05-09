@@ -409,25 +409,25 @@ foobar"
        (expect (org-safe-looking-at-headline-stars-p) :to-be nil)))))
 
 (describe "org-safe-looking-back-at-headline-stars-p"
-  (it "should be t when looking back at single headline star"
+  (it "should be non-nil when looking back at single headline star"
     (test-org-safe-with-org-temp-buffer
      "* headline"
      (lambda nil
        (goto-char 2) ; After first asterisk
        (expect (org-safe-looking-back-at-headline-stars-p)))))
-  (it "should be t when looking back at two headline stars"
+  (it "should be non-nil when looking back at two headline stars"
     (test-org-safe-with-org-temp-buffer
      "** headline"
      (lambda nil
        (goto-char 3) ; After first asterisk
        (expect (org-safe-looking-back-at-headline-stars-p)))))
-  (it "should be t when between two headline stars"
+  (it "should be non-nil when between two headline stars"
     (test-org-safe-with-org-temp-buffer
      "** headline"
      (lambda nil
        (goto-char 3) ; After first asterisk
        (expect (org-safe-looking-back-at-headline-stars-p)))))
-  (it "should be t when looking at stars without titles"
+  (it "should be non-nil when looking at stars without titles"
     ;; org-mode considers these titles still
     "* " ; Title
     (lambda nil
@@ -442,7 +442,7 @@ foobar"
          (expect (org-safe-looking-back-at-headline-stars-p) :to-be nil))))))
 
 (describe "org-safe-prohibited-p"
-  (it "should be t when org-safe-prohibited-var t"
+  (it "should be non-nil when org-safe-prohibited-var is t"
     (let ((org-safe-prohibited-var t))
       (expect (org-safe-prohibited-p))))
   (it "should be nil when org-safe-prohibited-var nil"
