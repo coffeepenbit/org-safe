@@ -441,6 +441,28 @@ foobar"
          (goto-char 2) ; After first asterisk
          (expect (org-safe-looking-back-at-headline-stars-p) :to-be nil))))))
 
+(describe "org-safe-looking-at-headline-star-space"
+  (it "should be non-nil when looking at single headline space"
+    (test-org-safe-with-org-temp-buffer
+     "* headline"
+     (lambda nil
+       (goto-char 1) ; After first asterisk
+       (expect (org-safe-looking-at-headline-star-space)))))
+  (it "should be non-nil when looking at multiple headline spaces"
+    (test-org-safe-with-org-temp-buffer
+     "*     headline"
+     (lambda nil
+       (goto-char 1) ; After first asterisk
+       (expect (org-safe-looking-at-headline-star-space))))))
+
+(describe "org-safe-looking-back-at-headline-star-space"
+  (it "should be non-nil when looking back at single headline star"
+    (test-org-safe-with-org-temp-buffer
+     "* headline"
+     (lambda nil
+       (goto-char 2) ; After first asterisk
+       (expect (org-safe-looking-back-at-headline-star-space))))))
+
 (describe "org-safe-prohibited-p"
   (it "should be non-nil when org-safe-prohibited-var is t"
     (let ((org-safe-prohibited-var t))
