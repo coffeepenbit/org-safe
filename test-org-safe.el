@@ -196,9 +196,15 @@
          (forward-line 4)
          (expect (looking-at (regexp-quote ":END:")))
          (org-safe-delete-char)
-         (expect (looking-at (regexp-quote ":END:")))))))
-  ;; TODO implement this test
-  (xit "it does NOT delete space between headline and asterisk"))
+         (expect (looking-at (regexp-quote ":END:"))))))
+    (it "prohibts deleting space between headline and asterisk"
+      (test-org-safe-with-org-temp-buffer
+       "* headline"
+       (lambda nil
+         (forward-char 1)
+         (expect (looking-at (regexp-quote " headline")))
+         (org-safe-delete-char)
+         (expect (looking-at (regexp-quote " headline"))))))))
 
 (describe "org-safe-looking-at-logbook-note-p"
   (describe "looking at logbook note"
