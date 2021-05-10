@@ -5,7 +5,6 @@
 ;; Author: coffeepenbit@gmail.com
 ;; Version: 0.0.1
 ;; Keywords: outline
-
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or
@@ -461,13 +460,13 @@ foobar"
        (goto-char 1) ; After first asterisk
        (expect (org-safe-looking-at-headline-star-space))))))
 
-(describe "org-safe-looking-back-at-headline-star-space"
+(describe "org-safe-looking-back-at-headline-star-space-p"
   (it "should be non-nil when looking back at single headline star"
     (test-org-safe-with-org-temp-buffer
      "* headline"
      (lambda nil
        (goto-char 2) ; After first asterisk
-       (expect (org-safe-looking-back-at-headline-star-space))))))
+       (expect (org-safe-looking-back-at-headline-star-space-p))))))
 
 (describe "org-safe-prohibited-p"
   (it "should be non-nil when org-safe-prohibited-var is t"
