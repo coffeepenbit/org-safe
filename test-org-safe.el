@@ -492,7 +492,8 @@ foobar"
     (expect (org-safe-prohibited-p) :to-be nil)))
 
 (describe "org-safe-disabled-timer"
-  :var ((org-safe-prohibited-duration 0.1))
+  :var (org-safe-prohibited-duration)
+  (before-each (setq org-safe-prohibited-duration 0.1))
   (it "re-enables org-safe after prohibited duration passes"
     ;; Start in prohibited state
     (org-safe-prohibit)
