@@ -5,7 +5,6 @@
 ;; Author: coffeepenbit@gmail.com
 ;; Version: 0.0.1
 ;; Keywords: outline
-
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or
@@ -196,9 +195,15 @@
          (forward-line 4)
          (expect (looking-at (regexp-quote ":END:")))
          (org-safe-delete-char)
-         (expect (looking-at (regexp-quote ":END:")))))))
-  ;; TODO implement this test
-  (xit "it does NOT delete space between headline and asterisk"))
+         (expect (looking-at (regexp-quote ":END:"))))))
+    (it "prohibts deleting space between headline and asterisk"
+      (test-org-safe-with-org-temp-buffer
+       "* headline"
+       (lambda nil
+         (forward-char 1)
+         (expect (looking-at (regexp-quote " headline")))
+         (org-safe-delete-char)
+         (expect (looking-at (regexp-quote " headline"))))))))
 
 (describe "org-safe-looking-at-logbook-note-p"
   (describe "looking at logbook note"
@@ -409,25 +414,25 @@ foobar"
        (expect (org-safe-looking-at-headline-stars-p) :to-be nil)))))
 
 (describe "org-safe-looking-back-at-headline-stars-p"
-  (it "should be t when looking back at single headline star"
+  (it "should be non-nil when looking back at single headline star"
     (test-org-safe-with-org-temp-buffer
      "* headline"
      (lambda nil
        (goto-char 2) ; After first asterisk
        (expect (org-safe-looking-back-at-headline-stars-p)))))
-  (it "should be t when looking back at two headline stars"
+  (it "should be non-nil when looking back at two headline stars"
     (test-org-safe-with-org-temp-buffer
      "** headline"
      (lambda nil
        (goto-char 3) ; After first asterisk
        (expect (org-safe-looking-back-at-headline-stars-p)))))
-  (it "should be t when between two headline stars"
+  (it "should be non-nil when between two headline stars"
     (test-org-safe-with-org-temp-buffer
      "** headline"
      (lambda nil
        (goto-char 3) ; After first asterisk
        (expect (org-safe-looking-back-at-headline-stars-p)))))
-  (it "should be t when looking at stars without titles"
+  (it "should be non-nil when looking at stars without titles"
     ;; org-mode considers these titles still
     "* " ; Title
     (lambda nil
@@ -441,8 +446,30 @@ foobar"
          (goto-char 2) ; After first asterisk
          (expect (org-safe-looking-back-at-headline-stars-p) :to-be nil))))))
 
+(describe "org-safe-looking-at-headline-star-space"
+  (it "should be non-nil when looking at single headline space"
+    (test-org-safe-with-org-temp-buffer
+     "* headline"
+     (lambda nil
+       (goto-char 1) ; After first asterisk
+       (expect (org-safe-looking-at-headline-star-space)))))
+  (it "should be non-nil when looking at multiple headline spaces"
+    (test-org-safe-with-org-temp-buffer
+     "*     headline"
+     (lambda nil
+       (goto-char 1) ; After first asterisk
+       (expect (org-safe-looking-at-headline-star-space))))))
+
+(describe "org-safe-looking-back-at-headline-star-space-p"
+  (it "should be non-nil when looking back at single headline star"
+    (test-org-safe-with-org-temp-buffer
+     "* headline"
+     (lambda nil
+       (goto-char 2) ; After first asterisk
+       (expect (org-safe-looking-back-at-headline-star-space-p))))))
+
 (describe "org-safe-prohibited-p"
-  (it "should be t when org-safe-prohibited-var t"
+  (it "should be non-nil when org-safe-prohibited-var is t"
     (let ((org-safe-prohibited-var t))
       (expect (org-safe-prohibited-p))))
   (it "should be nil when org-safe-prohibited-var nil"
@@ -464,7 +491,8 @@ foobar"
     (expect (org-safe-prohibited-p) :to-be nil)))
 
 (describe "org-safe-disabled-timer"
-  :var ((org-safe-prohibited-duration 0.1))
+  :var (org-safe-prohibited-duration)
+  (before-each (setq org-safe-prohibited-duration 0.1))
   (it "re-enables org-safe after prohibited duration passes"
     ;; Start in prohibited state
     (org-safe-prohibit)
