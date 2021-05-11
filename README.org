@@ -33,3 +33,9 @@ Without ~use-package~:
 #+begin_src elisp
 (quelpa '(org-safe :fetcher github :repo "coffeepenbit/org-safe"))
 #+end_src
+
+** Dev
+
+*** Run tests
+
+From project's root directory, run ~eldev test~
