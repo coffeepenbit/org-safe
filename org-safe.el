@@ -42,6 +42,8 @@
 
 (defcustom org-safe-prohibit-functions
   '(org-safe-looking-at-headline-stars-p
+    org-safe-looking-at-headline-star-space-p
+    org-safe-looking-back-at-headline-star-space-p
     org-safe-looking-at-drawer-p
     org-safe-looking-at-logbook-note-p
     org-safe-looking-at-document-footer-properties-p
