@@ -118,7 +118,6 @@ N is number of chars to consider."
 \\)?" ; Count org headlines and next line as well
                       org-outline-regexp)))
 
-
 ;; TODO implement this function
 (defun org-safe-looking-at-headline-star-space-p nil
   "Return non-nil if headline in region."
