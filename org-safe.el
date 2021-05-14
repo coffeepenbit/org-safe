@@ -118,10 +118,12 @@ N is number of chars to consider."
 \\)?" ; Count org headlines and next line as well
                       org-outline-regexp)))
 
-;; TODO implement this function
 (defun org-safe-looking-at-headline-star-space-p nil
   "Return non-nil if headline in region."
-  nil)
+  (and (looking-at " ")
+       ;; TODO add limit to looking-back
+       (looking-back "^\\*+ ?")
+       (org-at-heading-p)))
 
 (defun org-safe-looking-back-at-headline-star-space-p nil
   "Return non-nil if headline in region."

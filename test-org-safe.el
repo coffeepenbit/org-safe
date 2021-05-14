@@ -446,26 +446,42 @@ foobar"
          (goto-char 2) ; After first asterisk
          (expect (org-safe-looking-back-at-headline-stars-p) :to-be nil))))))
 
-(describe "org-safe-looking-at-headline-star-space"
+(describe "org-safe-looking-at-headline-star-space-p"
   (it "should be non-nil when looking at single headline space"
     (test-org-safe-with-org-temp-buffer
      "* headline"
      (lambda nil
-       (goto-char 1) ; After first asterisk
-       (expect (org-safe-looking-at-headline-star-space)))))
+       (forward-char 1)
+       (expect (looking-at " headline"))
+       (expect (org-safe-looking-at-headline-star-space-p)))))
   (it "should be non-nil when looking at multiple headline spaces"
     (test-org-safe-with-org-temp-buffer
      "*     headline"
      (lambda nil
-       (goto-char 1) ; After first asterisk
-       (expect (org-safe-looking-at-headline-star-space))))))
+       (forward-char 1)
+       (expect (looking-at "     headline"))
+       (expect (org-safe-looking-at-headline-star-space-p)))))
+  (it "should be nil when looking at non-headline star space"
+    (test-org-safe-with-org-temp-buffer
+     "* h eadline"
+     (lambda nil
+       (forward-char 3)
+       (expect (looking-at " eadline"))
+       (expect (org-safe-looking-back-at-headline-star-space-p) :to-be nil))))
+  (it "should be nil when not on headline"
+    (test-org-safe-with-org-temp-buffer
+     " * headline"
+     (lambda nil
+       (forward-char 2)
+       (expect (looking-at " headline"))
+       (expect (org-safe-looking-back-at-headline-star-space-p) :to-be nil)))))
 
 (describe "org-safe-looking-back-at-headline-star-space-p"
   (it "should be non-nil when looking back at single headline star space"
     (test-org-safe-with-org-temp-buffer
      "* headline"
      (lambda nil
-       (forward-char 2) ; After first asterisk
+       (forward-char 2)
        (expect (looking-at "headline"))
        (expect (org-safe-looking-back-at-headline-star-space-p)))))
   (it "should be non-nil when looking back at two headline star spaces"
