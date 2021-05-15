@@ -78,8 +78,12 @@
   :init-value nil
   :lighter " org-safe"
   :group 'org-safe
-  :keymap 'org-safe-mode-map)
-;; TODO add toggling of advice
+  :keymap 'org-safe-mode-map
+  ;; TODO add toggling of advice
+  (if org-safe-mode
+      (advice-add 'self-insert-command :before-until
+                  #'org-safe-prohibit-self-insert-command-advice)
+    (advice-remove 'self-insert-command #'org-safe-prohibit-self-insert-command-advice)))
 
 (defvar org-safe-prohibited-var nil
   "If true, prevent function from activating.")

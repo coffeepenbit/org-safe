@@ -58,7 +58,10 @@
        (org-safe-mode)
        (expect (key-binding (kbd "DEL")) :to-equal 'org-safe-delete-backward-char)
        (org-safe-mode -1)
-       (expect (key-binding (kbd "DEL")) :to-equal 'org-delete-backward-char)))))
+       (expect (key-binding (kbd "DEL")) :to-equal 'org-delete-backward-char))))
+  (it "toggles org-safe-prohibit-self-insert-command-advice"
+  ;; TODO implement test
+    (expect nil :to-be t)))
 
 (describe "org-safe-delete-char"
   (before-each (setq inhibit-message t))
