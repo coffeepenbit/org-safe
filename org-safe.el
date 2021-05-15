@@ -41,15 +41,20 @@
   :type 'float)
 
 (defcustom org-safe-prohibit-functions
-  '(org-safe-looking-at-headline-stars-p
+  '(;; Headlines
+    org-safe-looking-at-headline-stars-p
     org-safe-looking-at-headline-star-space-p
     org-safe-looking-back-at-headline-star-space-p
-    org-safe-looking-at-drawer-p
-    org-safe-looking-at-logbook-note-p
-    org-safe-looking-at-document-footer-properties-p
-    org-safe-looking-at-document-header-properties-p
     org-safe-headline-in-region-p
     org-safe-drawer-in-region-p
+
+    ;; Drawers
+    org-safe-looking-at-drawer-p
+    org-safe-looking-at-logbook-note-p
+
+    ;; Document properties
+    org-safe-looking-at-document-footer-properties-p
+    org-safe-looking-at-document-header-properties-p
     org-safe-document-header-properties-in-region-p
     org-safe-document-footer-properties-in-region-p)
   "Functions that prevent deletion when returning non-nil."
