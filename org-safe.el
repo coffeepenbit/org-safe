@@ -319,9 +319,11 @@ BEG and END are points."
                  "^[ ]*"
                  (regexp-quote "# Local variables:")))))
 
-(defun org-safe-self-insert-advice (&rest arguments)
-  ;; TODO add docstring
-  (not (cl-some 'funcall org-safe-prohibit-functions)))
+(defun org-safe-prohibit-self-insert-command-advice (&rest _)
+  "Return non-nil if `self-insert-command' should be prohibited.
+
+Use this function by adding it as advice :before-until to `self-insert-command'."
+  (cl-some 'funcall org-safe-prohibit-functions))
 
 (provide 'org-safe)
 ;;; org-safe.el ends here
