@@ -79,6 +79,7 @@
   :lighter " org-safe"
   :group 'org-safe
   :keymap 'org-safe-mode-map)
+;; TODO add toggling of advice
 
 (defvar org-safe-prohibited-var nil
   "If true, prevent function from activating.")
@@ -317,6 +318,10 @@ BEG and END are points."
     (looking-at (concat
                  "^[ ]*"
                  (regexp-quote "# Local variables:")))))
+
+(defun org-safe-self-insert-advice (&rest arguments)
+  ;; TODO add docstring
+  (not (cl-some 'funcall org-safe-prohibit-functions)))
 
 (provide 'org-safe)
 ;;; org-safe.el ends here

@@ -1084,6 +1084,29 @@ Works for narrowed buffers."
          1)
     (point-max)))
 
+(describe "org-safe-self-insert-advice"
+  (before-each
+    (advice-add 'self-insert-command :before-until #'org-safe-self-insert-advice))
+  (after-each
+    (advice-remove 'self-insert-command #'org-safe-self-insert-advice))
+  (it "prohibits self-insert in front of headline stars"
+    (test-org-safe-with-org-temp-buffer
+     "* headline"
+     (lambda nil
+       (expect (looking-at "* headline"))
+       (self-insert-command 1 ?a)
+       (expect (looking-at "* headline")))))
+  (it "does NOT prohibit self-insert of headline text"
+    (test-org-safe-with-org-temp-buffer
+     "* headline"
+     (lambda nil
+       (goto-char (- (point-max) 1))
+       (expect (looking-at "e"))
+       ;; TODO determine why this is returning true
+       (expect (not (cl-some 'funcall org-safe-prohibit-functions)) :to-be nil)
+       (self-insert-command 1 ?a)
+       (expect (looking-at "ae"))))))
+
 (provide 'test-org-safe)
 ;;; test-org-safe.el ends here
 
