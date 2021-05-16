@@ -26,6 +26,8 @@
 (require 'buttercup)
 (require 'org-safe)
 
+;; TODO remove unnecessary (org-safe-mode) calls
+
 (describe "Enabling and disabling org-safe-mode"
   (it "Toggles org-safe-mode"
     (test-org-safe-with-org-temp-buffer
@@ -1082,17 +1084,25 @@ d") ; Point look at d
 
 (describe "org-safe-prohibit-self-insert-command-advice"
   (before-each
-    (advice-add 'self-insert-command :before-until #'org-safe-prohibit-self-insert-command-advice))
+    (advice-add 'self-insert-command :before-until
+                #'org-safe-prohibit-self-insert-command-advice)
+    ;; NOTE manually set `org-safe-mode' variable to t to avoid any hooks run
+    ;; when enabling `org-safe-mode' from interfering with tests.
+    ;;
+    ;; `org-safe-mode' must be set because it is checked by the advice
+    (setq org-safe-mode t))
   (after-each
-    (advice-remove 'self-insert-command #'org-safe-prohibit-self-insert-command-advice))
-  (it "prohibits self-insert in front of headline stars"
+    (advice-remove 'self-insert-command #'org-safe-prohibit-self-insert-command-advice)
+    (setq org-safe-mode nil))
+  (it "prohibits self-insert in front of non-first headline stars"
     (test-org-safe-with-org-temp-buffer
-     "* headline"
+     "** headline"
      (lambda nil
-       (expect (eq (point) (point-min)))
+       (forward-char)
+       (expect (char-before) :to-be ?*)
        (expect (char-after) :to-be ?*)
        (self-insert-command 1 ?a)
-       (expect (eq (point) (point-min)))
+       (expect (char-after) :to-be ?*)
        (expect (char-after) :to-be ?*))))
   (it "prohibits self-insert in front of headline space"
     (test-org-safe-with-org-temp-buffer
@@ -1102,6 +1112,7 @@ d") ; Point look at d
        (expect (char-before) :to-be ?*)
        (expect (char-after) :to-be ? )
        (self-insert-command 1 ?a)
+       (expect (org-safe-action-is-prohibited))
        (expect (char-before) :to-be ?*)
        (expect (char-after) :to-be ? ))))
   (it "does NOT prohibit self-insert at bold text"
@@ -1115,15 +1126,17 @@ d") ; Point look at d
        (expect (char-before) :to-be ?a)
        (expect (char-after) :to-be ?h))))
   (it "does NOT prohibit self-insert newline at first star"
+    ;; TODO pass this test
     (test-org-safe-with-org-temp-buffer
      "* headline"
      (lambda nil
        (expect (eq (point) (point-min)))
        (expect (char-after) :to-be ?*)
+       (expect (org-safe-looking-at-first-headline-star-p))
        (self-insert-command 1 10) ; 10 is Newline
-       (expect (eq (point) (point-min)))
-       (expect (buffer-string) :to-equal "* headline
-"))))
+       ;; (expect (eq (point) (point-min)))
+       (expect (buffer-string) :to-equal "
+* headline"))))
   (it "does NOT affect non org-safe-mode buffers"
     (with-temp-buffer
       "* headline"

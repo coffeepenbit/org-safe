@@ -322,16 +322,27 @@ BEG and END are points."
                  "^[ ]*"
                  (regexp-quote "# Local variables:")))))
 
-(defun org-safe-prohibit-self-insert-command-advice (&rest _)
+(defun org-safe-prohibit-self-insert-command-advice (N &optional C)
   "Return non-nil if `self-insert-command' should be prohibited.
 
 Use this function by adding it as advice :before-until to `self-insert-command',
-i.e. run `self-insert-command' only if this function returns nil."
-  ;; TODO allow new line to push headline down
-  (when (and (org-safe-mode) ; Prevent running advice in non org-safe buffers
-             (cl-some 'funcall org-safe-prohibit-functions))
-    (progn (message "org-safe prohibiting self-insert-command")
-           t)))
+i.e. run `self-insert-command' only if this function returns nil.
+
+See `self-insert-command' docs for N and C descriptions."
+  (when (org-safe-mode) ; Prevent running advice in non org-safe buffers
+    (if (or (org-safe-attemping-insert-first-star-newline-p C)
+            (not (org-safe-action-is-prohibited)))
+        nil ; Allow `self-insert-command'
+      (progn ; Prevent `self-insert-command'
+        (message "org-safe prohibiting self-insert-command")
+        t))))
+
+(defun org-safe-attemping-insert-first-star-newline-p (C)
+  "Return non-nil if attempt to insert newline before first headline star.
+
+See `self-insert-command' docs for C description."
+  (and (org-safe-looking-at-first-headline-star-p)
+       (eq C 10)))
 
 (defun org-safe-looking-at-first-headline-star-p nil
   "Return non-nil if point is looking at first headline star."
