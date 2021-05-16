@@ -386,29 +386,29 @@ foobar"
     (test-org-safe-with-org-temp-buffer
      "* headline"
      (lambda nil
-       (expect (org-safe-looking-at-headline-stars-p) :to-be t)))
+       (expect (org-safe-looking-at-headline-stars-p))))
     (test-org-safe-with-org-temp-buffer
      "** headline"
      (lambda nil
-       (expect (org-safe-looking-at-headline-stars-p) :to-be t)))
+       (expect (org-safe-looking-at-headline-stars-p))))
     (test-org-safe-with-org-temp-buffer
      "** headline"
      (lambda nil
        (goto-char 2)
-       (expect (org-safe-looking-at-headline-stars-p) :to-be t)))
+       (expect (org-safe-looking-at-headline-stars-p))))
     (test-org-safe-with-org-temp-buffer
      "* headline*"
      (lambda nil
-       (expect (org-safe-looking-at-headline-stars-p) :to-be t)))
+       (expect (org-safe-looking-at-headline-stars-p))))
     (test-org-safe-with-org-temp-buffer
      "*    headline"
      (lambda nil
-       (expect (org-safe-looking-at-headline-stars-p) :to-be t)))
+       (expect (org-safe-looking-at-headline-stars-p))))
     (test-org-safe-with-org-temp-buffer
      "
 * headline"
      (lambda nil
-       (expect (org-safe-looking-at-headline-stars-p)) :to-be t)))
+       (expect (org-safe-looking-at-headline-stars-p)))))
   (it "should be nil when looking at non-headlines"
     (test-org-safe-with-org-temp-buffer
      "*headline"
