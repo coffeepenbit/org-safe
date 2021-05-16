@@ -60,8 +60,14 @@
        (org-safe-mode -1)
        (expect (key-binding (kbd "DEL")) :to-equal 'org-delete-backward-char))))
   (it "toggles org-safe-prohibit-self-insert-command-advice"
-    ;; TODO implement test
-    (expect nil :to-be t)))
+    (test-org-safe-with-org-temp-buffer
+     ""
+     (lambda nil
+       (expect (advice-member-p 'org-safe-self-insert-command-advice
+                                'self-insert-command) :to-be nil)
+       (org-safe-mode)
+       (expect (advice-member-p 'org-safe-self-insert-command-advice
+                                'self-insert-command))))))
 
 (describe "org-safe-delete-char"
   (before-each (setq inhibit-message t))
@@ -204,8 +210,10 @@
        "* headline"
        (lambda nil
          (forward-char 1)
+         (expect (eq (char-before) ?*))
          (expect (looking-at (regexp-quote " headline")))
          (org-safe-delete-char)
+         (expect (eq (char-before) ?*))
          (expect (looking-at (regexp-quote " headline"))))))))
 
 (describe "org-safe-looking-at-logbook-note-p"
@@ -1097,7 +1105,11 @@ d") ; Point look at d
        (expect (char-after) :to-be ?h)
        (self-insert-command 1 ?a)
        (expect (char-before) :to-be ?a)
-       (expect (char-after) :to-be ?h)))))
+       (expect (char-after) :to-be ?h))))
+  (xit "only impacts org-safe-mode buffers"
+    ;; TODO implement test
+    ;; Can likely do this by adding advice and ensuring mode is off
+    ))
 
 ;;;; Helpers
 (defun test-org-safe-with-org-temp-buffer (buffer-text func)
