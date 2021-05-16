@@ -60,7 +60,7 @@
        (org-safe-mode -1)
        (expect (key-binding (kbd "DEL")) :to-equal 'org-delete-backward-char))))
   (it "toggles org-safe-prohibit-self-insert-command-advice"
-  ;; TODO implement test
+    ;; TODO implement test
     (expect nil :to-be t)))
 
 (describe "org-safe-delete-char"
@@ -1073,56 +1073,44 @@ d") ; Point look at d
     (test-org-safe-with-org-temp-buffer
      "* headline"
      (lambda nil
-       (expect (looking-at "* headline"))
+       (expect (eq (point) (point-min)))
+       (expect (char-after) :to-be ?*)
        (self-insert-command 1 ?a)
-       (expect (looking-at "* headline")))))
+       (expect (eq (point) (point-min)))
+       (expect (char-after) :to-be ?*))))
   (it "prohibits self-insert in front of headline space"
     (test-org-safe-with-org-temp-buffer
      "* headline"
      (lambda nil
-       (forward-char)
-       (expect (looking-at " headline"))
+       (forward-char 1)
+       (expect (char-before) :to-be ?*)
+       (expect (char-after) :to-be ? )
        (self-insert-command 1 ?a)
-       (expect (looking-at " headline")))))
-  (it "does NOT prohibit regular text insertion"
-    (test-org-safe-with-org-temp-buffer
-     ""
-     (lambda nil
-       (self-insert-command 1 ?a)
-       (expect (char-before) :to-be ?a))))
-  (it "does NOT prohibit self-insert of headline text"
-    (test-org-safe-with-org-temp-buffer
-     "* headline"
-     (lambda nil
-       (forward-char 9)
-       (expect (looking-at "e"))
-       (self-insert-command 1 ?a)
-       (expect (char-before) :to-be ?a)
-       (expect (char-after) :to-be ?e))))
+       (expect (char-before) :to-be ?*)
+       (expect (char-after) :to-be ? ))))
   (it "does NOT prohibit self-insert at bold text"
     (test-org-safe-with-org-temp-buffer
      "*headline"
      (lambda nil
-       (expect (looking-at "*headline"))
-       (self-insert-command 1 ?a)
-       (expect (looking-at "*headline"))
        (forward-char 1)
-       (expect (looking-at "headline"))
+       (expect (char-before) :to-be ?*)
+       (expect (char-after) :to-be ?h)
        (self-insert-command 1 ?a)
-       (expect (looking-at "headline"))))))
+       (expect (char-before) :to-be ?a)
+       (expect (char-after) :to-be ?h)))))
 
 ;;;; Helpers
-  (defun test-org-safe-with-org-temp-buffer (buffer-text func)
-    "Useful for testing `org-mode' functions.
+(defun test-org-safe-with-org-temp-buffer (buffer-text func)
+  "Useful for testing `org-mode' functions.
 
 BUFFER-TEXT is the initial state of the `org-mode' buffer.
 
 FUNC is what is ran after creating the buffer."
-    (with-temp-buffer
-      (insert buffer-text)
-      (org-mode)
-      (goto-char (point-min))
-      (funcall func)))
+  (with-temp-buffer
+    (insert buffer-text)
+    (org-mode)
+    (goto-char (point-min))
+    (funcall func)))
 
 (defun test-org-safe-nchars nil
   "Count number of chars in buffer.
