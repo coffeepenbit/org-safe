@@ -1120,10 +1120,16 @@ d") ; Point look at d
        (self-insert-command 1 ?a)
        (expect (char-before) :to-be ?a)
        (expect (char-after) :to-be ?h))))
-  (xit "only impacts org-safe-mode buffers"
-    ;; TODO implement test
-    ;; Can likely do this by adding advice and ensuring mode is off
-    ))
+  (it "does NOT affect non org-safe-mode buffers"
+    (with-temp-buffer
+      "* headline"
+      (lambda nil
+        (expect org-safe-mode :to-be nil)
+        (expect (eq (point) (point-min)))
+        (expect (char-after) :to-be ?*)
+        (self-insert-command 1 ?a)
+        (expect (char-before) :to-be ?a)
+        (expect (char-after) :to-be ?*)))))
 
 ;;;; Helpers
 (defun test-org-safe-with-org-temp-buffer (buffer-text func)

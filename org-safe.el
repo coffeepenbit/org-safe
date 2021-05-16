@@ -79,7 +79,6 @@
   :lighter " org-safe"
   :group 'org-safe
   :keymap 'org-safe-mode-map
-  ;; TODO add toggling of advice
   (if org-safe-mode
       (advice-add 'self-insert-command :before-until
                   #'org-safe-prohibit-self-insert-command-advice)
@@ -328,9 +327,11 @@ BEG and END are points."
 
 Use this function by adding it as advice :before-until to `self-insert-command',
 i.e. run `self-insert-command' only if this function returns nil."
-  (when (cl-some 'funcall org-safe-prohibit-functions)
+  ;; TODO allow new line to push headline down
+  (when (and (org-safe-mode) ; Prevent running advice in non org-safe buffers
+             (cl-some 'funcall org-safe-prohibit-functions))
     (progn (message "org-safe prohibiting self-insert command")
            t)))
 
-  (provide 'org-safe)
+(provide 'org-safe)
 ;;; org-safe.el ends here
