@@ -1135,6 +1135,36 @@ d") ; Point look at d
         (expect (char-before) :to-be ?a)
         (expect (char-after) :to-be ?*)))))
 
+(describe "org-safe-looking-at-first-headline-star-p"
+  (describe "when looking at first headline star"
+    (it "should be non-nil when there's one headline star space"
+      (test-org-safe-with-org-temp-buffer
+       "* headline"
+       (lambda nil
+         (expect (org-safe-looking-at-first-headline-star-p)))))
+    (it "should be non-nil when there's multiple headline star spaces"
+      (test-org-safe-with-org-temp-buffer
+       "*    headline"
+       (lambda nil
+         (expect (org-safe-looking-at-first-headline-star-p))))))
+  (describe "when NOT looking at first headline star"
+    (it "should return nil when looking at second headline star"
+      (test-org-safe-with-org-temp-buffer
+       "** headline"
+       (lambda nil
+         (forward-char)
+         (expect (org-safe-looking-at-first-headline-star-p) :to-be nil))))
+    (it "should return nil when looking regular asterisk"
+      (test-org-safe-with-org-temp-buffer
+       "*headline"
+       (lambda nil
+         (expect (org-safe-looking-at-first-headline-star-p) :to-be nil))))
+    (it "should return nil when looking at bold star"
+      (test-org-safe-with-org-temp-buffer
+       "*headline*"
+       (lambda nil
+         (expect (org-safe-looking-at-first-headline-star-p) :to-be nil))))))
+
 ;;;; Helpers
 (defun test-org-safe-with-org-temp-buffer (buffer-text func)
   "Useful for testing `org-mode' functions.

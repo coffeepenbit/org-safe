@@ -333,5 +333,11 @@ i.e. run `self-insert-command' only if this function returns nil."
     (progn (message "org-safe prohibiting self-insert-command")
            t)))
 
+(defun org-safe-looking-at-first-headline-star-p nil
+  "Return non-nil if point is looking at first headline star."
+  (and (org-at-heading-p)
+       (eq (char-before) 10)
+       (eq (char-after) ?*)))
+
 (provide 'org-safe)
 ;;; org-safe.el ends here
