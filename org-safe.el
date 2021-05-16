@@ -84,7 +84,7 @@
   :lighter " org-safe"
   :group 'org-safe
   :keymap 'org-safe-mode-map
-  (if org-safe-mode
+  (if org-safe-mode ; `org-safe-mode' was just enabled
       (advice-add 'self-insert-command :before-until
                   #'org-safe-prohibit-self-insert-command-advice)
     (advice-remove 'self-insert-command #'org-safe-prohibit-self-insert-command-advice)))
@@ -156,6 +156,7 @@ N is number of chars to consider."
 
 (defun org-safe-action-is-prohibited nil
   "Return non-nil if action should be prohibited."
+  ;; TODO return reason for safe-prohibit-function being true
   (cl-some 'funcall org-safe-prohibit-functions))
 
 (defconst org-safe-logbook-drawer-re
@@ -338,7 +339,8 @@ Use this function by adding it as advice :before-until to `self-insert-command',
 i.e. run `self-insert-command' only if this function returns nil.
 
 See `self-insert-command' docs for N and C descriptions."
-  (when (org-safe-mode) ; Prevent running advice in non org-safe buffers
+  (when (and (eq major-mode 'org-mode)
+             org-safe-mode) ; Prevent running advice in non org-safe buffers
     (if (or (org-safe-attemping-insert-first-star-newline-p C)
             (not (org-safe-action-is-prohibited)))
         nil ; Allow `self-insert-command'
