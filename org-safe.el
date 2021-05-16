@@ -41,16 +41,21 @@
   :type 'float)
 
 (defcustom org-safe-prohibit-functions
-  '(;; Headlines
+  '(;; Headline stars
     org-safe-looking-at-headline-stars-p
+    org-safe-looking-back-at-headline-stars-p
+
+    ;; Headline spaces
     org-safe-looking-at-headline-star-space-p
     org-safe-looking-back-at-headline-star-space-p
+
+    ;; Headline region
     org-safe-headline-in-region-p
-    org-safe-drawer-in-region-p
 
     ;; Drawers
     org-safe-looking-at-drawer-p
     org-safe-looking-at-logbook-note-p
+    org-safe-drawer-in-region-p
 
     ;; Document properties
     org-safe-looking-at-document-footer-properties-p
