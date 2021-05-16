@@ -116,7 +116,7 @@ N is number of chars to consider."
   (interactive)
   (if (not (org-safe-looking-back-at-headline-stars-p))
       (org-delete-backward-char 1)
-    (message "Cant delete headline stars")))
+    (message "org-safe prohibiting deltion of headline stars")))
 
 (defun org-safe-looking-back-at-headline-stars-p nil
   "Return non-nil if point is looking back at headline stars."
@@ -147,7 +147,7 @@ N is number of chars to consider."
   (interactive)
   (if (not (cl-some 'funcall org-safe-prohibit-functions))
       (org-delete-char 1)
-    (message "Can't delete headline stars")))
+    (message "org-safe prohibiting deltion of headline stars")))
 
 (defconst org-safe-logbook-drawer-re
   ;; NOTE: This constant is defined in `org' 9.4. Defining it here
@@ -330,7 +330,7 @@ i.e. run `self-insert-command' only if this function returns nil."
   ;; TODO allow new line to push headline down
   (when (and (org-safe-mode) ; Prevent running advice in non org-safe buffers
              (cl-some 'funcall org-safe-prohibit-functions))
-    (progn (message "org-safe prohibiting self-insert command")
+    (progn (message "org-safe prohibiting self-insert-command")
            t)))
 
 (provide 'org-safe)
