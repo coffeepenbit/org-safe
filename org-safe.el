@@ -145,9 +145,13 @@ N is number of chars to consider."
 (defun org-safe-delete-char nil
   "Execute org-delete-char if non-protected content."
   (interactive)
-  (if (not (cl-some 'funcall org-safe-prohibit-functions))
+  (if (not (org-safe-action-is-prohibited))
       (org-delete-char 1)
     (message "org-safe prohibiting deltion of headline stars")))
+
+(defun org-safe-action-is-prohibited nil
+  "Return non-nil if action should be prohibited."
+  (cl-some 'funcall org-safe-prohibit-functions))
 
 (defconst org-safe-logbook-drawer-re
   ;; NOTE: This constant is defined in `org' 9.4. Defining it here
