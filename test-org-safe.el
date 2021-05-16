@@ -1114,6 +1114,16 @@ d") ; Point look at d
        (self-insert-command 1 ?a)
        (expect (char-before) :to-be ?a)
        (expect (char-after) :to-be ?h))))
+  (it "does NOT prohibit self-insert newline at first star"
+    (test-org-safe-with-org-temp-buffer
+     "* headline"
+     (lambda nil
+       (expect (eq (point) (point-min)))
+       (expect (char-after) :to-be ?*)
+       (self-insert-command 1 10) ; 10 is Newline
+       (expect (eq (point) (point-min)))
+       (expect (buffer-string) :to-equal "* headline
+"))))
   (it "does NOT affect non org-safe-mode buffers"
     (with-temp-buffer
       "* headline"
