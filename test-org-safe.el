@@ -379,7 +379,15 @@ foobar"
   ;; TODO implement this test
   (xit "does NOT delete logbook drawer")
   ;; TODO implement this test
-  (xit "it does NOT delete space between headline and asterisk"))
+  (it "it does NOT delete space between headline and asterisk"
+    (test-org-safe-with-org-temp-buffer
+     "* headline"
+     (lambda nil
+       (forward-char 2)
+       (expect (looking-at "headline"))
+       (expect (char-before) :to-be ? )
+       (org-safe-delete-backward-char)
+       (expect (buffer-string) :to-equal "* headline")))))
 
 (describe "org-safe-looking-at-headline-stars-p"
   (it "should be t when looking at a headline"

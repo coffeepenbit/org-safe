@@ -120,9 +120,9 @@
 
 N is number of chars to consider."
   (interactive)
-  (if (not (org-safe-looking-back-at-headline-stars-p))
+  (if (not (org-safe-action-is-prohibited))
       (org-delete-backward-char 1)
-    (message "org-safe prohibiting deltion of headline stars")))
+    (message "org-safe prohibiting deletion of headline stars")))
 
 (defun org-safe-looking-back-at-headline-stars-p nil
   "Return non-nil if point is looking back at headline stars."
@@ -153,7 +153,7 @@ N is number of chars to consider."
   (interactive)
   (if (not (org-safe-action-is-prohibited))
       (org-delete-char 1)
-    (message "org-safe prohibiting deltion of headline stars")))
+    (message "org-safe prohibiting deletion of headline stars")))
 
 (defun org-safe-action-is-prohibited nil
   "Return non-nil if action should be prohibited."
