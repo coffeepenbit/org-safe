@@ -157,8 +157,11 @@ N is number of chars to consider."
 
 (defun org-safe-action-is-prohibited nil
   "Return non-nil if action should be prohibited."
-  ;; TODO return reason for safe-prohibit-function being true
-  (cl-some 'funcall org-safe-prohibit-functions))
+  (mapcan (lambda (func)
+            (when (and func
+                       (funcall func))
+              (list (symbol-name func))))
+          org-safe-prohibit-functions))
 
 (defconst org-safe-logbook-drawer-re
   ;; NOTE: This constant is defined in `org' 9.4. Defining it here
