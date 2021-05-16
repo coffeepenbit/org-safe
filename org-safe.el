@@ -326,8 +326,11 @@ BEG and END are points."
 (defun org-safe-prohibit-self-insert-command-advice (&rest _)
   "Return non-nil if `self-insert-command' should be prohibited.
 
-Use this function by adding it as advice :before-until to `self-insert-command'."
-  (cl-some 'funcall org-safe-prohibit-functions))
+Use this function by adding it as advice :before-until to `self-insert-command',
+i.e. run `self-insert-command' only if this function returns nil."
+  (when (cl-some 'funcall org-safe-prohibit-functions)
+    (progn (message "org-safe prohibiting self-insert command")
+           t)))
 
-(provide 'org-safe)
+  (provide 'org-safe)
 ;;; org-safe.el ends here
