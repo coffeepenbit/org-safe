@@ -41,6 +41,20 @@
      ""
      (lambda nil
        (expect (bound-and-true-p org-safe-mode-map)))))
+  (it "it can be enabled in org-mode buffers"
+    (test-org-safe-with-org-temp-buffer
+     ""
+     (lambda nil
+       (expect major-mode :to-be 'org-mode)
+       (expect org-safe-mode :to-be nil)
+       (org-safe-mode)
+       (expect org-safe-mode :to-be t))))
+  (it "it can NOT be enabled in non org-mode buffers"
+    (with-temp-buffer
+      (expect major-mode :not :to-be 'org-mode)
+      (expect org-safe-mode :to-be nil)
+      (org-safe-mode)
+      (expect org-safe-mode :to-be nil)))
   (it "toggles remapping org-delete-char to org-safe-delete-char"
     (test-org-safe-with-org-temp-buffer
      ""
