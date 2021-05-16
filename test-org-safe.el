@@ -71,10 +71,10 @@
     (test-org-safe-with-org-temp-buffer
      ""
      (lambda nil
-       (expect (advice-member-p 'org-safe-self-insert-command-advice
+       (expect (advice-member-p 'org-safe-prohibit-self-insert-command-advice
                                 'self-insert-command) :to-be nil)
        (org-safe-mode)
-       (expect (advice-member-p 'org-safe-self-insert-command-advice
+       (expect (advice-member-p 'org-safe-prohibit-self-insert-command-advice
                                 'self-insert-command))))))
 
 (describe "org-safe-delete-char"
@@ -206,7 +206,7 @@
          (expect (looking-at (regexp-quote ":END:")))
          (org-safe-delete-char)
          (expect (looking-at (regexp-quote ":END:"))))))
-    (it "prohibts deleting space between headline and asterisk"
+    (it "prohibits deleting space between headline and asterisk"
       (test-org-safe-with-org-temp-buffer
        "* headline"
        (lambda nil
