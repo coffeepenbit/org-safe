@@ -26,8 +26,6 @@
 (require 'buttercup)
 (require 'org-safe)
 
-;; TODO remove unnecessary (org-safe-mode) calls
-
 (describe "Enabling and disabling org-safe-mode"
   (it "Toggles org-safe-mode"
     (test-org-safe-with-org-temp-buffer
@@ -86,7 +84,6 @@
       (test-org-safe-with-org-temp-buffer
        "* headline"
        (lambda nil
-         (org-safe-mode)
          (goto-char 5)
          (org-safe-delete-char)
          (expect (buffer-string) :to-equal "* hedline"))))
@@ -94,20 +91,17 @@
       (test-org-safe-with-org-temp-buffer
        "*this is not a headline*"
        (lambda nil
-         (org-safe-mode) ; After first asterisk
          (org-safe-delete-char)
          (expect (buffer-string) :to-equal "this is not a headline*")))
       (test-org-safe-with-org-temp-buffer
        "*this is not a headline*"
        (lambda nil
-         (org-safe-mode)
          (goto-char (- (point-max) 1)) ; After last asterisk
          (org-safe-delete-char)
          (expect (buffer-string) :to-equal "*this is not a headline")))
       (test-org-safe-with-org-temp-buffer
        "asterisk*"
        (lambda nil
-         (org-safe-mode)
          (goto-char (- (point-max) 1)) ; After first asterisk
          (org-safe-delete-char)
          (expect (buffer-string) :to-equal "asterisk")))))
@@ -116,13 +110,11 @@
       (test-org-safe-with-org-temp-buffer
        "* headline"
        (lambda nil
-         (org-safe-mode)
          (org-safe-delete-char)
          (expect (buffer-string) :to-equal "* headline")))
       (test-org-safe-with-org-temp-buffer
        "** headline" ; Point after first asterisk
        (lambda nil
-         (org-safe-mode)
          (forward-char 1)
          (org-safe-delete-char)
          (expect (buffer-string) :to-equal "** headline"))))
@@ -132,7 +124,6 @@
        "this is some test
 ** headline on next line"
        (lambda nil
-         (org-safe-mode)
          (end-of-line)
          (org-safe-delete-char)
          (expect (buffer-string) :to-equal "this is some test
@@ -348,7 +339,6 @@ foobar"
     (test-org-safe-with-org-temp-buffer
      "* headline"
      (lambda nil
-       (org-safe-mode)
        (goto-char 5)
        (org-safe-delete-backward-char)
        (expect (buffer-string) :to-equal "* hadline"))))
@@ -356,14 +346,12 @@ foobar"
     (test-org-safe-with-org-temp-buffer
      "* headline"
      (lambda nil
-       (org-safe-mode)
        (goto-char 2) ; After first asterisk
        (org-safe-delete-backward-char)
        (expect (buffer-string) :to-equal "* headline")))
     (test-org-safe-with-org-temp-buffer
      "** headline"
      (lambda nil
-       (org-safe-mode)
        (goto-char 2) ; After first asterisk
        (org-safe-delete-backward-char)
        (expect "** headline" :to-equal (buffer-string)))))
@@ -371,21 +359,18 @@ foobar"
     (test-org-safe-with-org-temp-buffer
      "*this is not a headline*"
      (lambda nil
-       (org-safe-mode)
        (goto-char 2) ; After first asterisk
        (org-safe-delete-backward-char)
        (expect (buffer-string) :to-equal "this is not a headline*")))
     (test-org-safe-with-org-temp-buffer
      "*this is not a headline*"
      (lambda nil
-       (org-safe-mode)
        (goto-char (point-max))
        (org-safe-delete-backward-char)
        (expect (buffer-string) :to-equal "*this is not a headline")))
     (test-org-safe-with-org-temp-buffer
      "asterisk*"
      (lambda nil
-       (org-safe-mode)
        (goto-char (point-max))
        (org-safe-delete-backward-char)
        (expect (buffer-string) :to-equal "asterisk"))))
