@@ -1068,21 +1068,21 @@ d") ; Point look at d
         (expect 'foo :to-have-been-called-times 4)))))
 
 (describe "org-safe-prohibit-self-insert-command-advice"
-  (before-each
+  ;; NOTE manually set `org-safe-mode' variable to t to avoid any hooks run
+  ;; when enabling `org-safe-mode' from interfering with tests.
+  ;;
+  ;; `org-safe-mode' must be set because it is checked by the advice
+  (before-all
     (advice-add 'self-insert-command :before-until
-                #'org-safe-prohibit-self-insert-command-advice)
-    ;; NOTE manually set `org-safe-mode' variable to t to avoid any hooks run
-    ;; when enabling `org-safe-mode' from interfering with tests.
-    ;;
-    ;; `org-safe-mode' must be set because it is checked by the advice
-    (setq org-safe-mode t))
-  (after-each
-    (advice-remove 'self-insert-command #'org-safe-prohibit-self-insert-command-advice)
-    (setq org-safe-mode nil))
+                #'org-safe-prohibit-self-insert-command-advice))
+  (after-all
+    (advice-remove 'self-insert-command
+                   #'org-safe-prohibit-self-insert-command-advice))
   (it "prohibits self-insert in front of non-first headline stars"
     (test-org-safe-with-org-temp-buffer
      "** headline"
      (lambda nil
+       (setq org-safe-mode t)
        (forward-char)
        (expect (char-before) :to-be ?*)
        (expect (char-after) :to-be ?*)
@@ -1093,17 +1093,18 @@ d") ; Point look at d
     (test-org-safe-with-org-temp-buffer
      "* headline"
      (lambda nil
+       (setq org-safe-mode t)
        (forward-char 1)
        (expect (char-before) :to-be ?*)
-       (expect (char-after) :to-be ? )
+       (expect (looking-at " headline"))
        (self-insert-command 1 ?a)
-       (expect (org-safe-action-is-prohibited))
        (expect (char-before) :to-be ?*)
        (expect (char-after) :to-be ? ))))
   (it "does NOT prohibit self-insert at bold text"
     (test-org-safe-with-org-temp-buffer
      "*headline"
      (lambda nil
+       (setq org-safe-mode t)
        (forward-char 1)
        (expect (char-before) :to-be ?*)
        (expect (char-after) :to-be ?h)
@@ -1114,6 +1115,7 @@ d") ; Point look at d
     (test-org-safe-with-org-temp-buffer
      "* headline"
      (lambda nil
+       (setq org-safe-mode t)
        (expect (eq (point) (point-min)))
        (expect (char-after) :to-be ?*)
        (expect (org-safe-looking-at-first-headline-star-p))
@@ -1125,6 +1127,7 @@ d") ; Point look at d
     (with-temp-buffer
       "* headline"
       (lambda nil
+        (setq org-safe-mode t)
         (expect org-safe-mode :to-be nil)
         (expect (eq (point) (point-min)))
         (expect (char-after) :to-be ?*)
