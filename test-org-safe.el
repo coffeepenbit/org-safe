@@ -1111,7 +1111,6 @@ d") ; Point look at d
        (expect (char-before) :to-be ?a)
        (expect (char-after) :to-be ?h))))
   (it "does NOT prohibit self-insert newline at first star"
-    ;; TODO pass this test
     (test-org-safe-with-org-temp-buffer
      "* headline"
      (lambda nil
