@@ -66,6 +66,31 @@
   :group 'org-safe
   :type 'list)
 
+(defcustom org-safe-delete-char-prohibit-functions
+  '(;; Headline stars
+    org-safe-looking-at-headline-stars-p
+
+    ;; Headline spaces
+    org-safe-looking-at-headline-star-space-p
+
+    ;; Headline region
+    org-safe-headline-in-region-p
+
+    ;; Drawers
+    org-safe-looking-at-drawer-p
+    org-safe-looking-at-logbook-note-p
+    org-safe-drawer-in-region-p
+
+    ;; Document properties
+    org-safe-looking-at-document-footer-properties-p
+    org-safe-looking-at-document-header-properties-p
+    org-safe-document-header-properties-in-region-p
+    org-safe-document-footer-properties-in-region-p)
+  "Functions that prevent deletion when returning non-nil."
+  :group 'org-safe
+  :type 'list)
+
+
 ;;;; Vars
 (defvar org-safe-mode-map
   (let ((map (make-sparse-keymap)))
@@ -118,7 +143,7 @@
 (defun org-safe-delete-char nil
   "Execute org-delete-char if non-protected content."
   (interactive)
-  (let ((prohibited (org-safe-action-is-prohibited)))
+  (let ((prohibited (org-safe-delete-char-prohibited-context-p)))
     (if (not prohibited)
         (org-delete-char 1)
       (message "prohibited delete-char [reason(s): %s]" prohibited))))
@@ -164,6 +189,14 @@ N is number of chars to consider."
                        (funcall func))
               (list (symbol-name func))))
           org-safe-prohibit-functions))
+
+(defun org-safe-delete-char-prohibited-context-p nil
+  "Return non-nil if action should be prohibited."
+  (mapcan (lambda (func)
+            (when (and func
+                       (funcall func))
+              (list (symbol-name func))))
+          org-safe-delete-char-prohibit-functions))
 
 (defconst org-safe-logbook-drawer-re
   ;; NOTE: This constant is defined in `org' 9.4. Defining it here

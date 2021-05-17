@@ -80,13 +80,6 @@
 (describe "org-safe-delete-char"
   (before-each (setq inhibit-message t))
   (describe "does NOT prohibit"
-    (it "deleting non-first title chars in headline"
-      (test-org-safe-with-org-temp-buffer
-       "* headline"
-       (lambda nil
-         (goto-char 5)
-         (org-safe-delete-char)
-         (expect (buffer-string) :to-equal "* hedline"))))
     (it "deleting first title char in headline"
       (test-org-safe-with-org-temp-buffer
        "* headline"
@@ -94,6 +87,13 @@
          (forward-char 2)
          (org-safe-delete-char)
          (expect (buffer-string) :to-equal "* eadline"))))
+    (it "deleting non-first title chars in headline"
+      (test-org-safe-with-org-temp-buffer
+       "* headline"
+       (lambda nil
+         (goto-char 5)
+         (org-safe-delete-char)
+         (expect (buffer-string) :to-equal "* hedline"))))
     (it "deleting non-headline asterisks"
       (test-org-safe-with-org-temp-buffer
        "*this is not a headline*"
