@@ -432,7 +432,36 @@ foobar"
        (expect (looking-at "headline"))
        (expect (char-before) :to-be ? )
        (org-safe-delete-backward-char)
-       (expect (buffer-string) :to-equal "* headline")))))
+       (expect (buffer-string) :to-equal "* headline"))))
+  (describe "temporary allow deletion"
+    :var (org-safe-disabled-duration org-safe-disabled)
+    (before-each
+      (setq org-safe-disabled-duration 0.1
+            org-safe-disabled nil))
+    (it "respects temporary allow deletion"
+      (test-org-safe-with-org-temp-buffer
+       "** headline"
+       (lambda nil
+         (forward-char 2)
+         (print (format "%s" org-safe-disabled-duration))
+         ;; Prevented is default behavior
+         (expect (eq (char-before) ?*))
+         (expect (eq (char-after) ? ))
+         (org-safe-delete-backward-char)
+         (expect (buffer-string) :to-equal "** headline")
+
+         ;; Delete when timer is enabled
+         (org-safe-temp-allow-deletion)
+         (org-safe-delete-backward-char)
+         (expect (buffer-string) :to-equal "* headline")
+
+         ;; Should have initial behavior after timer expires
+         (sit-for (+ org-safe-disabled-duration 0.01)) ; Let timer expire
+
+         (expect (buffer-string) :to-equal "* headline")
+         (org-safe-delete-backward-char)
+         (expect (eq (char-before) ?*))
+         (expect (buffer-string) :to-equal "* headline"))))))
 
 (describe "org-safe-looking-at-headline-stars-p"
   (it "should be t when looking at a headline"
