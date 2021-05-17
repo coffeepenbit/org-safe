@@ -131,11 +131,13 @@
   :lighter " org-safe"
   :group 'org-safe
   :keymap 'org-safe-mode-map
-  (if org-safe-mode ; `org-safe-mode' was just enabled
-      (advice-add 'self-insert-command :before-until
-                  #'org-safe-prohibit-self-insert-command-advice)
-    ;; FIXME this removes advice even if org-safe is enabled in other buffers
-    (advice-remove 'self-insert-command #'org-safe-prohibit-self-insert-command-advice)))
+  ;; NOTE Disabling hook until fix issues with self-insert-command advice
+  ;; (if org-safe-mode ; `org-safe-mode' was just enabled
+  ;;     (advice-add 'self-insert-command :before-until
+  ;;                 #'org-safe-prohibit-self-insert-command-advice)
+  ;;   ;; FIXME this removes advice even if org-safe is enabled in other buffers
+  ;;   (advice-remove 'self-insert-command #'org-safe-prohibit-self-insert-command-advice))
+  )
 
 (defvar org-safe-prohibited-var nil
   "If true, prevent function from activating.")
