@@ -223,8 +223,33 @@
          (org-safe-delete-char)
          (expect (eq (char-before) ?*))
          (expect (looking-at (regexp-quote " headline")))))))
-  (it "is disabled when `org-safe' is disbaled"
-    ))
+  (describe "temporary allow deletion"
+    :var ((org-safe-disabled-duration 0.2)
+          (org-safe-disabled nil))
+    (it "respects temporary allow deletion"
+      (test-org-safe-with-org-temp-buffer
+       "** headline"
+       (lambda nil
+         (forward-char 2)
+
+         ;; Prevented is default behavior
+         (expect (eq (char-before) ?*))
+         (expect (eq (char-after) ? ))
+         (org-safe-delete-char)
+         (expect (buffer-string) :to-equal "** headline")
+
+         ;; Delete when timer is enabled
+         (org-safe-temp-allow-deletion)
+         (org-safe-delete-char)
+         (expect (buffer-string) :to-equal "* headline")
+
+         ;; Should have initial behavior after timer expires
+         (sit-for (+ org-safe-disabled-duration 0.01)) ; Let timer expire
+
+         (expect (buffer-string) :to-equal "* headline")
+         (org-safe-delete-char)
+         (expect (eq (char-before) ?*))
+         (expect (buffer-string) :to-equal "* headline"))))))
 
 (describe "org-safe-looking-at-logbook-note-p"
   (describe "looking at logbook note"
@@ -389,6 +414,15 @@ foobar"
   (xit "does NOT delete logbook drawer")
   ;; TODO implement this test
   (it "it does NOT delete space between headline and asterisk"
+    (test-org-safe-with-org-temp-buffer
+     "* headline"
+     (lambda nil
+       (forward-char 2)
+       (expect (looking-at "headline"))
+       (expect (char-before) :to-be ? )
+       (org-safe-delete-backward-char)
+       (expect (buffer-string) :to-equal "* headline"))))
+  (it "respects temp allow deletion timer"
     (test-org-safe-with-org-temp-buffer
      "* headline"
      (lambda nil
