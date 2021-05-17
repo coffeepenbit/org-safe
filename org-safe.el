@@ -40,7 +40,55 @@
   :group 'org-safe
   :type 'float)
 
-(defcustom org-safe-prohibit-functions
+(defcustom org-safe-prohibit-delete-char-contexts
+  '(;; Headline stars
+    org-safe-looking-at-headline-stars-p
+
+    ;; Headline spaces
+    org-safe-looking-at-headline-star-space-p
+
+    ;; Headline region
+    org-safe-headline-in-region-p
+
+    ;; Drawers
+    org-safe-looking-at-drawer-p
+    org-safe-looking-at-logbook-note-p
+    org-safe-drawer-in-region-p
+
+    ;; Document properties
+    org-safe-looking-at-document-footer-properties-p
+    org-safe-looking-at-document-header-properties-p
+    org-safe-document-header-properties-in-region-p
+    org-safe-document-footer-properties-in-region-p)
+  "Functions that prevent deletion when returning non-nil."
+  :group 'org-safe
+  :type 'list)
+
+(defcustom org-safe-prohibit-delete-backward-char-contexts
+  '(;; Headline stars
+    org-safe-looking-back-at-headline-stars-p
+
+    ;; Headline spaces
+    org-safe-looking-back-at-headline-star-space-p
+
+    ;; Headline region
+    org-safe-headline-in-region-p
+
+    ;; Drawers
+    org-safe-looking-at-drawer-p
+    org-safe-looking-at-logbook-note-p
+    org-safe-drawer-in-region-p
+
+    ;; Document properties
+    org-safe-looking-at-document-footer-properties-p
+    org-safe-looking-at-document-header-properties-p
+    org-safe-document-header-properties-in-region-p
+    org-safe-document-footer-properties-in-region-p)
+  "Functions that prevent deletion when returning non-nil."
+  :group 'org-safe
+  :type 'list)
+
+(defcustom org-safe-prohibit-self-insert-command-contexts
   '(;; Headline stars
     org-safe-looking-at-headline-stars-p
     org-safe-looking-back-at-headline-stars-p
@@ -65,31 +113,6 @@
   "Functions that prevent deletion when returning non-nil."
   :group 'org-safe
   :type 'list)
-
-(defcustom org-safe-delete-char-prohibit-functions
-  '(;; Headline stars
-    org-safe-looking-at-headline-stars-p
-
-    ;; Headline spaces
-    org-safe-looking-at-headline-star-space-p
-
-    ;; Headline region
-    org-safe-headline-in-region-p
-
-    ;; Drawers
-    org-safe-looking-at-drawer-p
-    org-safe-looking-at-logbook-note-p
-    org-safe-drawer-in-region-p
-
-    ;; Document properties
-    org-safe-looking-at-document-footer-properties-p
-    org-safe-looking-at-document-header-properties-p
-    org-safe-document-header-properties-in-region-p
-    org-safe-document-footer-properties-in-region-p)
-  "Functions that prevent deletion when returning non-nil."
-  :group 'org-safe
-  :type 'list)
-
 
 ;;;; Vars
 (defvar org-safe-mode-map
@@ -153,7 +176,7 @@
 
 N is number of chars to consider."
   (interactive)
-  (let ((prohibited (org-safe-action-is-prohibited)))
+  (let ((prohibited (org-safe-delete-backward-char-prohibited-context-p)))
     (if (not prohibited)
         (org-delete-backward-char 1)
       (message "prohibed delete-backward-char [reason(s): %s]" prohibited))))
@@ -188,7 +211,7 @@ N is number of chars to consider."
             (when (and func
                        (funcall func))
               (list (symbol-name func))))
-          org-safe-prohibit-functions))
+          org-safe-prohibit-self-insert-command-contexts))
 
 (defun org-safe-delete-char-prohibited-context-p nil
   "Return non-nil if action should be prohibited."
@@ -196,7 +219,15 @@ N is number of chars to consider."
             (when (and func
                        (funcall func))
               (list (symbol-name func))))
-          org-safe-delete-char-prohibit-functions))
+          org-safe-prohibit-delete-char-contexts))
+
+(defun org-safe-delete-backward-char-prohibited-context-p nil
+  "Return non-nil if action should be prohibited."
+  (mapcan (lambda (func)
+            (when (and func
+                       (funcall func))
+              (list (symbol-name func))))
+          org-safe-prohibit-delete-backward-char-contexts))
 
 (defconst org-safe-logbook-drawer-re
   ;; NOTE: This constant is defined in `org' 9.4. Defining it here
