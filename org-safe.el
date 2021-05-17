@@ -158,7 +158,6 @@
 
 (defun org-safe--start-disabled-timer nil
   "Enable `org-safe' again after timer is done."
-  (print "Temporarily disabling org-safe protection")
   (setq org-safe--disabled-timer (run-with-timer org-safe-disabled-duration
                                                  nil
                                                  'org-safe-enable)))

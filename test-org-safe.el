@@ -233,7 +233,6 @@
        "** headline"
        (lambda nil
          (forward-char 1)
-         (print (format "%s" org-safe-disabled-duration))
          ;; Prevented is default behavior
          (expect (eq (char-before) ?*))
          (expect (eq (char-after) ?*))
@@ -252,6 +251,120 @@
          (org-safe-delete-char)
          (expect (eq (char-before) ?*))
          (expect (buffer-string) :to-equal "* headline"))))))
+
+(describe "org-safe-delete-backward-char"
+  (before-each (setq inhibit-message t))
+  (it "deletes title chars in headline"
+    (test-org-safe-with-org-temp-buffer
+     "* headline"
+     (lambda nil
+       (goto-char 5)
+       (org-safe-delete-backward-char)
+       (expect (buffer-string) :to-equal "* hadline"))))
+  (it "prohibits deleting headline asterisks"
+    (test-org-safe-with-org-temp-buffer
+     "* headline"
+     (lambda nil
+       (goto-char 2) ; After first asterisk
+       (org-safe-delete-backward-char)
+       (expect (buffer-string) :to-equal "* headline")))
+    (test-org-safe-with-org-temp-buffer
+     "** headline"
+     (lambda nil
+       (goto-char 2) ; After first asterisk
+       (org-safe-delete-backward-char)
+       (expect "** headline" :to-equal (buffer-string)))))
+  (it "allows deletion of non-headline asterisks"
+    (test-org-safe-with-org-temp-buffer
+     "*this is not a headline*"
+     (lambda nil
+       (goto-char 2) ; After first asterisk
+       (org-safe-delete-backward-char)
+       (expect (buffer-string) :to-equal "this is not a headline*")))
+    (test-org-safe-with-org-temp-buffer
+     "*this is not a headline*"
+     (lambda nil
+       (goto-char (point-max))
+       (org-safe-delete-backward-char)
+       (expect (buffer-string) :to-equal "*this is not a headline")))
+    (test-org-safe-with-org-temp-buffer
+     "asterisk*"
+     (lambda nil
+       (goto-char (point-max))
+       (org-safe-delete-backward-char)
+       (expect (buffer-string) :to-equal "asterisk"))))
+
+  (xit "does NOT delete property drawer") ; TODO implement this test
+  (xit "does NOT delete logbook drawer") ; TODO implement this test
+  (it "it does NOT delete space between headline and asterisk"
+    (test-org-safe-with-org-temp-buffer
+     "* headline"
+     (lambda nil
+       (forward-char 2)
+       (expect (looking-at "headline"))
+       (expect (char-before) :to-be ? )
+       (org-safe-delete-backward-char)
+       (expect (buffer-string) :to-equal "* headline"))))
+  (it "respects temp allow deletion timer"
+    (test-org-safe-with-org-temp-buffer
+     "* headline"
+     (lambda nil
+       (forward-char 2)
+       (expect (looking-at "headline"))
+       (expect (char-before) :to-be ? )
+       (org-safe-delete-backward-char)
+       (expect (buffer-string) :to-equal "* headline"))))
+  (describe "temporary allow deletion"
+    :var (org-safe-disabled-duration org-safe-disabled)
+    (before-each
+      (setq org-safe-disabled-duration 0.1
+            org-safe-disabled nil))
+    (it "respects temporary allow deletion"
+      (test-org-safe-with-org-temp-buffer
+       "** headline"
+       (lambda nil
+         (forward-char 2)
+         ;; Prevented is default behavior
+         (expect (eq (char-before) ?*))
+         (expect (eq (char-after) ? ))
+         (org-safe-delete-backward-char)
+         (expect (buffer-string) :to-equal "** headline")
+
+         ;; Delete when timer is enabled
+         (org-safe-temp-allow-deletion)
+         (org-safe-delete-backward-char)
+         (expect (buffer-string) :to-equal "* headline")
+
+         ;; Should have initial behavior after timer expires
+         (sit-for (+ org-safe-disabled-duration 0.01)) ; Let timer expire
+
+         (expect (buffer-string) :to-equal "* headline")
+         (org-safe-delete-backward-char)
+         (expect (eq (char-before) ?*))
+         (expect (buffer-string) :to-equal "* headline"))))
+    (it "resets temporary allow deletion timer"
+      (test-org-safe-with-org-temp-buffer
+       "** headline"
+       (lambda nil
+         (forward-char 2)
+         ;; Prevented is default behavior
+         (expect (eq (char-before) ?*))
+         (expect (eq (char-after) ? ))
+         (org-safe-delete-backward-char)
+         (expect (buffer-string) :to-equal "** headline")
+
+         ;; Run command just before timer expires
+         (org-safe-temp-allow-deletion)
+         (sit-for (- org-safe-disabled-duration 0.01))
+         (org-safe-delete-backward-char)
+         (expect (buffer-string) :to-equal "* headline")
+         (expect (char-before) :to-equal ?*)
+
+         ;; Run command again just before reset timer expires
+         ;; This will only succeed if timer had been reset
+         (sit-for (- org-safe-disabled-duration 0.01))
+         (org-safe-delete-backward-char)
+         (expect (buffer-string) :to-equal " headline"))))))
 
 (describe "org-safe-looking-at-logbook-note-p"
   (describe "looking at logbook note"
@@ -368,122 +481,6 @@ foobar"
          (beginning-of-line)
          (expect (looking-at (regexp-quote "foobar")))
          (expect (org-safe-looking-at-logbook-note-p) :to-be nil))))))
-
-(describe "org-safe-delete-backward-char"
-  (before-each (setq inhibit-message t))
-  (it "deletes title chars in headline"
-    (test-org-safe-with-org-temp-buffer
-     "* headline"
-     (lambda nil
-       (goto-char 5)
-       (org-safe-delete-backward-char)
-       (expect (buffer-string) :to-equal "* hadline"))))
-  (it "prohibits deleting headline asterisks"
-    (test-org-safe-with-org-temp-buffer
-     "* headline"
-     (lambda nil
-       (goto-char 2) ; After first asterisk
-       (org-safe-delete-backward-char)
-       (expect (buffer-string) :to-equal "* headline")))
-    (test-org-safe-with-org-temp-buffer
-     "** headline"
-     (lambda nil
-       (goto-char 2) ; After first asterisk
-       (org-safe-delete-backward-char)
-       (expect "** headline" :to-equal (buffer-string)))))
-  (it "allows deletion of non-headline asterisks"
-    (test-org-safe-with-org-temp-buffer
-     "*this is not a headline*"
-     (lambda nil
-       (goto-char 2) ; After first asterisk
-       (org-safe-delete-backward-char)
-       (expect (buffer-string) :to-equal "this is not a headline*")))
-    (test-org-safe-with-org-temp-buffer
-     "*this is not a headline*"
-     (lambda nil
-       (goto-char (point-max))
-       (org-safe-delete-backward-char)
-       (expect (buffer-string) :to-equal "*this is not a headline")))
-    (test-org-safe-with-org-temp-buffer
-     "asterisk*"
-     (lambda nil
-       (goto-char (point-max))
-       (org-safe-delete-backward-char)
-       (expect (buffer-string) :to-equal "asterisk"))))
-
-  (xit "does NOT delete property drawer") ; TODO implement this test
-  (xit "does NOT delete logbook drawer") ; TODO implement this test
-  (it "it does NOT delete space between headline and asterisk"
-    (test-org-safe-with-org-temp-buffer
-     "* headline"
-     (lambda nil
-       (forward-char 2)
-       (expect (looking-at "headline"))
-       (expect (char-before) :to-be ? )
-       (org-safe-delete-backward-char)
-       (expect (buffer-string) :to-equal "* headline"))))
-  (it "respects temp allow deletion timer"
-    (test-org-safe-with-org-temp-buffer
-     "* headline"
-     (lambda nil
-       (forward-char 2)
-       (expect (looking-at "headline"))
-       (expect (char-before) :to-be ? )
-       (org-safe-delete-backward-char)
-       (expect (buffer-string) :to-equal "* headline"))))
-  (describe "temporary allow deletion"
-    :var (org-safe-disabled-duration org-safe-disabled)
-    (before-each
-      (setq org-safe-disabled-duration 0.1
-            org-safe-disabled nil))
-    (it "respects temporary allow deletion"
-      (test-org-safe-with-org-temp-buffer
-       "** headline"
-       (lambda nil
-         (forward-char 2)
-         (print (format "%s" org-safe-disabled-duration))
-         ;; Prevented is default behavior
-         (expect (eq (char-before) ?*))
-         (expect (eq (char-after) ? ))
-         (org-safe-delete-backward-char)
-         (expect (buffer-string) :to-equal "** headline")
-
-         ;; Delete when timer is enabled
-         (org-safe-temp-allow-deletion)
-         (org-safe-delete-backward-char)
-         (expect (buffer-string) :to-equal "* headline")
-
-         ;; Should have initial behavior after timer expires
-         (sit-for (+ org-safe-disabled-duration 0.01)) ; Let timer expire
-
-         (expect (buffer-string) :to-equal "* headline")
-         (org-safe-delete-backward-char)
-         (expect (eq (char-before) ?*))
-         (expect (buffer-string) :to-equal "* headline"))))
-    (it "resets temporary allow deletion timer"
-      (test-org-safe-with-org-temp-buffer
-       "** headline"
-       (lambda nil
-         (forward-char 2)
-         (print (format "%s" org-safe-disabled-duration))
-         ;; Prevented is default behavior
-         (expect (eq (char-before) ?*))
-         (expect (eq (char-after) ? ))
-         (org-safe-delete-backward-char)
-         (expect (buffer-string) :to-equal "** headline")
-
-         ;; Run command just before timer expires
-         (org-safe-temp-allow-deletion)
-         (sit-for (- org-safe-disabled-duration 0.01))
-         (org-safe-delete-backward-char)
-         (expect (buffer-string) :to-equal "* headline")
-         (expect (char-before) :to-equal ?*)
-
-         ;; Run command again just before reset timer expires
-         ;; This will only succeed if timer had been reset
-         (sit-for (- org-safe-disabled-duration 0.01))
-         (org-safe-delete-backward-char)
-         (expect (buffer-string) :to-equal " headline"))))))
 
 (describe "org-safe-looking-at-headline-stars-p"
   (it "should be t when looking at a headline"
