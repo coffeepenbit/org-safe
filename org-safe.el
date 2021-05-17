@@ -193,7 +193,7 @@ N is number of chars to consider."
 (defun org-safe-delete-char nil
   "Execute org-delete-char if non-protected content."
   (interactive)
-  (if (org-safe-disabled-p)
+  (if (org-safe-disabled-p) ; TODO reset disabled timer if running
       (org-delete-char 1)
     (progn
       (let ((prohibited-reason (org-safe-delete-char-prohibited-context-p)))
