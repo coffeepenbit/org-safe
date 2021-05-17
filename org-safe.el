@@ -140,6 +140,7 @@
 (defvar org-safe-prohibited-var nil
   "If true, prevent function from activating.")
 
+;; TODO have functions utilize this
 (defun org-safe-temp-allow-deletion nil
   "Prohibit `org-safe' protection."
   (interactive)
@@ -414,6 +415,10 @@ See `self-insert-command' docs for N and C descriptions."
             (not (org-safe-self-insert-command-prohibited-context-p)))
         nil ; Allow `self-insert-command'
       (progn ; Prevent `self-insert-command'
+        ;; TODO provide reason why self-insert-command is prohibited
+        ;; FIXME still not allowing newline insert if calling:
+        ;; - org-open-line
+        ;; - org-return
         (message "org-safe prohibiting self-insert-command")
         t))))
 
