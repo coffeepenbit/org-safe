@@ -222,7 +222,9 @@
          (expect (looking-at (regexp-quote " headline")))
          (org-safe-delete-char)
          (expect (eq (char-before) ?*))
-         (expect (looking-at (regexp-quote " headline"))))))))
+         (expect (looking-at (regexp-quote " headline")))))))
+  (it "is disabled when `org-safe' is disbaled"
+    ))
 
 (describe "org-safe-looking-at-logbook-note-p"
   (describe "looking at logbook note"
@@ -527,50 +529,50 @@ foobar"
        (expect (looking-at "headline"))
        (expect (org-safe-looking-back-at-headline-star-space-p) :to-be nil)))))
 
-(describe "org-safe-prohibited-p"
-  (it "should be non-nil when org-safe-prohibited-var is t"
-    (let ((org-safe-prohibited-var t))
-      (expect (org-safe-prohibited-p))))
-  (it "should be nil when org-safe-prohibited-var nil"
-    (let ((org-safe-prohibited-var nil))
-      (expect (org-safe-prohibited-p) :to-be nil))))
+(describe "org-safe-disabled-p"
+  (it "should be non-nil when org-safe-disabled-var is t"
+    (let ((org-safe-disabled-var t))
+      (expect (org-safe-disabled-p))))
+  (it "should be nil when org-safe-disabled-var nil"
+    (let ((org-safe-disabled-var nil))
+      (expect (org-safe-disabled-p) :to-be nil))))
 
 (describe "org-safe-prohibit"
   (it "should cause prohibited-p to be t after being nil"
-    (let ((org-safe-prohibited-var nil))
-      (expect (org-safe-prohibited-p) :to-be nil)
-      (org-safe-prohibit)
-      (expect (org-safe-prohibited-p)))))
+    (let ((org-safe-disabled-var nil))
+      (expect (org-safe-disabled-p) :to-be nil)
+      (org-safe-disable)
+      (expect (org-safe-disabled-p)))))
 
 (describe "org-safe-enable"
   (it "should cause prohibited-p to be nil after being t"
-    (let ((org-safe-prohibited-var t))
-      (expect (org-safe-prohibited-p)))
+    (let ((org-safe-disabled-var t))
+      (expect (org-safe-disabled-p)))
     (org-safe-enable)
-    (expect (org-safe-prohibited-p) :to-be nil)))
+    (expect (org-safe-disabled-p) :to-be nil)))
 
 (describe "org-safe-disabled-timer"
-  :var (org-safe-prohibited-duration)
-  (before-each (setq org-safe-prohibited-duration 0.1))
+  :var (org-safe-disabled-duration)
+  (before-each (setq org-safe-disabled-duration 0.1))
   (it "re-enables org-safe after prohibited duration passes"
     ;; Start in prohibited state
-    (org-safe-prohibit)
-    (expect (org-safe-prohibited-p))
+    (org-safe-disable)
+    (expect (org-safe-disabled-p))
     ;; Run prohibited timer and wait for it to finish
     (org-safe-start-prohibited-timer)
-    (sit-for (+ org-safe-prohibited-duration 0.01))
+    (sit-for (+ org-safe-disabled-duration 0.01))
     ;; Verify that `org-safe' is re-enabled
-    (expect (org-safe-prohibited-p) :to-be nil)))
+    (expect (org-safe-disabled-p) :to-be nil)))
 
 (describe "org-safe-temp-allow-deletion"
-  :var ((org-safe-prohibited-duration 0.1)
-        (org-safe-prohibited nil))
+  :var ((org-safe-disabled-duration 0.1)
+        (org-safe-disabled nil))
   (it "switches org-safe from enabled to prohibited"
     (call-interactively 'org-safe-temp-allow-deletion)
-    (expect (org-safe-prohibited-p)))
-  (it "re-enables org-safe after org-safe-prohibited-duration"
-    (sit-for (+ org-safe-prohibited-duration 0.01))
-    (expect (org-safe-prohibited-p) :to-be nil)))
+    (expect (org-safe-disabled-p)))
+  (it "re-enables org-safe after org-safe-disabled-duration"
+    (sit-for (+ org-safe-disabled-duration 0.01))
+    (expect (org-safe-disabled-p) :to-be nil)))
 
 (describe "org-safe-looking-at-drawer-p"
   (it "returns non-nil when looking at :PROPERTIES:"

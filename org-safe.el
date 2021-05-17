@@ -35,7 +35,7 @@
   "org-safe minor mode."
   :group 'editing)
 
-(defcustom org-safe-prohibited-duration 15
+(defcustom org-safe-disabled-duration 15
   "Disables org-safe protection for specified numebr of seconds."
   :group 'org-safe
   :type 'float)
@@ -139,31 +139,31 @@
   ;;   (advice-remove 'self-insert-command #'org-safe-prohibit-self-insert-command-advice))
   )
 
-(defvar org-safe-prohibited-var nil
+(defvar org-safe-disabled-var nil
   "If true, prevent function from activating.")
 
 ;; TODO have functions utilize this
 (defun org-safe-temp-allow-deletion nil
   "Prohibit `org-safe' protection."
   (interactive)
-  (org-safe-prohibit)
+  (org-safe-disable)
   (org-safe-start-prohibited-timer))
 
 (defun org-safe-start-prohibited-timer nil
   "Enable `org-safe' again after timer is done."
-  (run-with-timer org-safe-prohibited-duration nil 'org-safe-enable))
+  (run-with-timer org-safe-disabled-duration nil 'org-safe-enable))
 
-(defun org-safe-prohibited-p nil
+(defun org-safe-disabled-p nil
   "Check if `org-safe' protection is prohibited."
-  org-safe-prohibited-var)
+  org-safe-disabled-var)
 
-(defun org-safe-prohibit nil
-  "Prohibit `org-safe' safety functions."
-  (setq org-safe-prohibited-var t))
+(defun org-safe-disable nil
+  "Disable `org-safe' prohibiting functionality."
+  (setq org-safe-disabled-var t))
 
 (defun org-safe-enable nil
   "Re-enables org safe after prohibited."
-  (setq org-safe-prohibited-var nil))
+  (setq org-safe-disabled-var nil))
 
 (defun org-safe-delete-char nil
   "Execute org-delete-char if non-protected content."
