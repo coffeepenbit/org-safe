@@ -35,8 +35,8 @@
   "org-safe minor mode."
   :group 'editing)
 
-(defcustom org-safe-disabled-duration 15
-  "Disables org-safe protection for specified numebr of seconds."
+(defcustom org-safe-disabled-duration 3
+  "Disables org-safe protection for specified number of seconds."
   :group 'org-safe
   :type 'float)
 
@@ -165,26 +165,29 @@
   "Re-enables org safe after prohibited."
   (setq org-safe--disabled-var nil))
 
-(defun org-safe-delete-char nil
-  "Execute org-delete-char if non-protected content."
-  (interactive)
-  (if (org-safe-disabled-p)
-      (org-delete-char 1)
-    (progn
-      (let ((prohibited (org-safe-delete-char-prohibited-context-p)))
-        (if (not prohibited)
-            (org-delete-char 1)
-          (message "prohibited delete-char [reason(s): %s]" prohibited))))))
-
 (defun org-safe-delete-backward-char nil
   "Execute org-delete-backward-char if non-protected content.
 
 N is number of chars to consider."
   (interactive)
-  (let ((prohibited (org-safe-delete-backward-char-prohibited-context-p)))
-    (if (not prohibited)
-        (org-delete-backward-char 1)
-      (message "prohibed delete-backward-char [reason(s): %s]" prohibited))))
+  (if (org-safe-disabled-p)
+      (org-delete-backward-char 1)
+    (progn
+      (let ((prohibited (org-safe-delete-backward-char-prohibited-context-p)))
+        (if (not prohibited)
+            (org-delete-backward-char 1)
+          (message "prohibed delete-backward-char [reason(s): %s]" prohibited))))))
+
+  (defun org-safe-delete-char nil
+    "Execute org-delete-char if non-protected content."
+    (interactive)
+    (if (org-safe-disabled-p)
+        (org-delete-char 1)
+      (progn
+        (let ((prohibited (org-safe-delete-char-prohibited-context-p)))
+          (if (not prohibited)
+              (org-delete-char 1)
+            (message "prohibited delete-char [reason(s): %s]" prohibited))))))
 
 (defun org-safe-looking-back-at-headline-stars-p nil
   "Return non-nil if point is looking back at headline stars."
