@@ -115,14 +115,23 @@
   "Re-enables org safe after prohibited."
   (setq org-safe-prohibited-var nil))
 
+(defun org-safe-delete-char nil
+  "Execute org-delete-char if non-protected content."
+  (interactive)
+  (let ((prohibited (org-safe-action-is-prohibited)))
+    (if (not prohibited)
+        (org-delete-char 1)
+      (message "prohibited delete-char [reason(s): %s]" prohibited))))
+
 (defun org-safe-delete-backward-char nil
   "Execute org-delete-backward-char if non-protected content.
 
 N is number of chars to consider."
   (interactive)
-  (if (not (org-safe-action-is-prohibited))
-      (org-delete-backward-char 1)
-    (message "org-safe prohibiting deletion of headline stars")))
+  (let ((prohibited (org-safe-action-is-prohibited)))
+    (if (not prohibited)
+        (org-delete-backward-char 1)
+      (message "prohibed delete-backward-char [reason(s): %s]" prohibited))))
 
 (defun org-safe-looking-back-at-headline-stars-p nil
   "Return non-nil if point is looking back at headline stars."
@@ -147,13 +156,6 @@ N is number of chars to consider."
   ;; TODO add limit to looking-back
   (and (looking-back "^\\*+ +")
        (org-at-heading-p)))
-
-(defun org-safe-delete-char nil
-  "Execute org-delete-char if non-protected content."
-  (interactive)
-  (if (not (org-safe-action-is-prohibited))
-      (org-delete-char 1)
-    (message "org-safe prohibiting deletion of headline stars")))
 
 (defun org-safe-action-is-prohibited nil
   "Return non-nil if action should be prohibited."
@@ -343,6 +345,7 @@ Use this function by adding it as advice :before-until to `self-insert-command',
 i.e. run `self-insert-command' only if this function returns nil.
 
 See `self-insert-command' docs for N and C descriptions."
+  ;; FIXME cant insert after headline space
   (when (and (eq major-mode 'org-mode)
              org-safe-mode) ; Prevent running advice in non org-safe buffers
     (if (or (org-safe-attemping-insert-first-star-newline-p C)
