@@ -74,6 +74,10 @@
     ;; Headline region
     org-safe-headline-in-region-p
 
+    ;; TODO don't allow backward delete to delete end of tags
+    ;; Headline tags
+    ;; org-safe-looking-back-at-headline-tags-end
+
     ;; Drawers
     org-safe-looking-at-drawer-p
     org-safe-looking-at-logbook-note-p
