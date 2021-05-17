@@ -410,11 +410,9 @@ foobar"
        (goto-char (point-max))
        (org-safe-delete-backward-char)
        (expect (buffer-string) :to-equal "asterisk"))))
-  ;; TODO implement this test
-  (xit "does NOT delete property drawer")
-  ;; TODO implement this test
-  (xit "does NOT delete logbook drawer")
-  ;; TODO implement this test
+
+  (xit "does NOT delete property drawer") ; TODO implement this test
+  (xit "does NOT delete logbook drawer") ; TODO implement this test
   (it "it does NOT delete space between headline and asterisk"
     (test-org-safe-with-org-temp-buffer
      "* headline"

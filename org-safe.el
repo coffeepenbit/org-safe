@@ -146,7 +146,6 @@
 (defvar org-safe--disabled-var nil
   "If true, prevent function from activating.")
 
-;; TODO have functions utilize this
 (defun org-safe-temp-allow-deletion nil
   "Prohibit `org-safe' protection."
   (interactive)
@@ -156,6 +155,7 @@
 (defun org-safe-start-prohibited-timer nil
   "Enable `org-safe' again after timer is done."
   (message "Temporarily disabling org-safe protection")
+  ;; TODO reset timer when delete-char/et al are called
   (run-with-timer org-safe-disabled-duration nil 'org-safe-enable))
 
 (defun org-safe-disabled-p nil
@@ -422,13 +422,14 @@ Use this function by adding it as advice :before-until to `self-insert-command',
 i.e. run `self-insert-command' only if this function returns nil.
 
 See `self-insert-command' docs for N and C descriptions."
+  ;; TODO have self-insert-command obey disabled timer
   (when (and (eq major-mode 'org-mode)
              org-safe-mode) ; Prevent running advice in non org-safe buffers
     (if (or (org-safe-attemping-insert-first-star-newline-p C)
             (not (org-safe-self-insert-command-prohibited-context-p)))
         nil ; Allow `self-insert-command'
       (progn ; Prevent `self-insert-command'
-        ;; TODO provide reason why self-insert-command is prohibited
+        ;; TODO provide reason to user why self-insert-command is prohibited
         ;; FIXME still not allowing newline insert if calling:
         ;; - org-open-line
         ;; - org-return
