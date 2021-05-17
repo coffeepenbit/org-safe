@@ -1115,6 +1115,16 @@ d") ; Point look at d
        (self-insert-command 1 ?a)
        (expect (char-before) :to-be ?*)
        (expect (char-after) :to-be ? ))))
+  (it "does NOT prohibit self-insert at first headline char"
+    (test-org-safe-with-org-temp-buffer
+     "* headline"
+     (lambda nil
+       (setq org-safe-mode t)
+       (forward-char 2)
+       (expect (char-before) :to-be ? )
+       (expect (char-after) :to-be ?h)
+       (self-insert-command 1 ?a)
+       (expect (buffer-string) :to-equal "* aheadline"))))
   (it "does NOT prohibit self-insert at bold text"
     (test-org-safe-with-org-temp-buffer
      "*headline"
@@ -1149,8 +1159,7 @@ d") ; Point look at d
         (self-insert-command 1 ?a)
         (expect (char-before) :to-be ?a)
         (expect (char-after) :to-be ?*))))
-  (xit "does NOT affect non-interactive insert")
-  (xit "does NOT affect self-insert on first headline char"))
+  (xit "does NOT affect non-interactive insert"))
 
 (describe "org-safe-looking-at-first-headline-star-p"
   (describe "when looking at first headline star"

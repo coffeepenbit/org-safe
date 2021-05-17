@@ -95,7 +95,6 @@
 
     ;; Headline spaces
     org-safe-looking-at-headline-star-space-p
-    org-safe-looking-back-at-headline-star-space-p
 
     ;; Headline region
     org-safe-headline-in-region-p
@@ -205,7 +204,7 @@ N is number of chars to consider."
   (and (looking-back "^\\*+ +")
        (org-at-heading-p)))
 
-(defun org-safe-action-is-prohibited nil
+(defun org-safe-self-insert-command-prohibited-context-p nil
   "Return non-nil if action should be prohibited."
   (mapcan (lambda (func)
             (when (and func
@@ -409,11 +408,10 @@ Use this function by adding it as advice :before-until to `self-insert-command',
 i.e. run `self-insert-command' only if this function returns nil.
 
 See `self-insert-command' docs for N and C descriptions."
-  ;; FIXME cant insert after headline space
   (when (and (eq major-mode 'org-mode)
              org-safe-mode) ; Prevent running advice in non org-safe buffers
     (if (or (org-safe-attemping-insert-first-star-newline-p C)
-            (not (org-safe-action-is-prohibited)))
+            (not (org-safe-self-insert-command-prohibited-context-p)))
         nil ; Allow `self-insert-command'
       (progn ; Prevent `self-insert-command'
         (message "org-safe prohibiting self-insert-command")
