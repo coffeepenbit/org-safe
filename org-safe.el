@@ -168,10 +168,13 @@
 (defun org-safe-delete-char nil
   "Execute org-delete-char if non-protected content."
   (interactive)
-  (let ((prohibited (org-safe-delete-char-prohibited-context-p)))
-    (if (not prohibited)
-        (org-delete-char 1)
-      (message "prohibited delete-char [reason(s): %s]" prohibited))))
+  (if (org-safe-disabled-p)
+      (org-delete-char 1)
+    (progn
+      (let ((prohibited (org-safe-delete-char-prohibited-context-p)))
+        (if (not prohibited)
+            (org-delete-char 1)
+          (message "prohibited delete-char [reason(s): %s]" prohibited))))))
 
 (defun org-safe-delete-backward-char nil
   "Execute org-delete-backward-char if non-protected content.

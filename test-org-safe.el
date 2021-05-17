@@ -224,17 +224,19 @@
          (expect (eq (char-before) ?*))
          (expect (looking-at (regexp-quote " headline")))))))
   (describe "temporary allow deletion"
-    :var ((org-safe-disabled-duration 0.2)
-          (org-safe-disabled nil))
+    :var (org-safe-disabled-duration org-safe-disabled)
+    (before-each
+      (setq org-safe-disabled-duration 0.1
+            org-safe-disabled nil))
     (it "respects temporary allow deletion"
       (test-org-safe-with-org-temp-buffer
        "** headline"
        (lambda nil
-         (forward-char 2)
-
+         (forward-char 1)
+         (print (format "%s" org-safe-disabled-duration))
          ;; Prevented is default behavior
          (expect (eq (char-before) ?*))
-         (expect (eq (char-after) ? ))
+         (expect (eq (char-after) ?*))
          (org-safe-delete-char)
          (expect (buffer-string) :to-equal "** headline")
 
