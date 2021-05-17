@@ -646,18 +646,37 @@ foobar"
     (org-safe-disable)
     (expect (org-safe-disabled-p))
     ;; Run prohibited timer and wait for it to finish
-    (org-safe-start-disabled-timer)
+    (org-safe-temp-allow-deletion)
     (sit-for (+ org-safe-disabled-duration 0.01))
     ;; Verify that `org-safe' is re-enabled
     (expect (org-safe-disabled-p) :to-be nil)))
 
 (describe "org-safe-temp-allow-deletion"
-  :var ((org-safe-disabled-duration 0.1)
-        (org-safe-disabled nil))
+  :var (org-safe-disabled-duration org-safe-disabled)
+  (before-each
+    (setq org-safe-disabled-duration 0.1
+          org-safe-disabled nil))
   (it "switches org-safe from enabled to prohibited"
     (call-interactively 'org-safe-temp-allow-deletion)
     (expect (org-safe-disabled-p)))
   (it "re-enables org-safe after org-safe-disabled-duration"
+    (call-interactively 'org-safe-temp-allow-deletion)
+    (sit-for (+ org-safe-disabled-duration 0.01))
+    (expect (org-safe-disabled-p) :to-be nil))
+  (it "resets timer if called while timer already running"
+    ;; Initial call
+    (call-interactively 'org-safe-temp-allow-deletion)
+    (sit-for (- org-safe-disabled-duration 0.01))
+    (expect (org-safe-disabled-p) :to-be t)
+
+    ;; Reset timer
+    (call-interactively 'org-safe-temp-allow-deletion)
+
+    ;; Verify that reset was successful
+    (sit-for (- org-safe-disabled-duration 0.01))
+    (expect (org-safe-disabled-p) :to-be t)
+
+    ;; Verify last timer runs out
     (sit-for (+ org-safe-disabled-duration 0.01))
     (expect (org-safe-disabled-p) :to-be nil)))
 

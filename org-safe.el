@@ -149,15 +149,16 @@
 (defun org-safe-temp-allow-deletion nil
   "Prohibit `org-safe' protection."
   (interactive)
+  (when (timerp org-safe--disabled-timer)
+    (cancel-timer org-safe--disabled-timer))
   (org-safe-disable)
-  (org-safe-start-disabled-timer))
+  (org-safe--start-disabled-timer))
 
 (defvar org-safe--disabled-timer nil)
 
-(defun org-safe-start-disabled-timer nil
+(defun org-safe--start-disabled-timer nil
   "Enable `org-safe' again after timer is done."
-  (message "Temporarily disabling org-safe protection")
-  ;; TODO reset timer when delete-char/et al are called
+  (print "Temporarily disabling org-safe protection")
   (setq org-safe--disabled-timer (run-with-timer org-safe-disabled-duration
                                                  nil
                                                  'org-safe-enable)))
@@ -180,7 +181,9 @@
 N is number of chars to consider."
   (interactive)
   (if (org-safe-disabled-p)
-      (org-delete-backward-char 1)
+      (progn
+        (org-delete-backward-char 1)
+        (call-interactively 'org-safe-temp-allow-deletion))
     (progn
       (let ((prohibited-reason (org-safe-delete-backward-char-prohibited-context-p)))
         (if (not prohibited-reason)
