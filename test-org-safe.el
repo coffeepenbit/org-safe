@@ -564,23 +564,23 @@ foobar"
        (expect (org-safe-looking-back-at-headline-star-space-p) :to-be nil)))))
 
 (describe "org-safe-disabled-p"
-  (it "should be non-nil when org-safe-disabled-var is t"
-    (let ((org-safe-disabled-var t))
+  (it "should be non-nil when org-safe--disabled-var is t"
+    (let ((org-safe--disabled-var t))
       (expect (org-safe-disabled-p))))
-  (it "should be nil when org-safe-disabled-var nil"
-    (let ((org-safe-disabled-var nil))
+  (it "should be nil when org-safe--disabled-var nil"
+    (let ((org-safe--disabled-var nil))
       (expect (org-safe-disabled-p) :to-be nil))))
 
 (describe "org-safe-prohibit"
   (it "should cause prohibited-p to be t after being nil"
-    (let ((org-safe-disabled-var nil))
+    (let ((org-safe--disabled-var nil))
       (expect (org-safe-disabled-p) :to-be nil)
       (org-safe-disable)
       (expect (org-safe-disabled-p)))))
 
 (describe "org-safe-enable"
   (it "should cause prohibited-p to be nil after being t"
-    (let ((org-safe-disabled-var t))
+    (let ((org-safe--disabled-var t))
       (expect (org-safe-disabled-p)))
     (org-safe-enable)
     (expect (org-safe-disabled-p) :to-be nil)))

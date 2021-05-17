@@ -139,7 +139,7 @@
   ;;   (advice-remove 'self-insert-command #'org-safe-prohibit-self-insert-command-advice))
   )
 
-(defvar org-safe-disabled-var nil
+(defvar org-safe--disabled-var nil
   "If true, prevent function from activating.")
 
 ;; TODO have functions utilize this
@@ -155,15 +155,15 @@
 
 (defun org-safe-disabled-p nil
   "Check if `org-safe' protection is prohibited."
-  org-safe-disabled-var)
+  org-safe--disabled-var)
 
 (defun org-safe-disable nil
   "Disable `org-safe' prohibiting functionality."
-  (setq org-safe-disabled-var t))
+  (setq org-safe--disabled-var t))
 
 (defun org-safe-enable nil
   "Re-enables org safe after prohibited."
-  (setq org-safe-disabled-var nil))
+  (setq org-safe--disabled-var nil))
 
 (defun org-safe-delete-char nil
   "Execute org-delete-char if non-protected content."
