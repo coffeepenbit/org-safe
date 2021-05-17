@@ -459,7 +459,31 @@ foobar"
          (expect (buffer-string) :to-equal "* headline")
          (org-safe-delete-backward-char)
          (expect (eq (char-before) ?*))
-         (expect (buffer-string) :to-equal "* headline"))))))
+         (expect (buffer-string) :to-equal "* headline"))))
+    (it "resets temporary allow deletion timer"
+      (test-org-safe-with-org-temp-buffer
+       "** headline"
+       (lambda nil
+         (forward-char 2)
+         (print (format "%s" org-safe-disabled-duration))
+         ;; Prevented is default behavior
+         (expect (eq (char-before) ?*))
+         (expect (eq (char-after) ? ))
+         (org-safe-delete-backward-char)
+         (expect (buffer-string) :to-equal "** headline")
+
+         ;; Run command just before timer expires
+         (org-safe-temp-allow-deletion)
+         (sit-for (- org-safe-disabled-duration 0.01))
+         (org-safe-delete-backward-char)
+         (expect (buffer-string) :to-equal "* headline")
+         (expect (char-before) :to-equal ?*)
+
+         ;; Run command again just before reset timer expires
+         ;; This will only succeed if timer had been reset
+         (sit-for (- org-safe-disabled-duration 0.01))
+         (org-safe-delete-backward-char)
+         (expect (buffer-string) :to-equal " headline"))))))
 
 (describe "org-safe-looking-at-headline-stars-p"
   (it "should be t when looking at a headline"
@@ -622,7 +646,7 @@ foobar"
     (org-safe-disable)
     (expect (org-safe-disabled-p))
     ;; Run prohibited timer and wait for it to finish
-    (org-safe-start-prohibited-timer)
+    (org-safe-start-disabled-timer)
     (sit-for (+ org-safe-disabled-duration 0.01))
     ;; Verify that `org-safe' is re-enabled
     (expect (org-safe-disabled-p) :to-be nil)))

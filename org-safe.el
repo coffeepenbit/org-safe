@@ -150,13 +150,17 @@
   "Prohibit `org-safe' protection."
   (interactive)
   (org-safe-disable)
-  (org-safe-start-prohibited-timer))
+  (org-safe-start-disabled-timer))
 
-(defun org-safe-start-prohibited-timer nil
+(defvar org-safe--disabled-timer nil)
+
+(defun org-safe-start-disabled-timer nil
   "Enable `org-safe' again after timer is done."
   (message "Temporarily disabling org-safe protection")
   ;; TODO reset timer when delete-char/et al are called
-  (run-with-timer org-safe-disabled-duration nil 'org-safe-enable))
+  (setq org-safe--disabled-timer (run-with-timer org-safe-disabled-duration
+                                                 nil
+                                                 'org-safe-enable)))
 
 (defun org-safe-disabled-p nil
   "Check if `org-safe' protection is prohibited."
